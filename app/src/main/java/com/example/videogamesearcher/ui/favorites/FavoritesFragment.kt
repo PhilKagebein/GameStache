@@ -11,7 +11,7 @@ import com.example.videogamesearcher.databinding.FragmentFavoritesBinding
 
 class FavoritesFragment : Fragment() {
 
-    private lateinit var homeViewModel: FavoritesViewModel
+    private lateinit var favoritesViewModel: FavoritesViewModel
     private var _binding: FragmentFavoritesBinding? = null
 
     // This property is only valid between onCreateView and
@@ -20,13 +20,13 @@ class FavoritesFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        homeViewModel = ViewModelProvider(this).get(FavoritesViewModel::class.java)
+        favoritesViewModel = ViewModelProvider(this).get(FavoritesViewModel::class.java)
 
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner, { textView.text = it })
+        favoritesViewModel.text.observe(viewLifecycleOwner, { textView.text = it })
         return root
     }
 

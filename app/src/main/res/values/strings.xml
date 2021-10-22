@@ -3,4 +3,30 @@
     <string name="title_explore">Explore</string>
     <string name="title_favorites">Favorites</string>
     <string name="title_wishlist">Wishlist</string>
+    <string name="searchview_query_text"><i>Enter a video game…</i></string>
+    <string name="search_button_text">Search</string>
+
+    <string-array name="platforms">
+        <item name="platforms_spinner_prompt">Search by platform</item>
+        <item name="nintendo_switch">Nintendo Switch</item>
+        <item name="xbox_series_x">Xbox Series X</item>
+        <item name="ps5">Playstation 5</item>
+        <item name="pc">PC</item>
+    </string-array>
+
+    <string-array name="genre">
+        <item name="genre_spinner_prompt"><i>Search by genre</i></item>
+        <item name="platformer">Platformer</item>
+        <item name="rpg">RPG</item>
+        <item name="adventure">Adventure</item>
+        <item name="shooter">Shooter</item>
+    </string-array>
+
+    <string-array name="multiplayer">
+        <item name="multiplayer_spinner_prompt">Search by multiplayer capabilities</item>
+        <item name="single_player">Single player</item>
+        <item name="mp2">2 Players</item>
+        <item name="mp2_4">2–4 Players</item>
+        <item name="mp4">4 Players</item>
+    </string-array>
 </resources>
