@@ -1,13 +1,28 @@
 package com.example.videogamesearcher.ui.explore
 
+import android.app.Application
+import android.content.res.Resources
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.videogamesearcher.R
 
-class ExploreViewModel : ViewModel() {
+class ExploreViewModel(private val app: Application, private val resources: Resources) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is explore fragment"
+    fun displaySearchToast(){
+        Toast.makeText(app, "Search worked", Toast.LENGTH_LONG).show()
     }
-    val text: LiveData<String> = _text
+
+    fun getPlatformStrArray(): Array<String> {
+        return resources.getStringArray(R.array.platforms)
+    }
+
+    fun getGenreStrArray(): Array<String> {
+        return resources.getStringArray(R.array.genre)
+    }
+
+    fun getMultiplayerStrArray(): Array<String> {
+        return resources.getStringArray(R.array.multiplayer)
+    }
 }

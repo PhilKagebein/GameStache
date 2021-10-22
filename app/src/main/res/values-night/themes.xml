@@ -12,5 +12,17 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <!--Attributes-->
+        <item name="primaryColor">@color/purple_200</item>
+        <item name="primaryColorVariant">@color/purple_700</item>
+        <item name="secondaryColor">@color/teal_200</item>
+        <item name="secondaryColorVariant">@color/teal_700</item>
+        <item name="outlineColor">@color/white</item>
+        <item name="textColor">@color/white</item>
+
+        <!--Changes Text color on etVideoGameSearch-->
+        <item name="android:textColorHint">?attr/textColor</item>
     </style>
+
 </resources>

@@ -1,22 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.explore.ExploreFragment">
+    tools:context=".ui.explore.ExploreFragment"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_dashboard"
+    <EditText
+        android:id="@+id/etVideoGameSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:textSize="@dimen/etTextSize"
+        android:layout_marginStart="@dimen/etMarginStart"
+        android:layout_marginEnd="@dimen/etMarginEnd"
+        android:hint="@string/searchview_query_text"
+        android:singleLine="true"
+        />
+
+    <Spinner
+        android:id="@+id/spnPlatform"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:prompt="@string/searchview_query_text"
+        android:layout_marginEnd="@dimen/spnMarginEnd"
+        android:layout_marginStart="@dimen/spnMarginStart"
+        />
+
+    <Spinner
+        android:id="@+id/spnGenre"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spnMarginEnd"
+        android:layout_marginStart="@dimen/spnMarginStart"
+        />
+    <Spinner
+        android:id="@+id/spnMultiplayer"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spnMarginEnd"
+        android:layout_marginStart="@dimen/spnMarginStart"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnExploreSearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/search_button_text"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/btnExploreMarginStart"
+            android:layout_marginTop="@dimen/btnExploreMarginTop"
+            />
+    </LinearLayout>
+
+</LinearLayout>

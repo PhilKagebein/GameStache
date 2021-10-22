@@ -11,16 +11,16 @@ import com.example.videogamesearcher.databinding.FragmentWishlistBinding
 
 class WishlistFragment : Fragment() {
 
-    private lateinit var notificationsViewModel: WishlistViewModel
+    private lateinit var wishlistViewModel: WishlistViewModel
     private lateinit var binding: FragmentWishlistBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        notificationsViewModel = ViewModelProvider(this).get(WishlistViewModel::class.java)
+        wishlistViewModel = ViewModelProvider(this).get(WishlistViewModel::class.java)
 
         binding = FragmentWishlistBinding.inflate(inflater, container, false)
 
         val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner, { textView.text = it })
+        wishlistViewModel.text.observe(viewLifecycleOwner, { textView.text = it })
         return binding.root
     }
 
