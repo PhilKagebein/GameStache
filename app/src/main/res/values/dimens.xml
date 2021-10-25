@@ -16,4 +16,17 @@
     <dimen name="btnExploreMarginStart">15sp</dimen>
     <dimen name="btnExploreMarginTop">8dp</dimen>
 
+    <!--rvExplore Dimens-->
+    <dimen name="rvExploreMarginVertical">5dp</dimen>
+    <dimen name="rvExploreMarginEnd">8dp</dimen>
+    <dimen name="rvExploreMarginStart">13dp</dimen>
+
+    <!--rvFavorites Dimens-->
+    <dimen name="rvFavoritesMarginVertical">5dp</dimen>
+    <dimen name="rvFavoritesMarginHorizontal">8dp</dimen>
+
+    <!--rvWishlist Dimens-->
+    <dimen name="rvWishlistMarginVertical">5dp</dimen>
+    <dimen name="rvWishlistMarginHorizontal">8dp</dimen>
+
 </resources>
