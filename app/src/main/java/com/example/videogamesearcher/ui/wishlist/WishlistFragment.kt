@@ -19,8 +19,6 @@ class WishlistFragment : Fragment() {
 
         binding = FragmentWishlistBinding.inflate(inflater, container, false)
 
-        val textView: TextView = binding.textNotifications
-        wishlistViewModel.text.observe(viewLifecycleOwner, { textView.text = it })
         return binding.root
     }
 

@@ -62,4 +62,12 @@
             />
     </LinearLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvExplore"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="@dimen/rvExploreMarginVertical"
+        android:layout_marginStart="@dimen/rvExploreMarginStart"
+        android:layout_marginEnd="@dimen/rvExploreMarginEnd"
+        />
 </LinearLayout>
