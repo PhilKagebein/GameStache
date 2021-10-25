@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+
+    >
 
     <item
         android:id="@+id/navigation_favorites"
         android:icon="@drawable/favorites_icon"
-        android:title="@string/title_favorites" />
+        android:title="@string/title_favorites"
+        />
 
     <item
         android:id="@+id/navigation_explore"
         android:icon="@drawable/explore_icon"
-        android:title="@string/title_explore" />
+        android:title="@string/title_explore"
+
+        />
 
     <item
         android:id="@+id/navigation_wishlist"

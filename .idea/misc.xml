@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/drawable/explore_icon.xml" value="0.3536458333333333" />
+        <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/drawable/explore_search_button.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/drawable/searchview_background.xml" value="0.3536458333333333" />
+        <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/drawable/selector.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/layout/fragment_dashboard.xml" value="0.2223731884057971" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/VideoGameSearcher/app/src/main/res/layout/fragment_explore.xml" value="0.33" />
@@ -20,5 +23,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.33" />
+      </ProjectState>
+    </option>
   </component>
 </project>

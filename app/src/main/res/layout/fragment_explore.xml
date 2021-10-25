@@ -59,6 +59,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/btnExploreMarginStart"
             android:layout_marginTop="@dimen/btnExploreMarginTop"
+            android:backgroundTint="?attr/primaryColor"
             />
     </LinearLayout>
 
