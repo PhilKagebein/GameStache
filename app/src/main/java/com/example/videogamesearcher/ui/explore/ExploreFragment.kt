@@ -6,14 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
+import com.example.videogamesearcher.repository.Repository
 
 class ExploreFragment : Fragment() {
 
     private lateinit var exploreViewModel: ExploreViewModel
     private var _binding: FragmentExploreBinding? = null
+    private val repository = Repository()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -21,12 +24,9 @@ class ExploreFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         initExploreViewModel()
-        //exploreViewModel = ViewModelProvider(this).get(ExploreViewModel::class.java)
 
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,6 +35,9 @@ class ExploreFragment : Fragment() {
         var spnPlatform = binding.spnPlatform
         var spnGenre = binding.spnGenre
         var spnMultiplayer = binding.spnMultiplayer
+        var accessToken : String? = null
+
+        exploreViewModel.pushPostAccess()
 
         spnPlatform = initSpinners(spnPlatform, exploreViewModel.getPlatformStrArray())
         spnGenre = initSpinners(spnGenre, exploreViewModel.getGenreStrArray())
@@ -66,11 +69,15 @@ class ExploreFragment : Fragment() {
         }
 
         binding.btnExploreSearch.setOnClickListener {
-
         }
 
+        exploreViewModel.accessTokenResponse.observe(viewLifecycleOwner, Observer { response ->
+            if(response.isSuccessful){
+                accessToken = response.body()?.access_token
+                println(accessToken)
+            }//add an else statement later
+        })
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -79,13 +86,12 @@ class ExploreFragment : Fragment() {
 
     private fun initSpinners(spinner: Spinner, strArray: Array<String>): Spinner {
         spinner.adapter = ArrayAdapter(requireContext(), R.layout.spinner_items, strArray)
-
         return spinner
     }
 
-
     private fun initExploreViewModel(){
-        val factory = activity?.let {ExploreViewModelFactory(it.application, resources)}
+        val factory = activity?.let {ExploreViewModelFactory(repository, it.application, resources)}
         exploreViewModel = factory?.let {ViewModelProvider(this, it) }?.get(ExploreViewModel::class.java) as ExploreViewModel
     }
+
 }
