@@ -5,6 +5,7 @@
     <string name="title_wishlist">Wishlist</string>
     <string name="searchview_query_text"><i>Enter a video game…</i></string>
     <string name="search_button_text">Search</string>
+    <string name="no_platform_null_error">No Platform</string>
 
     <string-array name="platforms">
         <item name="platforms_spinner_prompt">Search by platform</item>
