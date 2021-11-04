@@ -1,74 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.explore.ExploreFragment"
-    android:orientation="vertical">
+<layout>
 
-    <EditText
-        android:id="@+id/etVideoGameSearch"
+    <data>
+        <variable
+            name="exploreviewmodel"
+            type="com.example.videogamesearcher.ui.explore.ExploreViewModel"/>
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/etTextSize"
-        android:layout_marginStart="@dimen/etMarginStart"
-        android:layout_marginEnd="@dimen/etMarginEnd"
-        android:hint="@string/searchview_query_text"
-        android:singleLine="true"
-        />
+        android:layout_height="match_parent"
+        tools:context=".ui.explore.ExploreFragment"
+        android:orientation="vertical">
 
-    <Spinner
-        android:id="@+id/spnPlatform"
-        style="@style/Widget.AppCompat.Spinner.Underlined"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:prompt="@string/searchview_query_text"
-        android:layout_marginEnd="@dimen/spnMarginEnd"
-        android:layout_marginStart="@dimen/spnMarginStart"
-        />
-
-    <Spinner
-        android:id="@+id/spnGenre"
-        style="@style/Widget.AppCompat.Spinner.Underlined"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/spnMarginEnd"
-        android:layout_marginStart="@dimen/spnMarginStart"
-        />
-    <Spinner
-        android:id="@+id/spnMultiplayer"
-        style="@style/Widget.AppCompat.Spinner.Underlined"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/spnMarginEnd"
-        android:layout_marginStart="@dimen/spnMarginStart"
-        />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnExploreSearch"
-            android:layout_width="0dp"
+        <EditText
+            android:id="@+id/etVideoGameSearch"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/search_button_text"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/btnExploreMarginStart"
-            android:layout_marginTop="@dimen/btnExploreMarginTop"
-            android:backgroundTint="?attr/primaryColor"
+            android:text="@={exploreviewmodel.observer.nameSearchText}"
+            android:textSize="@dimen/etTextSize"
+            android:layout_marginStart="@dimen/etMarginStart"
+            android:layout_marginEnd="@dimen/etMarginEnd"
+            android:hint="@string/searchview_query_text"
+            android:singleLine="true"
+            />
+
+        <Spinner
+            android:id="@+id/spnPlatform"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/searchview_query_text"
+            android:layout_marginEnd="@dimen/spnMarginEnd"
+            android:layout_marginStart="@dimen/spnMarginStart"
+            />
+
+        <Spinner
+            android:id="@+id/spnGenre"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spnMarginEnd"
+            android:layout_marginStart="@dimen/spnMarginStart"
+            />
+        <Spinner
+            android:id="@+id/spnMultiplayer"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spnMarginEnd"
+            android:layout_marginStart="@dimen/spnMarginStart"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnExploreSearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/search_button_text"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/btnExploreMarginStart"
+                android:layout_marginTop="@dimen/btnExploreMarginTop"
+                android:backgroundTint="?attr/primaryColor"
+                />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvExplore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/rvExploreMarginVertical"
+            android:layout_marginStart="@dimen/rvExploreMarginStart"
+            android:layout_marginEnd="@dimen/rvExploreMarginEnd"
+            tools:listitem="@layout/games_list_search_results"
+            android:visibility="visible"
             />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvExplore"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginVertical="@dimen/rvExploreMarginVertical"
-        android:layout_marginStart="@dimen/rvExploreMarginStart"
-        android:layout_marginEnd="@dimen/rvExploreMarginEnd"
-        />
-</LinearLayout>
+</layout>

@@ -6,11 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
+import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.repository.Repository
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class ExploreFragment : Fragment() {
 
@@ -26,6 +31,8 @@ class ExploreFragment : Fragment() {
         initExploreViewModel()
 
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
+        binding.exploreviewmodel = exploreViewModel
+        binding.lifecycleOwner = this
         return binding.root
     }
 
@@ -35,9 +42,16 @@ class ExploreFragment : Fragment() {
         var spnPlatform = binding.spnPlatform
         var spnGenre = binding.spnGenre
         var spnMultiplayer = binding.spnMultiplayer
-        var accessToken : String? = null
+        var authorization: TwitchAuthorization?
+        lateinit var searchText : RequestBody
+        val exploreAdapter = GamesListSearchResultsAdapter(resources)
 
-        exploreViewModel.pushPostAccess()
+        binding.rvExplore.apply{
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+            adapter = exploreAdapter
+        }
+
+        exploreViewModel.getAccessToken()
 
         spnPlatform = initSpinners(spnPlatform, exploreViewModel.getPlatformStrArray())
         spnGenre = initSpinners(spnGenre, exploreViewModel.getGenreStrArray())
@@ -69,13 +83,31 @@ class ExploreFragment : Fragment() {
         }
 
         binding.btnExploreSearch.setOnClickListener {
+            exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
+                    exploreViewModel.getGameNameAndPlatform(twitchAccessToken, searchText)
+                }
         }
 
-        exploreViewModel.accessTokenResponse.observe(viewLifecycleOwner, Observer { response ->
+        exploreViewModel.authorizationResponse.observe(viewLifecycleOwner, { response ->
             if(response.isSuccessful){
-                accessToken = response.body()?.access_token
-                println(accessToken)
+                authorization = response.body()
+                exploreViewModel.twitchAuthorization.postValue(authorization)
+                println(authorization?.access_token)
             }//add an else statement later
+        })
+
+        exploreViewModel.gameListSearchResultsResponse.observe(viewLifecycleOwner, { response ->
+            if(response.isSuccessful){
+                exploreViewModel.gamesListSearchResults.postValue(response.body())
+            }
+        })
+
+        exploreViewModel.gamesListSearchResults.observe(viewLifecycleOwner, {
+            exploreAdapter.submitList(it)
+        })
+
+        exploreViewModel.searchText.observe(viewLifecycleOwner, { text ->
+            searchText = text
         })
     }
 
