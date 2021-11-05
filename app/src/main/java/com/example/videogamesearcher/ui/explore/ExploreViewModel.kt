@@ -6,7 +6,7 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.lifecycle.*
 import com.example.videogamesearcher.R
-import com.example.videogamesearcher.models.GameNameResponse
+import com.example.videogamesearcher.models.SearchResultsResponse
 import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.repository.Repository
 import kotlinx.coroutines.Dispatchers
@@ -20,8 +20,8 @@ class ExploreViewModel(private val repository: Repository, private val app: Appl
 
     val authorizationResponse: MutableLiveData<Response<TwitchAuthorization>> = MutableLiveData()
     val twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
-    val gameListSearchResultsResponse: MutableLiveData<Response<GameNameResponse>> = MutableLiveData()
-    val gamesListSearchResults: MutableLiveData<GameNameResponse> = MutableLiveData()
+    val gamesListResponse: MutableLiveData<Response<SearchResultsResponse>> = MutableLiveData()
+    val gamesListResults: MutableLiveData<SearchResultsResponse> = MutableLiveData()
     val observer = Observer()
 
     class Observer() : BaseObservable() {
@@ -48,15 +48,15 @@ class ExploreViewModel(private val repository: Repository, private val app: Appl
         }
     }
 
-    fun getGameNameAndPlatform(accessToken: String, gameInfoSearch: RequestBody) {
+    fun searchGames(accessToken: String, gamesSearch: RequestBody) {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.getGameNameAndPlatform(accessToken, gameInfoSearch)
-            gameListSearchResultsResponse.postValue(response)
+            val response = repository.searchGames(accessToken, gamesSearch)
+            gamesListResponse.postValue(response)
         }
     }
 
     var searchText: LiveData<RequestBody> = observer.nameSearchText.map { text ->
-        "search \"${text}\";\nfields name, platforms.name;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
+        "search \"${text}\";\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
     }
 
 }

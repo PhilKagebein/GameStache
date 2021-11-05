@@ -1,6 +1,6 @@
 package com.example.videogamesearcher.models
 
-data class Platform(
+data class Genre(
     val id: Int,
     val name: String
 )
