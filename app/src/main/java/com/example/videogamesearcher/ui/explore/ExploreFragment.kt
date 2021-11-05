@@ -14,10 +14,8 @@ import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
 import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.repository.Repository
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.net.URI
+
 
 class ExploreFragment : Fragment() {
 
