@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
 import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.repository.Repository
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+
 
 class ExploreFragment : Fragment() {
 
@@ -44,13 +44,13 @@ class ExploreFragment : Fragment() {
         var spnMultiplayer = binding.spnMultiplayer
         var authorization: TwitchAuthorization?
         lateinit var searchText : RequestBody
-        val exploreAdapter = GamesListSearchResultsAdapter(resources)
 
+        val exploreAdapter = GamesListSearchResultsAdapter(resources)
         binding.rvExplore.apply{
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = exploreAdapter
+            addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
         }
-
         exploreViewModel.getAccessToken()
 
         spnPlatform = initSpinners(spnPlatform, exploreViewModel.getPlatformStrArray())
@@ -84,7 +84,7 @@ class ExploreFragment : Fragment() {
 
         binding.btnExploreSearch.setOnClickListener {
             exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
-                    exploreViewModel.getGameNameAndPlatform(twitchAccessToken, searchText)
+                    exploreViewModel.searchGames(twitchAccessToken, searchText)
                 }
         }
 
@@ -96,18 +96,19 @@ class ExploreFragment : Fragment() {
             }//add an else statement later
         })
 
-        exploreViewModel.gameListSearchResultsResponse.observe(viewLifecycleOwner, { response ->
+        exploreViewModel.searchText.observe(viewLifecycleOwner, { text ->
+            searchText = text
+        })
+
+        //try putting this in the view model
+        exploreViewModel.gamesListResponse.observe(viewLifecycleOwner, { response ->
             if(response.isSuccessful){
-                exploreViewModel.gamesListSearchResults.postValue(response.body())
+                exploreViewModel.gamesListResults.postValue(response.body())
             }
         })
 
-        exploreViewModel.gamesListSearchResults.observe(viewLifecycleOwner, {
+        exploreViewModel.gamesListResults.observe(viewLifecycleOwner, {
             exploreAdapter.submitList(it)
-        })
-
-        exploreViewModel.searchText.observe(viewLifecycleOwner, { text ->
-            searchText = text
         })
     }
 

@@ -79,7 +79,7 @@
             android:layout_marginVertical="@dimen/rvExploreMarginVertical"
             android:layout_marginStart="@dimen/rvExploreMarginStart"
             android:layout_marginEnd="@dimen/rvExploreMarginEnd"
-            tools:listitem="@layout/games_list_search_results"
+            tools:listitem="@layout/search_results"
             android:visibility="visible"
             />
     </LinearLayout>

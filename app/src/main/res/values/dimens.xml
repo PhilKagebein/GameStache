@@ -29,4 +29,17 @@
     <dimen name="rvWishlistMarginVertical">5dp</dimen>
     <dimen name="rvWishlistMarginHorizontal">8dp</dimen>
 
+    <!--search_results Dimens-->
+    <dimen name="searchResultVerticalMargin">5dp</dimen>
+    <dimen name="artImageViewHeight">100dp</dimen>
+    <dimen name="artImageViewWidth">75dp</dimen>
+    <dimen name="artImageViewEndMargin">8dp</dimen>
+    <dimen name="titleTextSize">16sp</dimen>
+    <dimen name="genreTextSize">12sp</dimen>
+    <dimen name="platformTextSize">12sp</dimen>
+    <dimen name="multiplayerTextSize">12sp</dimen>
+
+
+
+
 </resources>
