@@ -19,7 +19,7 @@
             android:id="@+id/etVideoGameSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@={exploreviewmodel.observer.nameSearchText}"
+            android:text="@={exploreviewmodel.nameSearchText}"
             android:textSize="@dimen/etTextSize"
             android:layout_marginStart="@dimen/etMarginStart"
             android:layout_marginEnd="@dimen/etMarginEnd"
@@ -29,10 +29,12 @@
 
         <Spinner
             android:id="@+id/spnPlatform"
+            android:spinnerMode="dialog"
             style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
+
+
             android:layout_height="wrap_content"
-            android:prompt="@string/searchview_query_text"
             android:layout_marginEnd="@dimen/spnMarginEnd"
             android:layout_marginStart="@dimen/spnMarginStart"
             />
@@ -44,6 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/spnMarginEnd"
             android:layout_marginStart="@dimen/spnMarginStart"
+            android:spinnerMode="dialog"
+            android:prompt="@string/genre_spinner_prompt"
+
             />
         <Spinner
             android:id="@+id/spnMultiplayer"
@@ -52,6 +57,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/spnMarginEnd"
             android:layout_marginStart="@dimen/spnMarginStart"
+            android:spinnerMode="dialog"
+            android:prompt="@string/game_modes_spinner_prompt"
             />
 
         <LinearLayout

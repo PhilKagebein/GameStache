@@ -1,4 +1,4 @@
-package com.example.videogamesearcher.models
+package com.example.videogamesearcher.models.search_results
 
 data class SearchResultsResponseItem(
     val cover: Cover,

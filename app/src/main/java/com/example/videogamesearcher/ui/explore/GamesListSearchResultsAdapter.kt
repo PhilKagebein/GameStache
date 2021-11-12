@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.SearchResultsBinding
-import com.example.videogamesearcher.models.SearchResultsResponseItem
+import com.example.videogamesearcher.models.search_results.SearchResultsResponseItem
 import java.net.URI
 
 class GamesListSearchResultsAdapter(private val reso: Resources):

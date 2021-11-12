@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
-import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.repository.Repository
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
-
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class ExploreFragment : Fragment() {
 
@@ -34,18 +34,18 @@ class ExploreFragment : Fragment() {
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = this
         return binding.root
+        //ASK SCREWN ABOUT THIS DIFFERENT BINDING
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var spnPlatform = binding.spnPlatform
-        var spnGenre = binding.spnGenre
-        var spnMultiplayer = binding.spnMultiplayer
-        var authorization: TwitchAuthorization?
-        lateinit var searchText : RequestBody
-
+        var spnPlatform: Spinner? = binding.spnPlatform
+        var spnGenre: Spinner? = binding.spnGenre
+        var spnMultiplayer: Spinner? = binding.spnMultiplayer
+        var searchText : RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
         val exploreAdapter = GamesListSearchResultsAdapter(resources)
+
         binding.rvExplore.apply{
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = exploreAdapter
@@ -53,63 +53,71 @@ class ExploreFragment : Fragment() {
         }
         exploreViewModel.getAccessToken()
 
-        spnPlatform = initSpinners(spnPlatform, exploreViewModel.getPlatformStrArray())
-        spnGenre = initSpinners(spnGenre, exploreViewModel.getGenreStrArray())
-        spnMultiplayer = initSpinners(spnMultiplayer, exploreViewModel.getMultiplayerStrArray())
-
-        spnPlatform.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
-            }
-
-            override fun onNothingSelected(adapterview: AdapterView<*>?) {
-
-            }
-        }
-        spnGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
-            }
-
-            override fun onNothingSelected(adapterview: AdapterView<*>?) {
-
-            }
-        }
-        spnMultiplayer.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
-            }
-
-            override fun onNothingSelected(adapterview: AdapterView<*>?) {
-
-            }
-        }
-
-        binding.btnExploreSearch.setOnClickListener {
-            exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
-                    exploreViewModel.searchGames(twitchAccessToken, searchText)
+        exploreViewModel.createPlatformsList().observe(viewLifecycleOwner, { platformsList ->
+            //USE ROOM DB TO CACHE THE SPINNER LISTS
+            spnPlatform = platformsList?.let { platforms -> spnPlatform?.let { spnPlatform -> initSpinners(spnPlatform, platforms) }}
+            spnPlatform?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+                    if (itemPosition == 0) {
+                        exploreViewModel.platformText.postValue("")
+                    } else {
+                        exploreViewModel.platformText.postValue("platforms.name = \"${spnPlatform?.getItemAtPosition(itemPosition).toString()}\"")
+                    }
                 }
-        }
 
-        exploreViewModel.authorizationResponse.observe(viewLifecycleOwner, { response ->
-            if(response.isSuccessful){
-                authorization = response.body()
-                exploreViewModel.twitchAuthorization.postValue(authorization)
-                println(authorization?.access_token)
-            }//add an else statement later
+                override fun onNothingSelected(adapterview: AdapterView<*>?) {
+
+                }
+            }
         })
 
-        exploreViewModel.searchText.observe(viewLifecycleOwner, { text ->
+        exploreViewModel.createGenresList().observe(viewLifecycleOwner, { genresList ->
+            spnGenre = genresList?.let { genres -> spnGenre?.let { spnGenre -> initSpinners(spnGenre, genres) } }
+            spnGenre?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+                    if (itemPosition == 0) {
+                        exploreViewModel.genreText.postValue("")
+                    } else {
+                        exploreViewModel.genreText.postValue("genres.name = \"${spnGenre?.getItemAtPosition(itemPosition).toString()}\"")
+                    }
+                }
+
+                override fun onNothingSelected(adapterview: AdapterView<*>?) {
+
+                }
+            }
+        })
+
+        exploreViewModel.createGameModesList().observe(viewLifecycleOwner, { gameModesList ->
+            spnMultiplayer = gameModesList?.let { gameModes -> spnMultiplayer?.let { spnMultiplayer -> initSpinners(spnMultiplayer, gameModes) } }
+            spnMultiplayer?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+                    if (itemPosition == 0) {
+                        exploreViewModel.gameModesText.postValue("")
+                    } else {
+                        exploreViewModel.gameModesText.postValue("game_modes.name = \"${spnMultiplayer?.getItemAtPosition(itemPosition).toString()}\"")
+                    }
+                }
+
+                override fun onNothingSelected(adapterview: AdapterView<*>?) {
+
+                }
+            }
+        })
+
+        exploreViewModel.searchText().observe(viewLifecycleOwner, { text ->
             searchText = text
         })
 
-        //try putting this in the view model
-        exploreViewModel.gamesListResponse.observe(viewLifecycleOwner, { response ->
-            if(response.isSuccessful){
-                exploreViewModel.gamesListResults.postValue(response.body())
-            }
+        exploreViewModel.gamesList.observe(viewLifecycleOwner, { gamesList ->
+            exploreAdapter.submitList(gamesList)
         })
 
-        exploreViewModel.gamesListResults.observe(viewLifecycleOwner, {
-            exploreAdapter.submitList(it)
-        })
+        binding.btnExploreSearch.setOnClickListener {
+            exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
+                exploreViewModel.searchGames(twitchAccessToken, searchText)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -117,14 +125,14 @@ class ExploreFragment : Fragment() {
         _binding = null
     }
 
-    private fun initSpinners(spinner: Spinner, strArray: Array<String>): Spinner {
+    private fun initSpinners(spinner: Spinner, strArray: MutableList<String>): Spinner {
         spinner.adapter = ArrayAdapter(requireContext(), R.layout.spinner_items, strArray)
         return spinner
     }
 
     private fun initExploreViewModel(){
-        val factory = activity?.let {ExploreViewModelFactory(repository, it.application, resources)}
-        exploreViewModel = factory?.let {ViewModelProvider(this, it) }?.get(ExploreViewModel::class.java) as ExploreViewModel
+        val factory = activity?.let { activity -> ExploreViewModelFactory(repository, activity.application, resources)}
+        exploreViewModel = factory?.let {factory -> ViewModelProvider(this, factory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
     }
 
 }
