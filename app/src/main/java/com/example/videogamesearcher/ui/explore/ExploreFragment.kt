@@ -10,9 +10,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.videogamesearcher.Constants.Companion.GAME_MODES_SPINNER_PROMPT
+import com.example.videogamesearcher.Constants.Companion.GENRE_SPINNER_PROMPT
+import com.example.videogamesearcher.Constants.Companion.PLATFORM_SPINNER_PROMPT
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
-import com.example.videogamesearcher.repository.Repository
+import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
+import com.example.videogamesearcher.models.explore_spinners.GenresResponseItem
+import com.example.videogamesearcher.models.explore_spinners.PlatformsResponseItem
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -21,7 +26,6 @@ class ExploreFragment : Fragment() {
 
     private lateinit var exploreViewModel: ExploreViewModel
     private var _binding: FragmentExploreBinding? = null
-    private val repository = Repository()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -53,9 +57,10 @@ class ExploreFragment : Fragment() {
         }
         exploreViewModel.getAccessToken()
 
-        exploreViewModel.createPlatformsList().observe(viewLifecycleOwner, { platformsList ->
-            //USE ROOM DB TO CACHE THE SPINNER LISTS
-            spnPlatform = platformsList?.let { platforms -> spnPlatform?.let { spnPlatform -> initSpinners(spnPlatform, platforms) }}
+        //Creating the Spinners
+        exploreViewModel.readPlatformsList.observe(viewLifecycleOwner, { platformItem ->
+            val platformList = exploreViewModel.createPlatformsListFromRoom(PLATFORM_SPINNER_PROMPT, platformItem)
+            spnPlatform = spnPlatform?.let { spnPlatform -> initSpinners(spnPlatform, platformList) }
             spnPlatform?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
                     if (itemPosition == 0) {
@@ -70,9 +75,9 @@ class ExploreFragment : Fragment() {
                 }
             }
         })
-
-        exploreViewModel.createGenresList().observe(viewLifecycleOwner, { genresList ->
-            spnGenre = genresList?.let { genres -> spnGenre?.let { spnGenre -> initSpinners(spnGenre, genres) } }
+        exploreViewModel.readGenresList.observe(viewLifecycleOwner, { genresItem ->
+            val genresList = exploreViewModel.createGenresListFromRoom(GENRE_SPINNER_PROMPT, genresItem)
+            spnGenre = spnGenre?.let { spnGenre -> initSpinners(spnGenre, genresList) }
             spnGenre?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
                     if (itemPosition == 0) {
@@ -87,9 +92,9 @@ class ExploreFragment : Fragment() {
                 }
             }
         })
-
-        exploreViewModel.createGameModesList().observe(viewLifecycleOwner, { gameModesList ->
-            spnMultiplayer = gameModesList?.let { gameModes -> spnMultiplayer?.let { spnMultiplayer -> initSpinners(spnMultiplayer, gameModes) } }
+        exploreViewModel.readGameModesList.observe(viewLifecycleOwner, { gameModesItem ->
+            val gameModesList = exploreViewModel.createGameModesListFromRoom(GAME_MODES_SPINNER_PROMPT, gameModesItem)
+            spnMultiplayer = spnMultiplayer?.let {spnMultiplayer -> initSpinners(spnMultiplayer, gameModesList) }
             spnMultiplayer?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
                     if (itemPosition == 0) {
@@ -118,6 +123,33 @@ class ExploreFragment : Fragment() {
                 exploreViewModel.searchGames(twitchAccessToken, searchText)
             }
         }
+
+        //Storing Spinner data in Room
+        exploreViewModel.platformsResponse().observe(viewLifecycleOwner, { response ->
+            if (response != null) {
+                for (i in response.indices) {
+                    val item = PlatformsResponseItem(response[i].id, response[i].name)
+                    exploreViewModel.addPlatformsListToRoom(item)
+                }
+            }
+        })
+        exploreViewModel.genresResponse().observe(viewLifecycleOwner, { response ->
+            if (response != null) {
+                for (i in response.indices) {
+                    val item = GenresResponseItem(response[i].id, response[i].name)
+                    exploreViewModel.addGenresListToRoom(item)
+                }
+            }
+        })
+        exploreViewModel.gameModesResponse().observe(viewLifecycleOwner, { response ->
+            if (response != null) {
+                for (i in response.indices) {
+                    val item = GameModesResponseItem(response[i].id, response[i].name)
+                    exploreViewModel.addGameModesListToRoom(item)
+                }
+            }
+        })
+
     }
 
     override fun onDestroyView() {
@@ -131,8 +163,8 @@ class ExploreFragment : Fragment() {
     }
 
     private fun initExploreViewModel(){
-        val factory = activity?.let { activity -> ExploreViewModelFactory(repository, activity.application, resources)}
-        exploreViewModel = factory?.let {factory -> ViewModelProvider(this, factory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
+             val factory = activity?.let { activity -> ExploreViewModelFactory(activity.application, resources) }
+             exploreViewModel = factory?.let {factory -> ViewModelProvider(this, factory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
     }
 
 }
