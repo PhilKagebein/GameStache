@@ -1,9 +1,12 @@
 package com.example.videogamesearcher.ui.explore
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -39,6 +42,7 @@ class ExploreFragment : Fragment() {
         binding.lifecycleOwner = this
         return binding.root
         //ASK SCREWN ABOUT THIS DIFFERENT BINDING
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -118,10 +122,15 @@ class ExploreFragment : Fragment() {
             exploreAdapter.submitList(gamesList)
         })
 
-        binding.btnExploreSearch.setOnClickListener {
-            exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
-                exploreViewModel.searchGames(twitchAccessToken, searchText)
+        binding.etVideoGameSearch.setOnEditorActionListener {_, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                performGameSearch(searchText)
             }
+            true
+        }
+
+        binding.btnExploreSearch.setOnClickListener {
+            performGameSearch(searchText)
         }
 
         //Storing Spinner data in Room
@@ -152,6 +161,15 @@ class ExploreFragment : Fragment() {
 
     }
 
+    private fun performGameSearch(searchText: RequestBody) {
+        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+        exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
+            exploreViewModel.searchGames(twitchAccessToken, searchText)
+        }
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -164,7 +182,7 @@ class ExploreFragment : Fragment() {
 
     private fun initExploreViewModel(){
              val factory = activity?.let { activity -> ExploreViewModelFactory(activity.application, resources) }
-             exploreViewModel = factory?.let {factory -> ViewModelProvider(this, factory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
+             exploreViewModel = factory?.let {customFactory -> ViewModelProvider(this, customFactory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
     }
 
 }
