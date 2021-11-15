@@ -1,6 +1,10 @@
 package com.example.videogamesearcher
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -31,5 +35,13 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+            if (currentFocus != null) {
+                val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
+            }
+            return super.dispatchTouchEvent(ev)
+        }
     }
 }

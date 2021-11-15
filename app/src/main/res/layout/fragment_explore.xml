@@ -25,6 +25,7 @@
             android:layout_marginEnd="@dimen/etMarginEnd"
             android:hint="@string/searchview_query_text"
             android:singleLine="true"
+            android:imeOptions="actionSearch"
             />
 
         <Spinner
