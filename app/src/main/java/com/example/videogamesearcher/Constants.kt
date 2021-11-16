@@ -11,5 +11,6 @@ class Constants {
         const val PLATFORM_SPINNER_PROMPT = "Select a platform"
         const val GENRE_SPINNER_PROMPT = "Select a genre"
         const val GAME_MODES_SPINNER_PROMPT = "Select multiplayer capabilities"
+        const val SPINNER_RESET_VALUE = 0
     }
 }

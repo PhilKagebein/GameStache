@@ -2,9 +2,9 @@ package com.example.videogamesearcher.ui.explore
 
 import android.app.Application
 import android.content.res.Resources
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import com.example.videogamesearcher.Constants.Companion.GAME_MODES_SPINNER_PROMPT
-import com.example.videogamesearcher.Constants.Companion.GENRE_SPINNER_PROMPT
 import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.*
 import com.example.videogamesearcher.models.search_results.SearchResultsResponse
@@ -166,5 +166,19 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
             }
         }
 
+    fun setBtnClearPlatformSpinnerVisibility(itemPosition: Int): Int {
+        if (itemPosition == 0) return GONE
+        else return VISIBLE
+    }
+
+    fun setBtnClearGenreSpinnerVisibility(itemPosition: Int): Int {
+        if (itemPosition == 0) return GONE
+        else return VISIBLE
+    }
+
+    fun setBtnClearMultiplayerSpinnerVisibility(itemPosition: Int): Int {
+        if (itemPosition == 0) return GONE
+        else return VISIBLE
+    }
 
 }

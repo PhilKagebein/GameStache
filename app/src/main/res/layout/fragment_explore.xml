@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -7,9 +9,7 @@
             type="com.example.videogamesearcher.ui.explore.ExploreViewModel"/>
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.explore.ExploreFragment"
@@ -26,37 +26,125 @@
             android:hint="@string/searchview_query_text"
             android:singleLine="true"
             android:imeOptions="actionSearch"
+            android:inputType="text"
             />
 
-        <Spinner
-            android:id="@+id/spnPlatform"
-            android:spinnerMode="dialog"
-            style="@style/Widget.AppCompat.Spinner.Underlined"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/platformSpinnerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spnMarginEnd"
-            android:layout_marginStart="@dimen/spnMarginStart"
-            />
+            android:layout_marginStart="@dimen/spnLayoutStart"
+            android:layout_marginEnd="@dimen/spnLayoutEnd"
+            android:orientation="horizontal">
 
-        <Spinner
-            android:id="@+id/spnGenre"
-            style="@style/Widget.AppCompat.Spinner.Underlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spnMarginEnd"
-            android:layout_marginStart="@dimen/spnMarginStart"
-            android:spinnerMode="dialog"
+            <Spinner
+                android:id="@+id/spnPlatform"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dialog"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnClearPlatformSpinner"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            />
-        <Spinner
-            android:id="@+id/spnMultiplayer"
-            style="@style/Widget.AppCompat.Spinner.Underlined"
+            <ImageView
+                android:id="@+id/btnClearPlatformSpinner"
+                android:layout_width="@dimen/clearButtonWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/clearButtonMarginEnd"
+                android:background="@drawable/spinner_clear"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/spnPlatform"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/platformGenreLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spnMarginEnd"
-            android:layout_marginStart="@dimen/spnMarginStart"
-            android:spinnerMode="dialog"
-            />
+            android:layout_marginStart="@dimen/spnLayoutStart"
+            android:layout_marginEnd="@dimen/spnLayoutEnd"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spnGenre"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dialog"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnClearGenreSpinner"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btnClearGenreSpinner"
+                android:layout_width="@dimen/clearButtonWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/clearButtonMarginEnd"
+                android:background="@drawable/spinner_clear"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/spnGenre"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/multiplayerSpinnerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spnLayoutStart"
+            android:layout_marginEnd="@dimen/spnLayoutEnd"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spnMultiplayer"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dialog"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnClearMultiplayerSpinner"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btnClearMultiplayerSpinner"
+                android:layout_width="@dimen/clearButtonWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/clearButtonMarginEnd"
+                android:background="@drawable/spinner_clear"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/spnMultiplayer"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"

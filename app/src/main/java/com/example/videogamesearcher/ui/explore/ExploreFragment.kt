@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.videogamesearcher.Constants.Companion.GAME_MODES_SPINNER_PROMPT
 import com.example.videogamesearcher.Constants.Companion.GENRE_SPINNER_PROMPT
 import com.example.videogamesearcher.Constants.Companion.PLATFORM_SPINNER_PROMPT
+import com.example.videogamesearcher.Constants.Companion.SPINNER_RESET_VALUE
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
 import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
@@ -40,6 +41,9 @@ class ExploreFragment : Fragment() {
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = this
+
+
+
         return binding.root
         //ASK SCREWN ABOUT THIS DIFFERENT BINDING
 
@@ -67,6 +71,7 @@ class ExploreFragment : Fragment() {
             spnPlatform = spnPlatform?.let { spnPlatform -> initSpinners(spnPlatform, platformList) }
             spnPlatform?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+                    binding.btnClearPlatformSpinner.visibility = exploreViewModel.setBtnClearPlatformSpinnerVisibility(itemPosition)
                     if (itemPosition == 0) {
                         exploreViewModel.platformText.postValue("")
                     } else {
@@ -84,6 +89,7 @@ class ExploreFragment : Fragment() {
             spnGenre = spnGenre?.let { spnGenre -> initSpinners(spnGenre, genresList) }
             spnGenre?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+                    binding.btnClearGenreSpinner.visibility = exploreViewModel.setBtnClearGenreSpinnerVisibility(itemPosition)
                     if (itemPosition == 0) {
                         exploreViewModel.genreText.postValue("")
                     } else {
@@ -101,6 +107,7 @@ class ExploreFragment : Fragment() {
             spnMultiplayer = spnMultiplayer?.let {spnMultiplayer -> initSpinners(spnMultiplayer, gameModesList) }
             spnMultiplayer?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+                    binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setBtnClearMultiplayerSpinnerVisibility(itemPosition)
                     if (itemPosition == 0) {
                         exploreViewModel.gameModesText.postValue("")
                     } else {
@@ -159,6 +166,17 @@ class ExploreFragment : Fragment() {
             }
         })
 
+        binding.btnClearPlatformSpinner.setOnClickListener {
+            spnPlatform?.setSelection(SPINNER_RESET_VALUE)
+        }
+
+        binding.btnClearGenreSpinner.setOnClickListener {
+            spnGenre?.setSelection(SPINNER_RESET_VALUE)
+        }
+
+        binding.btnClearMultiplayerSpinner.setOnClickListener {
+            spnMultiplayer?.setSelection(SPINNER_RESET_VALUE)
+        }
     }
 
     private fun performGameSearch(searchText: RequestBody) {

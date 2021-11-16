@@ -8,9 +8,9 @@
     <dimen name="etMarginStart">13dp</dimen>
     <dimen name="etMarginEnd">8dp</dimen>
 
-    <!--Explore Spinners Dimens-->
-    <dimen name="spnMarginEnd">8dp</dimen>
-    <dimen name="spnMarginStart">13dp</dimen>
+    <!--Explore Spinner Constraint Layout Dimens-->
+    <dimen name="spnLayoutEnd">8dp</dimen>
+    <dimen name="spnLayoutStart">13dp</dimen>
 
     <!--btnExploreSearch Dimens-->
     <dimen name="btnExploreMarginStart">15sp</dimen>
@@ -39,6 +39,9 @@
     <dimen name="platformTextSize">12sp</dimen>
     <dimen name="multiplayerTextSize">12sp</dimen>
 
+    <!--Spinner Clear Button Dimens-->
+    <dimen name="clearButtonWidth">24dp</dimen>
+    <dimen name="clearButtonMarginEnd">5dp</dimen>
 
 
 
