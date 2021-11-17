@@ -3,6 +3,7 @@ package com.example.videogamesearcher.ui.explore
 import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +13,7 @@ import com.example.videogamesearcher.databinding.SearchResultsBinding
 import com.example.videogamesearcher.models.search_results.SearchResultsResponseItem
 import java.net.URI
 
-class GamesListSearchResultsAdapter(private val reso: Resources):
+class GamesListSearchResultsAdapter(private val resources: Resources):
     ListAdapter<SearchResultsResponseItem, GamesListSearchResultsAdapter.SearchResultsResponseViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultsResponseViewHolder {
@@ -23,6 +24,10 @@ class GamesListSearchResultsAdapter(private val reso: Resources):
     override fun onBindViewHolder(holder: SearchResultsResponseViewHolder, position: Int) {
         val currentItem = getItem(position)
         holder.bind(currentItem)
+        holder.itemView.setOnClickListener {
+            val action = ExploreFragmentDirections.actionExploreFragmentToIndividualGameFragment(currentItem.id, currentItem.name)
+            Navigation.findNavController(holder.itemView).navigate(action)
+        }
     }
 
     inner class SearchResultsResponseViewHolder(private val binding: SearchResultsBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -48,39 +53,39 @@ class GamesListSearchResultsAdapter(private val reso: Resources):
             }
             //BINDING THE PLATFORM NAME
             if (game.platforms == null) {
-                binding.tvGamePlatform.text = reso.getString(R.string.no_platform_null_error)
+                binding.tvGamePlatform.text = resources.getString(R.string.no_platform_null_error)
             } else {
                 for (i in game.platforms.indices) {
                     if (i == (game.platforms.size-1)) {
-                        platformsText = "${platformsText}${game.platforms[i].name}"
+                        platformsText = "${platformsText}${game.platforms[i]?.name}"
                     } else {
-                        platformsText = "${platformsText}${game.platforms[i].name}, "
+                        platformsText = "${platformsText}${game.platforms[i]?.name}, "
                     }
                 }
                 binding.tvGamePlatform.text = platformsText
             }
             //BINDING THE GENRE(S) NAME(S)
             if (game.genres == null) {
-                binding.tvGameGenre.text = reso.getText(R.string.no_genre_null_error)
+                binding.tvGameGenre.text = resources.getText(R.string.no_genre_null_error)
             } else {
                 for (i in game.genres.indices) {
                     if (i == (game.genres.size-1)) {
-                        genreText = "${genreText}${game.genres[i].name}"
+                        genreText = "${genreText}${game.genres[i]?.name}"
                     } else {
-                        genreText = "${genreText}${game.genres[i].name}, "
+                        genreText = "${genreText}${game.genres[i]?.name}, "
                     }
                 }
                 binding.tvGameGenre.text = genreText
             }
             //BINDING THE GAME MODES
             if (game.game_modes == null) {
-                binding.tvGameModes.text = reso.getText(R.string.no_gamemodes_null_error)
+                binding.tvGameModes.text = resources.getText(R.string.no_gamemodes_null_error)
             } else {
                 for (i in game.game_modes.indices) {
                     if (i == (game.game_modes.size-1)) {
-                        gameModeText = "${gameModeText}${game.game_modes[i].name}"
+                        gameModeText = "${gameModeText}${game.game_modes[i]?.name}"
                     } else {
-                        gameModeText = "${gameModeText}${game.game_modes[i].name}, "
+                        gameModeText = "${gameModeText}${game.game_modes[i]?.name}, "
                     }
                 }
                 binding.tvGameModes.text = gameModeText

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videogamesearcher.Constants.Companion.SPINNER_RESET_VALUE
-import com.example.videogamesearcher.R
 import com.example.videogamesearcher.SpinnerAdapter
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
 import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
@@ -27,7 +26,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class ExploreFragment : Fragment() {
 
     private lateinit var exploreViewModel: ExploreViewModel
-    private var _binding:FragmentExploreBinding? = null
+    private var _binding: FragmentExploreBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -40,11 +39,8 @@ class ExploreFragment : Fragment() {
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = this
 
-
-
         return binding.root
         //ASK SCREWN ABOUT THIS DIFFERENT BINDING
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -176,6 +172,7 @@ class ExploreFragment : Fragment() {
         binding.btnClearMultiplayerSpinner.setOnClickListener {
             spnMultiplayer?.setSelection(SPINNER_RESET_VALUE)
         }
+
     }
 
     private fun performGameSearch(searchText: RequestBody) {
@@ -195,11 +192,6 @@ class ExploreFragment : Fragment() {
     private fun initSpinners(spinner: Spinner, strArray: MutableList<String>): Spinner {
         val customAdapter = SpinnerAdapter(requireContext(), strArray)
         spinner.adapter = customAdapter
-        return spinner
-    }
-
-    private fun initSpinner(spinner: Spinner, strArray: MutableList<String>): Spinner {
-        spinner.adapter = ArrayAdapter(requireContext(), R.layout.spinner_items, strArray)
         return spinner
     }
 
