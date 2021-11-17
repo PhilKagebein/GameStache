@@ -49,6 +49,7 @@
     <!--spinner_dialog.xml-->
     <dimen name="spinnerDialogMarginStart">11dp</dimen>
     <dimen name="spinnerDialogMarginVertical">4dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 
 
 

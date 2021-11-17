@@ -29,6 +29,9 @@
         <action
             android:id="@+id/action_navigation_explore_to_navigation_favorites"
             app:destination="@id/navigation_favorites" />
+        <action
+            android:id="@+id/action_exploreFragment_to_individualGameFragment"
+            app:destination="@id/individualGameFragment" />
     </fragment>
 
     <fragment
@@ -42,5 +45,20 @@
         <action
             android:id="@+id/action_navigation_wishlist_to_navigation_favorites"
             app:destination="@id/navigation_favorites" />
+    </fragment>
+    <fragment
+        android:id="@+id/individualGameFragment"
+        android:name="com.example.videogamesearcher.ui.individual_game.IndividualGameFragment"
+        android:label="individual_game_fragment"
+        tools:layout="@layout/individual_game_fragment" >
+        <action
+            android:id="@+id/action_individualGameFragment_to_exploreFragment"
+            app:destination="@id/navigation_explore" />
+        <argument
+            android:name="gameId"
+            app:argType="integer" />
+        <argument
+            android:name="gameName"
+            app:argType="string" />
     </fragment>
 </navigation>

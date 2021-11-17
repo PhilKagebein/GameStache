@@ -1,6 +1,8 @@
 package com.example.videogamesearcher
 
 import android.os.Bundle
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -22,8 +24,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_explore, R.id.navigation_favorites, R.id.navigation_wishlist
@@ -32,5 +33,22 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        navController.addOnDestinationChangedListener{ _, destination, _ ->
+            navView.visibility = setBottomNavBarVisibility(destination.id)
+
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    private fun setBottomNavBarVisibility(destination: Int): Int {
+        if(destination == R.id.individualGameFragment){
+            return GONE
+        } else {
+            return VISIBLE
+        }
     }
 }
