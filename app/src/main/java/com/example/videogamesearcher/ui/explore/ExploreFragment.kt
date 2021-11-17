@@ -13,11 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.videogamesearcher.Constants.Companion.GAME_MODES_SPINNER_PROMPT
-import com.example.videogamesearcher.Constants.Companion.GENRE_SPINNER_PROMPT
-import com.example.videogamesearcher.Constants.Companion.PLATFORM_SPINNER_PROMPT
 import com.example.videogamesearcher.Constants.Companion.SPINNER_RESET_VALUE
 import com.example.videogamesearcher.R
+import com.example.videogamesearcher.SpinnerAdapter
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
 import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
 import com.example.videogamesearcher.models.explore_spinners.GenresResponseItem
@@ -29,7 +27,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class ExploreFragment : Fragment() {
 
     private lateinit var exploreViewModel: ExploreViewModel
-    private var _binding: FragmentExploreBinding? = null
+    private var _binding:FragmentExploreBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -67,7 +65,7 @@ class ExploreFragment : Fragment() {
 
         //Creating the Spinners
         exploreViewModel.readPlatformsList.observe(viewLifecycleOwner, { platformItem ->
-            val platformList = exploreViewModel.createPlatformsListFromRoom(PLATFORM_SPINNER_PROMPT, platformItem)
+            val platformList = exploreViewModel.createPlatformsListFromRoom(platformItem)
             spnPlatform = spnPlatform?.let { spnPlatform -> initSpinners(spnPlatform, platformList) }
             spnPlatform?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
@@ -75,6 +73,7 @@ class ExploreFragment : Fragment() {
                     if (itemPosition == 0) {
                         exploreViewModel.platformText.postValue("")
                     } else {
+
                         exploreViewModel.platformText.postValue("platforms.name = \"${spnPlatform?.getItemAtPosition(itemPosition).toString()}\"")
                     }
                 }
@@ -85,7 +84,7 @@ class ExploreFragment : Fragment() {
             }
         })
         exploreViewModel.readGenresList.observe(viewLifecycleOwner, { genresItem ->
-            val genresList = exploreViewModel.createGenresListFromRoom(GENRE_SPINNER_PROMPT, genresItem)
+            val genresList = exploreViewModel.createGenresListFromRoom(genresItem)
             spnGenre = spnGenre?.let { spnGenre -> initSpinners(spnGenre, genresList) }
             spnGenre?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
@@ -103,7 +102,7 @@ class ExploreFragment : Fragment() {
             }
         })
         exploreViewModel.readGameModesList.observe(viewLifecycleOwner, { gameModesItem ->
-            val gameModesList = exploreViewModel.createGameModesListFromRoom(GAME_MODES_SPINNER_PROMPT, gameModesItem)
+            val gameModesList = exploreViewModel.createGameModesListFromRoom(gameModesItem)
             spnMultiplayer = spnMultiplayer?.let {spnMultiplayer -> initSpinners(spnMultiplayer, gameModesList) }
             spnMultiplayer?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
@@ -194,6 +193,12 @@ class ExploreFragment : Fragment() {
     }
 
     private fun initSpinners(spinner: Spinner, strArray: MutableList<String>): Spinner {
+        val customAdapter = SpinnerAdapter(requireContext(), strArray)
+        spinner.adapter = customAdapter
+        return spinner
+    }
+
+    private fun initSpinner(spinner: Spinner, strArray: MutableList<String>): Spinner {
         spinner.adapter = ArrayAdapter(requireContext(), R.layout.spinner_items, strArray)
         return spinner
     }

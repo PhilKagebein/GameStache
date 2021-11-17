@@ -8,5 +8,8 @@
     <string name="no_platform_null_error">No Platform</string>
     <string name="no_genre_null_error">No Genre</string>
     <string name="no_gamemodes_null_error">No Game Modes</string>
+    <string name="platform_spinner_prompt">Select a platform</string>
+    <string name="genre_spinner_prompt">Select a genre</string>
+    <string name="game_modes_spinner_prompt">Select multiplayer capabilities</string>
 
 </resources>
