@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.videogamesearcher.R
 import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.*
 import com.example.videogamesearcher.models.search_results.SearchResultsResponse
@@ -114,9 +115,9 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         }
     }
 
-    fun createPlatformsListFromRoom(spinnerPrompt: String, spinnerList: List<PlatformsResponseItem>): MutableList<String> {
+    fun createPlatformsListFromRoom(spinnerList: List<PlatformsResponseItem>): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
-        list.add(spinnerPrompt)
+        list.add(resources.getString(R.string.platform_spinner_prompt))
         if (spinnerList != null) {
             for (i in spinnerList.indices) {
                 list.add(spinnerList[i].name)
@@ -125,9 +126,9 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         return list
     }
 
-    fun createGenresListFromRoom(spinnerPrompt: String, spinnerList: List<GenresResponseItem>): MutableList<String> {
+    fun createGenresListFromRoom(spinnerList: List<GenresResponseItem>): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
-        list.add(spinnerPrompt)
+        list.add(resources.getString(R.string.genre_spinner_prompt))
         if (spinnerList != null) {
             for (i in spinnerList.indices) {
                 list.add(spinnerList[i].name)
@@ -136,9 +137,9 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         return list
     }
 
-    fun createGameModesListFromRoom(spinnerPrompt: String, spinnerList: List<GameModesResponseItem>): MutableList<String> {
+    fun createGameModesListFromRoom(spinnerList: List<GameModesResponseItem>): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
-        list.add(spinnerPrompt)
+        list.add(resources.getString(R.string.game_modes_spinner_prompt))
         if (spinnerList != null) {
             for (i in spinnerList.indices) {
                 list.add(spinnerList[i].name)

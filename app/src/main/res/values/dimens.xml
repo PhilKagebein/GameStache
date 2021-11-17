@@ -43,6 +43,13 @@
     <dimen name="clearButtonWidth">24dp</dimen>
     <dimen name="clearButtonMarginEnd">5dp</dimen>
 
+    <!--spinner_items.xml-->
+    <dimen name="spinnerItemsTextSize">18sp</dimen>
+
+    <!--spinner_dialog.xml-->
+    <dimen name="spinnerDialogMarginStart">11dp</dimen>
+    <dimen name="spinnerDialogMarginVertical">4dp</dimen>
+
 
 
 </resources>

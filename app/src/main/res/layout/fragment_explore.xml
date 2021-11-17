@@ -47,7 +47,9 @@
                 app:layout_constraintEnd_toStartOf="@+id/btnClearPlatformSpinner"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:prompt="@string/platform_spinner_prompt"
+                />
 
             <ImageView
                 android:id="@+id/btnClearPlatformSpinner"
@@ -86,7 +88,9 @@
                 app:layout_constraintEnd_toStartOf="@+id/btnClearGenreSpinner"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:prompt="@string/genre_spinner_prompt"
+                />
 
             <ImageView
                 android:id="@+id/btnClearGenreSpinner"
@@ -125,7 +129,9 @@
                 app:layout_constraintEnd_toStartOf="@+id/btnClearMultiplayerSpinner"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:prompt="@string/game_modes_spinner_prompt"
+                />
 
             <ImageView
                 android:id="@+id/btnClearMultiplayerSpinner"
