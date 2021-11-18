@@ -32,6 +32,19 @@ class GamesListSearchResultsAdapter(private val resources: Resources):
 
     inner class SearchResultsResponseViewHolder(private val binding: SearchResultsBinding) : RecyclerView.ViewHolder(binding.root) {
 
+
+        //@@@ktg in general, your Adapter should do as little as possible. If you have transformations
+        // on data that need to happen, they should happen in your ViewModel.
+        // URL that Glide is going to load? Figure out in the ViewModel.
+        // Text that will be displayed for tvGamePlatform? Figure it out in the ViewModel.
+        // A couple checks in the Adapter for basic things like
+        // myElement.visibility = if (attribute == null) GONE else VISIBLE
+        // are fine, but anything more involved should happen in your ViewModel.
+        // For you, that means you'll be doing a handful of transformations on the data that you get back
+        // from the API, so you'll probably want to do something like
+        // dataForAdapter = gamesList.switchMap { // do transformations }
+        // and then observe dataForAdapter (can give a better name) instead of gamesList in your fragment
+        // to submit to the adapter.
         fun bind(game: SearchResultsResponseItem) {
             var genreText = ""
             var gameModeText = ""
@@ -93,6 +106,7 @@ class GamesListSearchResultsAdapter(private val resources: Resources):
         }
     }
 
+    //@@@ktg would do some more research on how these work; this implementation is prone to bugs
     class DiffCallback: DiffUtil.ItemCallback<SearchResultsResponseItem>() {
         override fun areItemsTheSame(oldItem: SearchResultsResponseItem, newItem: SearchResultsResponseItem): Boolean {
            return oldItem.id == newItem.id

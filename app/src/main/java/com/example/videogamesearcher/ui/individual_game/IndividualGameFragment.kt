@@ -24,6 +24,7 @@ class IndividualGameFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    //@@@ktg should never need this if you're using NavigationComponent, which you are
     companion object {
         fun newInstance() = IndividualGameFragment()
     }

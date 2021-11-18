@@ -15,6 +15,10 @@ abstract class SpinnerResponseDatabase: RoomDatabase() {
         private var INSTANCE: SpinnerResponseDatabase? = null
 
 
+        //@@@ktg I would much rather have one database with multiple tables than multiple databases
+        // each with one table. That's how SQL-style databases are structured normally.
+        // will also allow you to rename this class something like "<AppNameDatabase>" rather than
+        // having the name be tied to any particular aspect of the data in the database or how it's used.
         fun getPlatformsListDatabase(context: Context): SpinnerResponseDatabase{
             val tempInstance = INSTANCE
             if(tempInstance != null){

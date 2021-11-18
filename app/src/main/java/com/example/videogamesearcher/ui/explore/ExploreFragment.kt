@@ -46,6 +46,10 @@ class ExploreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // @@@ktg code style thing: "self-documenting code" is a principle that basically means "your code
+        // should read like English, as much as possible". I would probably name these variables more
+        // along the lines of "platformSpinner" since in English we put adjectives before the noun
+        // that they describe, so it feels more natural.
         var spnPlatform: Spinner? = binding.spnPlatform
         var spnGenre: Spinner? = binding.spnGenre
         var spnMultiplayer: Spinner? = binding.spnMultiplayer
@@ -58,6 +62,10 @@ class ExploreFragment : Fragment() {
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
         }
         exploreViewModel.getAccessToken()
+
+        // @@@ktg these bits that create spinners look fairly similar. It'll involve a bit of refactoring,
+        // but you should be able to write a single function that you call into multiple times in order to initialize
+        // each of your spinners. The function encapsulation I believe can start the line after .observe for each of these.
 
         //Creating the Spinners
         exploreViewModel.readPlatformsList.observe(viewLifecycleOwner, { platformItem ->
@@ -116,6 +124,10 @@ class ExploreFragment : Fragment() {
             }
         })
 
+        //@@@ktg don't need this - the only time you end up using searchText is when you call into
+        // performGameSearch, which passes searchText as an arg to exploreViewModel.searchGames. Since
+        // exploreViewModel is the owner of searchText(), there's no need to pass it in, just access
+        // it from within that function.
         exploreViewModel.searchText().observe(viewLifecycleOwner, { text ->
             searchText = text
         })
@@ -136,6 +148,7 @@ class ExploreFragment : Fragment() {
         }
 
         //Storing Spinner data in Room
+        //@@@ktg see other comment in ViewModel about refactoring to use Repository differently
         exploreViewModel.platformsResponse().observe(viewLifecycleOwner, { response ->
             if (response != null) {
                 for (i in response.indices) {
@@ -161,6 +174,8 @@ class ExploreFragment : Fragment() {
             }
         })
 
+        //@@@ktg Constants that only apply to a single class usually live in the companion object
+        // of that class
         binding.btnClearPlatformSpinner.setOnClickListener {
             spnPlatform?.setSelection(SPINNER_RESET_VALUE)
         }

@@ -6,6 +6,8 @@ import androidx.room.*
 @Dao
 interface SpinnerResponseDao {
 
+    // @@@ktg you almost always want REPLACE rather than IGNORE. Ctrl+click into IGNORE here
+    // and read about the differences between the strategies.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addPlatformsList(spinner: PlatformsResponseItem)
 

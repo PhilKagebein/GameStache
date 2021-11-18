@@ -22,7 +22,7 @@ class IndividualGameViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val response = individualGameRepo.getAccessToken()
             if (response.isSuccessful) {
-                twitchAuthorization.postValue(response.body())
+                twitchAuthorization.postValue(response.body()) //@@@ktg do you need to get a new auth token for every API call or do they last for X amount of time?
             } else {
                 //Change how this is handled in the future.
                 println("Twitch auth token response not successful.")
@@ -55,7 +55,7 @@ class IndividualGameViewModel : ViewModel() {
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
+            "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg" //@@@ktg can be moved to companion object as static constant
         }
     }
 
