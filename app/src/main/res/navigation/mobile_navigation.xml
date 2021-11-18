@@ -9,14 +9,7 @@
         android:id="@+id/navigation_favorites"
         android:name="com.example.videogamesearcher.ui.favorites.FavoritesFragment"
         android:label="@string/title_favorites"
-        tools:layout="@layout/fragment_favorites" >
-        <action
-            android:id="@+id/action_navigation_home_to_navigation_dashboard"
-            app:destination="@id/navigation_explore" />
-        <action
-            android:id="@+id/action_navigation_home_to_navigation_notifications"
-            app:destination="@id/navigation_wishlist" />
-    </fragment>
+        tools:layout="@layout/fragment_favorites" />
 
     <fragment
         android:id="@+id/navigation_explore"
@@ -38,22 +31,12 @@
         android:id="@+id/navigation_wishlist"
         android:name="com.example.videogamesearcher.ui.wishlist.WishlistFragment"
         android:label="@string/title_wishlist"
-        tools:layout="@layout/fragment_wishlist" >
-        <action
-            android:id="@+id/action_navigation_notifications_to_navigation_dashboard"
-            app:destination="@id/navigation_explore" />
-        <action
-            android:id="@+id/action_navigation_wishlist_to_navigation_favorites"
-            app:destination="@id/navigation_favorites" />
-    </fragment>
+        tools:layout="@layout/fragment_wishlist" />
     <fragment
         android:id="@+id/individualGameFragment"
         android:name="com.example.videogamesearcher.ui.individual_game.IndividualGameFragment"
         android:label="individual_game_fragment"
         tools:layout="@layout/individual_game_fragment" >
-        <action
-            android:id="@+id/action_individualGameFragment_to_exploreFragment"
-            app:destination="@id/navigation_explore" />
         <argument
             android:name="gameId"
             app:argType="integer" />
