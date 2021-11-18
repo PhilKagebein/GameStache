@@ -1,11 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.individual_game.IndividualGameFragment"
-    android:id="@+id/individualGameFragment">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="individualgameviewmodel"
+            type="com.example.videogamesearcher.ui.individual_game.IndividualGameViewModel"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.individual_game.IndividualGameFragment"
+        android:id="@+id/individualGameFragment"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/linearLayoutForGameScrollView"
+            >
+
+            <ImageView
+                android:id="@+id/individualGameArt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/individualGameArtHeight"
+                android:scaleType="centerInside"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewTitleAndOriginalRelease"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Title/Original Release Data/Publisher/Franchise/ETC"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewSummary"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Summary"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewAllPlatforms"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="All Platforms and Release Dates by Region"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewGenresAndPerspectives"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Genres and Player Perspectives"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewMultiplayerModes"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Multiplayer Modes"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewOtherInvoledCompanies"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
+                android:layout_marginTop="@dimen/individualGameMarginTop"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Other Involved Companies"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewSimilarGames"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
+                android:layout_marginHorizontal="@dimen/individualGameMarginTop"
+                android:layout_marginVertical="@dimen/individualGameVerticalMargin"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Similar Games"
+                    android:gravity="center"
+                    android:textColor="?attr/textColor"
+                    android:textSize="@dimen/individualGameTextSize"
+
+                    />
+
+            </androidx.cardview.widget.CardView>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</layout>
+

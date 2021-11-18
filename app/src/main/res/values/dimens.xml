@@ -51,6 +51,16 @@
     <dimen name="spinnerDialogMarginVertical">4dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
+<!--Individual Game Fragment-->
+    <dimen name="individualGameHorizontalMargin">20dp</dimen>
+    <dimen name="individualGameVerticalMargin">20dp</dimen>
+    <dimen name="individualGameMarginTop">20dp</dimen>
+    <dimen name="individualGameTextSize">18sp</dimen>
+
+    <!--Card Views-->
+    <dimen name="cardViewsCornerRadius">4dp</dimen>
+    <!--Game Art    -->
+    <dimen name="individualGameArtHeight">240dp</dimen>
 
 
 </resources>
