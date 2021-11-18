@@ -176,12 +176,17 @@ class ExploreFragment : Fragment() {
     }
 
     private fun performGameSearch(searchText: RequestBody) {
-        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+        collapseKeyboard()
+
         exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
             exploreViewModel.searchGames(twitchAccessToken, searchText)
         }
 
+    }
+
+    private fun collapseKeyboard() {
+        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 
     override fun onDestroyView() {

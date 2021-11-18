@@ -9,7 +9,7 @@ import com.example.videogamesearcher.R
 import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.*
 import com.example.videogamesearcher.models.search_results.SearchResultsResponse
-import com.example.videogamesearcher.repository.Repository
+import com.example.videogamesearcher.repository.ExploreRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -39,39 +39,39 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
     val readGenresList: LiveData<List<GenresResponseItem>>
     val readGameModesList: LiveData<List<GameModesResponseItem>>
 
-    private val repository: Repository
+    private val exploreRepository: ExploreRepository
 
     init {
         val platformsListDao = SpinnerResponseDatabase.getPlatformsListDatabase(app).spinnerResponseDao()
         val genresListDao = SpinnerResponseDatabase.getGenresListDatabase(app).spinnerResponseDao()
         val gameModesDao = SpinnerResponseDatabase.getGameModesListDatabase(app).spinnerResponseDao()
-        repository = Repository(platformsListDao, genresListDao, gameModesDao)
-        readPlatformsList = repository.readPlatformsList
-        readGenresList = repository.readGenresList
-        readGameModesList = repository.readGameModesList
+        exploreRepository = ExploreRepository(platformsListDao, genresListDao, gameModesDao)
+        readPlatformsList = exploreRepository.readPlatformsList
+        readGenresList = exploreRepository.readGenresList
+        readGameModesList = exploreRepository.readGameModesList
     }
 
     fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addPlatformsListToRoom(spinnerResponseItem)
+            exploreRepository.addPlatformsListToRoom(spinnerResponseItem)
         }
     }
 
     fun addGenresListToRoom(spinnerResponseItem: GenresResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addGenresListToRoom(spinnerResponseItem)
+            exploreRepository.addGenresListToRoom(spinnerResponseItem)
         }
     }
 
     fun addGameModesListToRoom(spinnerResponseItem: GameModesResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addGameModesListToRoom(spinnerResponseItem)
+            exploreRepository.addGameModesListToRoom(spinnerResponseItem)
         }
     }
 
     fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.getAccessToken()
+            val response = exploreRepository.getAccessToken()
             if (response.isSuccessful){
                 twitchAuthorization.postValue(response.body())
             }
@@ -84,7 +84,7 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
 
     fun searchGames(accessToken: String, gamesSearch: RequestBody) {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.searchGames(accessToken, gamesSearch)
+            val response = exploreRepository.searchGames(accessToken, gamesSearch)
             if (response.isSuccessful) {
                 gamesList.postValue(response.body())
             } else {
@@ -96,26 +96,26 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
 
     fun platformsResponse(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
             liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-                val response = twitchAuthorization?.let { twitchAuthorization -> repository.getPlatformsList(twitchAuthorization.access_token, spinnerBody) }
+                val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsList(twitchAuthorization.access_token, spinnerBody) }
                 emit(response?.body())
             }
     }
 
     fun genresResponse(): LiveData<List<GenresResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> repository.getGenresList(twitchAuthorization.access_token, spinnerBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGenresList(twitchAuthorization.access_token, spinnerBody) }
             emit(response?.body())
         }
     }
 
     fun gameModesResponse(): LiveData<List<GameModesResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> repository.getGameModesList(twitchAuthorization.access_token, spinnerBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGameModesList(twitchAuthorization.access_token, spinnerBody) }
             emit(response?.body())
         }
     }
 
-    fun createPlatformsListFromRoom(spinnerList: List<PlatformsResponseItem>): MutableList<String> {
+    fun createPlatformsListFromRoom(spinnerList: List<PlatformsResponseItem>?): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
         list.add(resources.getString(R.string.platform_spinner_prompt))
         if (spinnerList != null) {
@@ -126,7 +126,7 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         return list
     }
 
-    fun createGenresListFromRoom(spinnerList: List<GenresResponseItem>): MutableList<String> {
+    fun createGenresListFromRoom(spinnerList: List<GenresResponseItem>?): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
         list.add(resources.getString(R.string.genre_spinner_prompt))
         if (spinnerList != null) {
@@ -137,7 +137,7 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         return list
     }
 
-    fun createGameModesListFromRoom(spinnerList: List<GameModesResponseItem>): MutableList<String> {
+    fun createGameModesListFromRoom(spinnerList: List<GameModesResponseItem>?): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
         list.add(resources.getString(R.string.game_modes_spinner_prompt))
         if (spinnerList != null) {

@@ -11,7 +11,7 @@ import com.example.videogamesearcher.models.search_results.SearchResultsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
 
-class Repository(private val platformsResponseDao: SpinnerResponseDao, private val genresResponseDao: SpinnerResponseDao, private val gameModesResponseDao: SpinnerResponseDao) {
+class ExploreRepository(private val platformsResponseDao: SpinnerResponseDao, private val genresResponseDao: SpinnerResponseDao, private val gameModesResponseDao: SpinnerResponseDao) {
 
     val readPlatformsList: LiveData<List<PlatformsResponseItem>> = platformsResponseDao.getPlatformsListData()
     val readGenresList: LiveData<List<GenresResponseItem>> = genresResponseDao.getGenresListData()
@@ -48,4 +48,5 @@ class Repository(private val platformsResponseDao: SpinnerResponseDao, private v
     suspend fun getGameModesList(accessToken: String, platformsBody: RequestBody): Response<List<GameModesResponseItem>> {
         return RetrofitInstance.api.getGameModesList("Bearer $accessToken", platformsBody)
     }
+
 }
