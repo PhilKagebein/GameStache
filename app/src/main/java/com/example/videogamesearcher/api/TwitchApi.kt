@@ -5,6 +5,7 @@ import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
 import com.example.videogamesearcher.models.explore_spinners.GenresResponseItem
 import com.example.videogamesearcher.models.explore_spinners.PlatformsResponseItem
+import com.example.videogamesearcher.models.individual_game.IndividualGameData
 import com.example.videogamesearcher.models.search_results.SearchResultsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -46,4 +47,11 @@ interface TwitchApi {
         @Header("Authorization") accessToken: String,
         @Body platformsBody: RequestBody
     ): Response<List<GameModesResponseItem>>
+
+    @Headers("Client-ID: $CLIENT_ID")
+    @POST("games")
+    suspend fun getIndividualGameData(
+        @Header("Authorization") accessToken: String,
+        @Body platformsBody: RequestBody
+    ): Response<IndividualGameData>
 }
