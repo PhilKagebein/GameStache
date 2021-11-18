@@ -31,10 +31,10 @@ class IndividualGameViewModel : ViewModel() {
     }
 
 
-    fun getIndividualGameData(): LiveData<IndividualGameData?>
+    private fun getIndividualGameData(): LiveData<IndividualGameData?>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameId ->
-                val individualGameSearchBody: RequestBody = "where id = $gameId;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
+                val individualGameSearchBody: RequestBody = "where id = $gameId;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
                 liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
                     val response = individualGameRepo.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
                     if (response.isSuccessful){
@@ -51,7 +51,7 @@ class IndividualGameViewModel : ViewModel() {
         if (gameData?.get(0)?.cover?.url == null) {
             ""
         } else {
-            val baseUrl = URI(gameData[0].cover.url)
+            val baseUrl = URI(gameData[0].cover?.url)
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))

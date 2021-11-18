@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.videogamesearcher.MainActivity
+import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.IndividualGameFragmentBinding
 
 class IndividualGameFragment : Fragment() {
@@ -46,17 +47,10 @@ class IndividualGameFragment : Fragment() {
 
         gameFragmentViewModel.createBackgroundURLForGlide().observe(viewLifecycleOwner, { url ->
             Glide.with(this)
-                .asBitmap()
                 .load(url)
-                .into(object: CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        binding.individualGameFragment.background = BitmapDrawable(resources, resource)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        binding.individualGameFragment.background = placeholder
-                    }
-                })
+                .placeholder(R.color.transparent)
+                .error(R.color.transparent)
+                .into(binding.individualGameArt)
         })
     }
 
