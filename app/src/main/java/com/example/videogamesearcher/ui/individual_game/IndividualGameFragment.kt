@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.videogamesearcher.MainActivity
@@ -18,7 +16,6 @@ class IndividualGameFragment : Fragment() {
 
     private val args: IndividualGameFragmentArgs by navArgs()
     private var _binding: IndividualGameFragmentBinding? = null
-    private  var dialogArtView: ImageView? = null
 
     private val binding get() = _binding!!
 
@@ -53,7 +50,6 @@ class IndividualGameFragment : Fragment() {
 
         binding.individualGameArt.setOnClickListener {
             val artDialog = ArtDialog(imageURL)
-            dialogArtView = getView()?.findViewById(R.id.artDialogImageView)
             artDialog.show(requireActivity().supportFragmentManager, "ArtDialog")
         }
 
