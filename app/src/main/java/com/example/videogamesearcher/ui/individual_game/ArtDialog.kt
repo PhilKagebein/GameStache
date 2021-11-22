@@ -8,6 +8,8 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.example.videogamesearcher.R
 import kotlinx.android.synthetic.main.individual_game_art_dialog.view.*
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 
 class ArtDialog(private val url: String): DialogFragment() {
 
