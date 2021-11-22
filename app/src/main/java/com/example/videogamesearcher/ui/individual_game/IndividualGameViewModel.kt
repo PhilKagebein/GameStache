@@ -47,7 +47,7 @@ class IndividualGameViewModel : ViewModel() {
             }
     }
 
-    fun createBackgroundURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
+    fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
         if (gameData?.get(0)?.cover?.url == null) {
             ""
         } else {
