@@ -31,27 +31,27 @@ interface TwitchApi {
     @POST("platforms")
     suspend fun getPlatformsList(
         @Header("Authorization") accessToken: String,
-        @Body platformsBody: RequestBody
+        @Body platformsPostRequestBody: RequestBody
     ): Response<List<PlatformsResponseItem>>
 
     @Headers("Client-ID: $CLIENT_ID")
     @POST("genres")
     suspend fun getGenresList(
         @Header("Authorization") accessToken: String,
-        @Body platformsBody: RequestBody
+        @Body genresPostRequestBody: RequestBody
     ): Response<List<GenresResponseItem>>
 
     @Headers("Client-ID: $CLIENT_ID")
     @POST("game_modes")
     suspend fun getGameModesList(
         @Header("Authorization") accessToken: String,
-        @Body platformsBody: RequestBody
+        @Body gameModesPostRequestBody: RequestBody
     ): Response<List<GameModesResponseItem>>
 
     @Headers("Client-ID: $CLIENT_ID")
     @POST("games")
     suspend fun getIndividualGameData(
         @Header("Authorization") accessToken: String,
-        @Body platformsBody: RequestBody
+        @Body individualGamePostRequestBody: RequestBody
     ): Response<IndividualGameData>
 }

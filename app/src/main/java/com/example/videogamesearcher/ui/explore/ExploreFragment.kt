@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.videogamesearcher.Constants.Companion.SPINNER_RESET_VALUE
 import com.example.videogamesearcher.SpinnerAdapter
 import com.example.videogamesearcher.databinding.FragmentExploreBinding
 import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
@@ -40,15 +39,14 @@ class ExploreFragment : Fragment() {
         binding.lifecycleOwner = this
 
         return binding.root
-        //ASK SCREWN ABOUT THIS DIFFERENT BINDING
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var spnPlatform: Spinner? = binding.spnPlatform
-        var spnGenre: Spinner? = binding.spnGenre
-        var spnMultiplayer: Spinner? = binding.spnMultiplayer
+        var platformSpinner: Spinner? = binding.spnPlatform
+        var genreSpinner: Spinner? = binding.spnGenre
+        var multiplayerSpinner: Spinner? = binding.spnMultiplayer
         var searchText : RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
         val exploreAdapter = GamesListSearchResultsAdapter(resources)
 
@@ -62,15 +60,15 @@ class ExploreFragment : Fragment() {
         //Creating the Spinners
         exploreViewModel.readPlatformsList.observe(viewLifecycleOwner, { platformItem ->
             val platformList = exploreViewModel.createPlatformsListFromRoom(platformItem)
-            spnPlatform = spnPlatform?.let { spnPlatform -> initSpinners(spnPlatform, platformList) }
-            spnPlatform?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            platformSpinner = platformSpinner?.let { spnPlatform -> initSpinners(spnPlatform, platformList) }
+            platformSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
-                    binding.btnClearPlatformSpinner.visibility = exploreViewModel.setBtnClearPlatformSpinnerVisibility(itemPosition)
+                    binding.btnClearPlatformSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                     if (itemPosition == 0) {
                         exploreViewModel.platformText.postValue("")
                     } else {
 
-                        exploreViewModel.platformText.postValue("platforms.name = \"${spnPlatform?.getItemAtPosition(itemPosition).toString()}\"")
+                        exploreViewModel.platformText.postValue("platforms.name = \"${platformSpinner?.getItemAtPosition(itemPosition).toString()}\"")
                     }
                 }
 
@@ -80,15 +78,17 @@ class ExploreFragment : Fragment() {
             }
         })
         exploreViewModel.readGenresList.observe(viewLifecycleOwner, { genresItem ->
+            //I can put the two lines below into one function
             val genresList = exploreViewModel.createGenresListFromRoom(genresItem)
-            spnGenre = spnGenre?.let { spnGenre -> initSpinners(spnGenre, genresList) }
-            spnGenre?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            genreSpinner = genreSpinner?.let { spnGenre -> initSpinners(spnGenre, genresList) }
+            //But two I leave the ItemSelectedListener inside the observable? Do I put that in the spinner initialization function? Not in either?
+            genreSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
-                    binding.btnClearGenreSpinner.visibility = exploreViewModel.setBtnClearGenreSpinnerVisibility(itemPosition)
+                    binding.btnClearGenreSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                     if (itemPosition == 0) {
                         exploreViewModel.genreText.postValue("")
                     } else {
-                        exploreViewModel.genreText.postValue("genres.name = \"${spnGenre?.getItemAtPosition(itemPosition).toString()}\"")
+                        exploreViewModel.genreText.postValue("genres.name = \"${genreSpinner?.getItemAtPosition(itemPosition).toString()}\"")
                     }
                 }
 
@@ -99,14 +99,14 @@ class ExploreFragment : Fragment() {
         })
         exploreViewModel.readGameModesList.observe(viewLifecycleOwner, { gameModesItem ->
             val gameModesList = exploreViewModel.createGameModesListFromRoom(gameModesItem)
-            spnMultiplayer = spnMultiplayer?.let {spnMultiplayer -> initSpinners(spnMultiplayer, gameModesList) }
-            spnMultiplayer?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            multiplayerSpinner = multiplayerSpinner?.let { spnMultiplayer -> initSpinners(spnMultiplayer, gameModesList) }
+            multiplayerSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
-                    binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setBtnClearMultiplayerSpinnerVisibility(itemPosition)
+                    binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                     if (itemPosition == 0) {
                         exploreViewModel.gameModesText.postValue("")
                     } else {
-                        exploreViewModel.gameModesText.postValue("game_modes.name = \"${spnMultiplayer?.getItemAtPosition(itemPosition).toString()}\"")
+                        exploreViewModel.gameModesText.postValue("game_modes.name = \"${multiplayerSpinner?.getItemAtPosition(itemPosition).toString()}\"")
                     }
                 }
 
@@ -120,7 +120,7 @@ class ExploreFragment : Fragment() {
             searchText = text
         })
 
-        exploreViewModel.gamesList.observe(viewLifecycleOwner, { gamesList ->
+        exploreViewModel.transformDataForListAdapter().observe(viewLifecycleOwner, { gamesList ->
             exploreAdapter.submitList(gamesList)
         })
 
@@ -162,15 +162,15 @@ class ExploreFragment : Fragment() {
         })
 
         binding.btnClearPlatformSpinner.setOnClickListener {
-            spnPlatform?.setSelection(SPINNER_RESET_VALUE)
+            platformSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
 
         binding.btnClearGenreSpinner.setOnClickListener {
-            spnGenre?.setSelection(SPINNER_RESET_VALUE)
+            genreSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
 
         binding.btnClearMultiplayerSpinner.setOnClickListener {
-            spnMultiplayer?.setSelection(SPINNER_RESET_VALUE)
+            multiplayerSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
 
     }
@@ -200,9 +200,14 @@ class ExploreFragment : Fragment() {
         return spinner
     }
 
-    private fun initExploreViewModel(){
+    private fun initExploreViewModel() {
              val factory = activity?.let { activity -> ExploreViewModelFactory(activity.application, resources) }
              exploreViewModel = factory?.let {customFactory -> ViewModelProvider(this, customFactory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
+    }
+
+    companion object{
+        const val SPINNER_RESET_VALUE = 0
+        const val BASIC_SEARCH_TEXT = "\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;\n"
     }
 
 }

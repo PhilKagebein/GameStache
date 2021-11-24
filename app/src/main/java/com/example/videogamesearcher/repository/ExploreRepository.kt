@@ -17,6 +17,14 @@ class ExploreRepository(private val platformsResponseDao: SpinnerResponseDao, pr
     val readGenresList: LiveData<List<GenresResponseItem>> = genresResponseDao.getGenresListData()
     val readGameModesList: LiveData<List<GameModesResponseItem>> = gameModesResponseDao.getGameModesListData()
 
+/*    fun getPlatformsList(): LiveData<List<PlatformsResponseItem>> {
+       // determine if we need to make the api call
+        //if we do, make api call
+        //if successful, store in Room
+        //
+        return platformsResponseDao.getPlatformsListData()
+    }*/
+
     suspend fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         platformsResponseDao.addPlatformsList(spinnerResponseItem)
     }
@@ -37,16 +45,16 @@ class ExploreRepository(private val platformsResponseDao: SpinnerResponseDao, pr
         return RetrofitInstance.api.searchGames("Bearer $accessToken", gamesSearch)
     }
 
-    suspend fun getPlatformsList(accessToken: String, platformsBody: RequestBody): Response<List<PlatformsResponseItem>> {
-        return RetrofitInstance.api.getPlatformsList("Bearer $accessToken", platformsBody)
+    suspend fun getPlatformsList(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
+        return RetrofitInstance.api.getPlatformsList("Bearer $accessToken", platformsPostRequestBody)
     }
 
-    suspend fun getGenresList(accessToken: String, platformsBody: RequestBody): Response<List<GenresResponseItem>> {
-        return RetrofitInstance.api.getGenresList("Bearer $accessToken", platformsBody)
+    suspend fun getGenresList(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
+        return RetrofitInstance.api.getGenresList("Bearer $accessToken", genrePostRequestBody)
     }
 
-    suspend fun getGameModesList(accessToken: String, platformsBody: RequestBody): Response<List<GameModesResponseItem>> {
-        return RetrofitInstance.api.getGameModesList("Bearer $accessToken", platformsBody)
+    suspend fun getGameModesList(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
+        return RetrofitInstance.api.getGameModesList("Bearer $accessToken", gameModesPostRequestBody)
     }
 
 }

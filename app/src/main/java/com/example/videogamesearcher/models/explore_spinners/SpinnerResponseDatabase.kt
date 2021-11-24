@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [PlatformsResponseItem::class, GenresResponseItem::class, GameModesResponseItem::class], version = 1, exportSchema = false)
 abstract class SpinnerResponseDatabase: RoomDatabase() {
 
-    abstract  fun spinnerResponseDao(): SpinnerResponseDao
+    abstract fun spinnerResponseDao(): SpinnerResponseDao
 
     companion object{
         @Volatile
@@ -30,7 +30,7 @@ abstract class SpinnerResponseDatabase: RoomDatabase() {
                 return instance
             }
         }
-
+//DELETE THIS SHIT BELOW
         fun getGenresListDatabase(context: Context): SpinnerResponseDatabase{
             val tempInstance = INSTANCE
             if(tempInstance != null){

@@ -19,10 +19,6 @@ class IndividualGameFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    companion object {
-        fun newInstance() = IndividualGameFragment()
-    }
-
     private lateinit var gameFragmentViewModel: IndividualGameViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

@@ -5,14 +5,14 @@ import androidx.room.*
 
 @Dao
 interface SpinnerResponseDao {
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+//SPLIT ALL THIS INTO THREE DAOS. SHOULD HAVE ONE DAO PER TABLE
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addPlatformsList(spinner: PlatformsResponseItem)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addGenresList(spinner: GenresResponseItem)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addGameModesList(spinner: GameModesResponseItem)
 
     @Transaction
