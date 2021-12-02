@@ -191,39 +191,6 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         return list
     }
 
-    /*fun createPlatformsListFromRoom(spinnerList: List<PlatformsResponseItem>?): MutableList<String> {
-        val list: MutableList<String> = emptyList<String>().toMutableList()
-        list.add(resources.getString(R.string.platform_spinner_prompt))
-        if (spinnerList != null) {
-            for (i in spinnerList.indices) {
-                list.add(spinnerList[i].name)
-            }
-        }
-        return list
-    }
-
-    fun createGenresListFromRoom(spinnerList: List<GenresResponseItem>?): MutableList<String> {
-        val list: MutableList<String> = emptyList<String>().toMutableList()
-        list.add(resources.getString(R.string.genre_spinner_prompt))
-        if (spinnerList != null) {
-            for (i in spinnerList.indices) {
-                list.add(spinnerList[i].name)
-            }
-        }
-        return list
-    }
-
-    fun createGameModesListFromRoom(spinnerList: List<GameModesResponseItem>?): MutableList<String> {
-        val list: MutableList<String> = emptyList<String>().toMutableList()
-        list.add(resources.getString(R.string.game_modes_spinner_prompt))
-        if (spinnerList != null) {
-            for (i in spinnerList.indices) {
-                list.add(spinnerList[i].name)
-            }
-        }
-        return list
-    }*/
-
     fun searchText(): LiveData<RequestBody> =
         nameSearchText.switchMap { searchText ->
             platformText.switchMap { platformText ->
