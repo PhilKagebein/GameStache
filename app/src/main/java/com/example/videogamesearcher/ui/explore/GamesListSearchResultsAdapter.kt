@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.SearchResultsBinding
 import com.example.videogamesearcher.models.search_results.SearchResultsResponseItem
-import java.net.URI
 
 class GamesListSearchResultsAdapter(private val resources: Resources):
     ListAdapter<SearchResultsResponseItem, GamesListSearchResultsAdapter.SearchResultsResponseViewHolder>(DiffCallback()) {
@@ -33,74 +32,69 @@ class GamesListSearchResultsAdapter(private val resources: Resources):
     inner class SearchResultsResponseViewHolder(private val binding: SearchResultsBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(game: SearchResultsResponseItem) {
-            var genreText = ""
-            var gameModeText = ""
-            var platformsText = ""
 
             //BINDING THE IMAGE
-            if (game.cover == null) {
-                Glide.with(binding.gameArtThumbNail).load("").placeholder(R.drawable.no_image).error(R.drawable.no_image).into(binding.gameArtThumbNail)
-            } else {
-                val url = URI(game.cover.url)
-                val segments = url.path.split("/")
-                val lastSegment = segments[segments.size - 1]
-                val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-                Glide.with(binding.gameArtThumbNail).load("https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg").placeholder(R.drawable.no_image).error(R.drawable.no_image).into(binding.gameArtThumbNail)
-            }
+            Glide.with(binding.gameArtThumbNail).load("${game.cover?.url}").placeholder(R.drawable.no_image).error(R.drawable.no_image).into(binding.gameArtThumbNail)
+
             //BINDING THE TITLE
             binding.apply {
                 tvGameTitle.text = game.name
             }
+            //TODO TALK THROUGH WITH KEVIN THE ISSUE OF CONCATENATING THE STRING TO DISPLAY FOR PLATFORMS, GENRES, ETC. SEEM LIKE I HAVE TO DO IT IN THE ADAPTER.
+            //DO I CHANGE THE CLASS BEING SUBMITTED TO THE LIST ADAPTER? NOT SURE ON THE BEST SOLUTION
             //BINDING THE PLATFORM NAME
-            if (game.platforms == null) {
-                binding.tvGamePlatform.text = resources.getString(R.string.no_platform_null_error)
+            if (game.platforms.isNullOrEmpty()) {
+                binding.tvGamePlatform.text = PLATFORM_NULL_MESSAGE
             } else {
                 for (i in game.platforms.indices) {
-                    if (i == (game.platforms.size-1)) {
-                        platformsText = "${platformsText}${game.platforms[i]?.name}"
-                    } else {
-                        platformsText = "${platformsText}${game.platforms[i]?.name}, "
-                    }
+                    binding.tvGamePlatform.text = game.platforms[i]?.name
                 }
-                binding.tvGamePlatform.text = platformsText
             }
+
             //BINDING THE GENRE(S) NAME(S)
-            if (game.genres == null) {
-                binding.tvGameGenre.text = resources.getText(R.string.no_genre_null_error)
+            if (game.genres.isNullOrEmpty()) {
+                binding.tvGameGenre.text = GENRE_NULL_MESSAGE
             } else {
                 for (i in game.genres.indices) {
-                    if (i == (game.genres.size-1)) {
-                        genreText = "${genreText}${game.genres[i]?.name}"
-                    } else {
-                        genreText = "${genreText}${game.genres[i]?.name}, "
-                    }
+                    binding.tvGameGenre.text = game.genres[i]?.name
                 }
-                binding.tvGameGenre.text = genreText
             }
+
             //BINDING THE GAME MODES
-            if (game.game_modes == null) {
-                binding.tvGameModes.text = resources.getText(R.string.no_gamemodes_null_error)
+            if (game.game_modes.isNullOrEmpty()) {
+                binding.tvGameModes.text = GAME_MODES_NULL_MESSAGE
             } else {
                 for (i in game.game_modes.indices) {
-                    if (i == (game.game_modes.size-1)) {
-                        gameModeText = "${gameModeText}${game.game_modes[i]?.name}"
-                    } else {
-                        gameModeText = "${gameModeText}${game.game_modes[i]?.name}, "
-                    }
+                    binding.tvGameModes.text = game.game_modes[i]?.name
                 }
-                binding.tvGameModes.text = gameModeText
             }
         }
     }
 
     class DiffCallback: DiffUtil.ItemCallback<SearchResultsResponseItem>() {
+
         override fun areItemsTheSame(oldItem: SearchResultsResponseItem, newItem: SearchResultsResponseItem): Boolean {
            return oldItem.id == newItem.id
         }
 
+        //TODO TALK TO KEVIN ABOUT HOW TO PROPERLY IMPLEMENT BELOW WHEN NEW VS. OLD GAME MODES MIGHT HAVE VARYING NUMBER OF ENTRIES
         override fun areContentsTheSame(oldItem: SearchResultsResponseItem, newItem: SearchResultsResponseItem): Boolean {
-            return oldItem == newItem
+            return when {
+                oldItem.id != newItem.id -> false
+                oldItem.name != newItem.name -> false
+                oldItem.game_modes != newItem.game_modes -> false
+                oldItem.genres != newItem.genres -> false
+                oldItem.platforms != newItem.platforms -> false
+                oldItem.cover != newItem.cover -> false
+                else -> true
+            }
         }
+    }
+
+    companion object{
+        const val PLATFORM_NULL_MESSAGE = "No platforms listed"
+        const val GENRE_NULL_MESSAGE = "No genres listed"
+        const val GAME_MODES_NULL_MESSAGE = "No multiplayer modes listed"
     }
 
 }

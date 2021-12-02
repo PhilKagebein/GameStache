@@ -8,6 +8,5 @@ class Constants {
         const val CLIENT_ID = "u150zxw7kz3bjd8h8vlldlqa9ux3da"
         const val CLIENT_SECRET = "evqpr3v9sxw7jt3fo3hg0rdxlz23iu"
         const val GRANT_TYPE = "client_credentials"
-        const val SPINNER_RESET_VALUE = 0
     }
 }

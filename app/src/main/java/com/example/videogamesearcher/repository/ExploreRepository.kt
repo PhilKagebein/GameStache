@@ -11,13 +11,15 @@ import com.example.videogamesearcher.models.search_results.SearchResultsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
 
-class ExploreRepository(private val platformsResponseDao: SpinnerResponseDao, private val genresResponseDao: SpinnerResponseDao, private val gameModesResponseDao: SpinnerResponseDao) {
+class ExploreRepository(private val platformsResponseDao: PlatformSpinnerDao, private val genresResponseDao: GenresSpinnerDao, private val gameModesResponseDao: GameModesSpinnerDao) {
 
-    val readPlatformsList: LiveData<List<PlatformsResponseItem>> = platformsResponseDao.getPlatformsListData()
-    val readGenresList: LiveData<List<GenresResponseItem>> = genresResponseDao.getGenresListData()
-    val readGameModesList: LiveData<List<GameModesResponseItem>> = gameModesResponseDao.getGameModesListData()
+    val readPlatformsList: LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListData()
+    val readGenresList: LiveData<List<GenericSpinnerItem>> = genresResponseDao.getGenresListData()
+    val readGameModesListFromRoomDB: LiveData<List<GenericSpinnerItem>> = gameModesResponseDao.getGameModesListData()
 
-    suspend fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
+    //TODO: ASK KEVIN ABOUT NEVER USING @UPDATE SINCE I WON'T KNOW WHEN A NEW CONSOLE WILL BE RELEASED FOR EXAMPLE. SHOULD ALWAYS JUST BE INSERT YES?
+
+    suspend fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem) {
         platformsResponseDao.addPlatformsList(spinnerResponseItem)
     }
 
@@ -37,16 +39,16 @@ class ExploreRepository(private val platformsResponseDao: SpinnerResponseDao, pr
         return RetrofitInstance.api.searchGames("Bearer $accessToken", gamesSearch)
     }
 
-    suspend fun getPlatformsList(accessToken: String, platformsBody: RequestBody): Response<List<PlatformsResponseItem>> {
-        return RetrofitInstance.api.getPlatformsList("Bearer $accessToken", platformsBody)
+    suspend fun getPlatformsList(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
+        return RetrofitInstance.api.getPlatformsList("Bearer $accessToken", platformsPostRequestBody)
     }
 
-    suspend fun getGenresList(accessToken: String, platformsBody: RequestBody): Response<List<GenresResponseItem>> {
-        return RetrofitInstance.api.getGenresList("Bearer $accessToken", platformsBody)
+    suspend fun getGenresList(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
+        return RetrofitInstance.api.getGenresList("Bearer $accessToken", genrePostRequestBody)
     }
 
-    suspend fun getGameModesList(accessToken: String, platformsBody: RequestBody): Response<List<GameModesResponseItem>> {
-        return RetrofitInstance.api.getGameModesList("Bearer $accessToken", platformsBody)
+    suspend fun getGameModesList(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
+        return RetrofitInstance.api.getGameModesList("Bearer $accessToken", gameModesPostRequestBody)
     }
 
 }

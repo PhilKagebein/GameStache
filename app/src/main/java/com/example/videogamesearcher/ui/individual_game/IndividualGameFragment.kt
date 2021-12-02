@@ -15,19 +15,13 @@ import com.example.videogamesearcher.databinding.IndividualGameFragmentBinding
 class IndividualGameFragment : Fragment() {
 
     private val args: IndividualGameFragmentArgs by navArgs()
-    private var _binding: IndividualGameFragmentBinding? = null
-
-    private val binding get() = _binding!!
-
-    companion object {
-        fun newInstance() = IndividualGameFragment()
-    }
+    private lateinit var binding: IndividualGameFragmentBinding
 
     private lateinit var gameFragmentViewModel: IndividualGameViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         gameFragmentViewModel = ViewModelProvider(this)[IndividualGameViewModel::class.java]
-        _binding = IndividualGameFragmentBinding.inflate(inflater, container, false)
+        binding = IndividualGameFragmentBinding.inflate(inflater, container, false)
         val actionBar = (requireActivity() as MainActivity).supportActionBar?.setTitle(args.gameName)
 
         return binding.root

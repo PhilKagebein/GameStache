@@ -55,8 +55,8 @@ class IndividualGameViewModel : ViewModel() {
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
+            //TODO: ASK KEVIN TO WALK ME THROUGH HOW MOVING THIS TO A STATIC CONSTANT WOULD WORK. COMPILER NOT HAPPY WITH VARIABLE IN THERE
             "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         }
     }
-
 }
