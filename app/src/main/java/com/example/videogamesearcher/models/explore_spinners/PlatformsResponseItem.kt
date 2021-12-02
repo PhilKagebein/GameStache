@@ -9,7 +9,6 @@ data class PlatformsResponseItem(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
     val name: String
-
 )
 
 

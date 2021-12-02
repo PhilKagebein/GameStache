@@ -40,7 +40,8 @@ class GamesListSearchResultsAdapter(private val resources: Resources):
             binding.apply {
                 tvGameTitle.text = game.name
             }
-            //TODO TALK THROUGH WITH KEVIN THE ISSUE OF CONCACTENATING THE STRING TO DISPLAY FOR PLATFORMS, GENRES, ETC. SEEM LIKE I HAVE TO DO IT IN THE ADAPTER.
+            //TODO TALK THROUGH WITH KEVIN THE ISSUE OF CONCATENATING THE STRING TO DISPLAY FOR PLATFORMS, GENRES, ETC. SEEM LIKE I HAVE TO DO IT IN THE ADAPTER.
+            //DO I CHANGE THE CLASS BEING SUBMITTED TO THE LIST ADAPTER? NOT SURE ON THE BEST SOLUTION
             //BINDING THE PLATFORM NAME
             if (game.platforms.isNullOrEmpty()) {
                 binding.tvGamePlatform.text = PLATFORM_NULL_MESSAGE

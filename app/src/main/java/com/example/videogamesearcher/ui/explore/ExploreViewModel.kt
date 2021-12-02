@@ -5,12 +5,10 @@ import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import com.example.videogamesearcher.R
 import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.*
 import com.example.videogamesearcher.models.search_results.*
 import com.example.videogamesearcher.repository.ExploreRepository
-import com.example.videogamesearcher.ui.explore.ExploreFragment.Companion.BASIC_SEARCH_TEXT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -33,20 +31,20 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
     var gameModesText: MutableLiveData<String> = MutableLiveData("")
     val nameSearchText: MutableLiveData<String> = MutableLiveData("")
 
-    val readPlatformsList: LiveData<List<PlatformsResponseItem>>
-    val readGenresList: LiveData<List<GenresResponseItem>>
-    val readGameModesList: LiveData<List<GameModesResponseItem>>
+    val currentPlatformListInRoomDB: LiveData<List<GenericSpinnerItem>>
+    val currentGenreListInRoomDB: LiveData<List<GenericSpinnerItem>>
+    val currentGameModesListInRoomDB: LiveData<List<GenericSpinnerItem>>
 
     private val exploreRepository: ExploreRepository
 
     init {
-        val platformsListDao = SpinnerResponseDatabase.getPlatformsListDatabase(app).spinnerResponseDao()
-        val genresListDao = SpinnerResponseDatabase.getGenresListDatabase(app).spinnerResponseDao()
-        val gameModesDao = SpinnerResponseDatabase.getGameModesListDatabase(app).spinnerResponseDao()
+        val platformsListDao = GameStashDatabase.getGameStashDatabase(app).platformSpinnerDao()
+        val genresListDao = GameStashDatabase.getGameStashDatabase(app).genresSpinnerDao()
+        val gameModesDao = GameStashDatabase.getGameStashDatabase(app).gameModesSpinnerDao()
         exploreRepository = ExploreRepository(platformsListDao, genresListDao, gameModesDao)
-        readPlatformsList = exploreRepository.readPlatformsList
-        readGenresList = exploreRepository.readGenresList
-        readGameModesList = exploreRepository.readGameModesList
+        currentPlatformListInRoomDB = exploreRepository.readPlatformsList
+        currentGenreListInRoomDB = exploreRepository.readGenresList
+        currentGameModesListInRoomDB = exploreRepository.readGameModesListFromRoomDB
     }
 
     fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
@@ -160,11 +158,10 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
             }
         }
 
-    //ask Kevin how to handle emit() if response isn't successful
-    fun platformsResponse(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
-            liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-                val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsList(twitchAuthorization.access_token, spinnersPostRequestBody) }
-                emit(response?.body())
+    fun getPlatformsListFromRoom(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
+        liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
+            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsList(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            emit(response?.body())
             }
     }
 
@@ -182,7 +179,19 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
         }
     }
 
-    fun createPlatformsListFromRoom(spinnerList: List<PlatformsResponseItem>?): MutableList<String> {
+    //TODO: TALK TO KEVIN ABOUT WHY I MADE GENERICSPINNERITEM CLASS AND THIS SOLUTION TO THE PROBLEM
+    fun addPromptToSpinnerList(spinnerList: List<GenericSpinnerItem>?, spinnerPrompt: String): MutableList<String> {
+        val list: MutableList<String> = emptyList<String>().toMutableList()
+        list.add(spinnerPrompt)
+        if (spinnerList != null) {
+            for (i in spinnerList.indices) {
+                list.add(spinnerList[i].name)
+            }
+        }
+        return list
+    }
+
+    /*fun createPlatformsListFromRoom(spinnerList: List<PlatformsResponseItem>?): MutableList<String> {
         val list: MutableList<String> = emptyList<String>().toMutableList()
         list.add(resources.getString(R.string.platform_spinner_prompt))
         if (spinnerList != null) {
@@ -213,7 +222,8 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
             }
         }
         return list
-    }
+    }*/
+
     fun searchText(): LiveData<RequestBody> =
         nameSearchText.switchMap { searchText ->
             platformText.switchMap { platformText ->
@@ -222,30 +232,46 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
                         val text =
                             BASIC_SEARCH_TEXT +
                             "${if (searchText.isNullOrBlank()) {""} else {"search \"${searchText}\";"}}\n" +
-                                   /* makeWhereClause(mapOf(
-                                        "platform.name" to platformText,
-
-                                    ))*/
-                            if (platformText == "" && genreText == "" && gameModesText == "") {""}
-                            else if((platformText == "" && genreText == "") || (platformText == "" && gameModesText == "") || (genreText == "" && gameModesText == "")){"where $platformText$genreText$gameModesText;"}
-                            else if(platformText == "") {"where $genreText & $gameModesText;"}
-                            else if(genreText == "") {"where $platformText & $gameModesText;"}
-                            else if(gameModesText == "") {"where $platformText & $genreText;"}
-                            else {"where $platformText & $genreText & $gameModesText;"}
+                                    makeWhereClause(mapOf(
+                                        "platforms.name" to platformText,
+                                        "genres.name" to genreText,
+                                        "game_modes.name" to gameModesText
+                                    ))
                         text.toRequestBody("text/plain".toMediaTypeOrNull())
                     }
                 }
             }
         }
 
-    //FINISH THIS LATER
- /*   fun makeWhereClause(temp: Map<String,String>): String {
+    //TODO SHOW KEVIN THIS AND SEE IF HE THINKS THIS IS THE BEST IT WILL BE
+    private fun makeWhereClause(spinnerMap: Map<String,String>): String {
+        var whereClause = "where "
+        val filteredMap = spinnerMap.filterNot { it.value.isEmpty() }
+        val mapList = filteredMap.toList()
+        val mapSize = filteredMap.size
+        var currentMapItem = 1
 
-    }*/
+        if (mapSize == 0) {
+            return ""
+        } else {
+            for (i in mapList) {
+                if (currentMapItem < mapSize) {
+                    whereClause += "${i.first} = ${i.second} & "
+                    currentMapItem++
+                } else if (currentMapItem == mapSize){
+                    whereClause += "${i.first} = ${i.second};"
+                }
+            }
+        }
+        return whereClause
+    }
 
     fun setExploreSpinnersClearButtonVisibility(itemPosition: Int): Int {
         if (itemPosition == 0) return GONE
         else return VISIBLE
     }
 
+    companion object {
+        const val BASIC_SEARCH_TEXT = "\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;"
+    }
 }

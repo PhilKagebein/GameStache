@@ -11,21 +11,15 @@ import com.example.videogamesearcher.models.search_results.SearchResultsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
 
-class ExploreRepository(private val platformsResponseDao: SpinnerResponseDao, private val genresResponseDao: SpinnerResponseDao, private val gameModesResponseDao: SpinnerResponseDao) {
+class ExploreRepository(private val platformsResponseDao: PlatformSpinnerDao, private val genresResponseDao: GenresSpinnerDao, private val gameModesResponseDao: GameModesSpinnerDao) {
 
-    val readPlatformsList: LiveData<List<PlatformsResponseItem>> = platformsResponseDao.getPlatformsListData()
-    val readGenresList: LiveData<List<GenresResponseItem>> = genresResponseDao.getGenresListData()
-    val readGameModesList: LiveData<List<GameModesResponseItem>> = gameModesResponseDao.getGameModesListData()
+    val readPlatformsList: LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListData()
+    val readGenresList: LiveData<List<GenericSpinnerItem>> = genresResponseDao.getGenresListData()
+    val readGameModesListFromRoomDB: LiveData<List<GenericSpinnerItem>> = gameModesResponseDao.getGameModesListData()
 
-/*    fun getPlatformsList(): LiveData<List<PlatformsResponseItem>> {
-       // determine if we need to make the api call
-        //if we do, make api call
-        //if successful, store in Room
-        //
-        return platformsResponseDao.getPlatformsListData()
-    }*/
+    //TODO: ASK KEVIN ABOUT NEVER USING @UPDATE SINCE I WON'T KNOW WHEN A NEW CONSOLE WILL BE RELEASED FOR EXAMPLE. SHOULD ALWAYS JUST BE INSERT YES?
 
-    suspend fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
+    suspend fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem) {
         platformsResponseDao.addPlatformsList(spinnerResponseItem)
     }
 
