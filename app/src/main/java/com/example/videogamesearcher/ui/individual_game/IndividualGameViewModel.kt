@@ -3,6 +3,7 @@ package com.example.videogamesearcher.ui.individual_game
 import androidx.lifecycle.*
 import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.models.individual_game.IndividualGameData
+import com.example.videogamesearcher.models.individual_game.InvolvedCompany
 import com.example.videogamesearcher.models.individual_game.ReleaseDate
 import com.example.videogamesearcher.repository.IndividualGameRepository
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,6 @@ class IndividualGameViewModel : ViewModel() {
         }
     }
 
-
     private fun getIndividualGameData(): LiveData<IndividualGameData?>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameId ->
@@ -52,11 +52,9 @@ class IndividualGameViewModel : ViewModel() {
             }
     }
 
+    //TODO: CACHE ALL THIS LATER
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
-
         formatDate(gameData?.get(0)?.first_release_date)
-        //formatDate(gameData?.get(0)?.first_release_date?.toLong()?.let { releaseDateTimestamp -> Instant.ofEpochSecond(releaseDateTimestamp) })
-
     }
 
     var originalPlatforms: LiveData<String> = getIndividualGameData().map { gameData ->
@@ -64,6 +62,16 @@ class IndividualGameViewModel : ViewModel() {
         val individualReleasesList = gameData?.get(0)?.release_dates
 
         findOriginalPlatforms(originalReleaseDate, individualReleasesList)
+    }
+
+    var developers: LiveData<String> = getIndividualGameData().map { gameData ->
+
+        getDevelopers(gameData?.get(0)?.involved_companies)
+    }
+
+    var publishers: LiveData<String> = getIndividualGameData().map { gameData ->
+
+        getPublishers(gameData?.get(0)?.involved_companies)
     }
 
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
@@ -120,5 +128,42 @@ class IndividualGameViewModel : ViewModel() {
             }
         }
         return originalPlatforms
+    }
+
+    //TODO: TALK TO KEVIN ABOUT CONDENSING THE TWO FUNCTIONS BELOW INTO ONE. CAN WE CONCATENATE "developer" IN LINE 142. IF NOT, CHAT ABOUT ALTERNATIVE METHODS (PASSING IN AN ARBITRARY VALUE)
+    private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>?): String {
+        var developersList = "Developed by: "
+
+        if (involvedCompaniesList.isNullOrEmpty()) {
+            developersList = "No developers found"
+        } else {
+
+            for (company in involvedCompaniesList.indices) {
+                if (involvedCompaniesList[company]?.developer == true) {
+                    developersList += "${involvedCompaniesList[company]?.company?.name}, "
+                }
+            }
+            developersList = developersList.substring(0, developersList.length-2)
+        }
+
+        return developersList
+    }
+
+    private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>?): String {
+        var publishersList = "Published by: "
+
+        if (involvedCompaniesList.isNullOrEmpty()) {
+            publishersList = "No publishers found"
+        } else {
+
+            for (company in involvedCompaniesList.indices) {
+                if (involvedCompaniesList[company]?.publisher == true) {
+                    publishersList += "${involvedCompaniesList[company]?.company?.name}, "
+                }
+            }
+            publishersList = publishersList.substring(0, publishersList.length-2)
+        }
+
+        return publishersList
     }
 }
