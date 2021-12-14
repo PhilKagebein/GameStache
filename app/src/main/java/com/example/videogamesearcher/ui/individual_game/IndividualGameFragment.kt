@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide
 import com.example.videogamesearcher.MainActivity
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.IndividualGameFragmentBinding
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class IndividualGameFragment : Fragment() {
 
@@ -23,6 +25,11 @@ class IndividualGameFragment : Fragment() {
         gameFragmentViewModel = ViewModelProvider(this)[IndividualGameViewModel::class.java]
         binding = IndividualGameFragmentBinding.inflate(inflater, container, false)
         val actionBar = (requireActivity() as MainActivity).supportActionBar?.setTitle(args.gameName)
+
+        binding.individualGameTitle.text = args.gameName
+
+        binding.individualgameviewmodel = gameFragmentViewModel
+        binding.lifecycleOwner = this
 
         return binding.root
     }

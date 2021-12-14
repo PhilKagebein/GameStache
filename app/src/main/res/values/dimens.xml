@@ -58,7 +58,7 @@
     <dimen name="individualGameTextSize">18sp</dimen>
 
     <!--Card Views-->
-    <dimen name="cardViewsCornerRadius">4dp</dimen>
+    <dimen name="cardViewsCornerRadius">3dp</dimen>
     <!--Game Art    -->
     <dimen name="individualGameArtHeight">240dp</dimen>
 
