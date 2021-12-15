@@ -8,5 +8,6 @@
     <string name="platform_spinner_prompt">Select a platform</string>
     <string name="genre_spinner_prompt">Select a genre</string>
     <string name="game_modes_spinner_prompt">Select multiplayer capabilities</string>
+    <string name="game_summary_block_heading_text">Game Description</string>
 
 </resources>

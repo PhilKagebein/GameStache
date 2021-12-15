@@ -22,7 +22,7 @@ class ArtDialog(private val url: String): DialogFragment() {
             .error(R.color.transparent)
             .into(rootView.artDialogImageView)
 
-        rootView.cancelButton.setOnClickListener {
+        rootView.cancelButtonArtDialog.setOnClickListener {
             dismiss()
         }
 
