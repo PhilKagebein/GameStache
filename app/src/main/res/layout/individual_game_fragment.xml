@@ -155,7 +155,7 @@
                             android:id="@+id/descriptionBlockArrowButton"
                             android:layout_width="@dimen/gameFragmentDropdownWidth"
                             android:layout_height="@dimen/gameFragmentDropdownHeight"
-                            android:background="@drawable/drop_down_arrow_up"
+                            android:background="@drawable/drop_down_arrow_down"
                             android:backgroundTint="@color/white"
                             android:backgroundTintMode="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -176,7 +176,7 @@
                         android:textAlignment="textStart"
                         android:layout_gravity="start"
                         android:text="@{individualgameviewmodel.summaryText}"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:textColor="?attr/textColor"
                         />
 
@@ -185,24 +185,81 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewAllPlatforms"
+                android:id="@+id/releaseRegionsCardView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
                 android:layout_marginTop="@dimen/individualGameMarginTop"
                 >
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="All Platforms and Release Dates by Region"
-                    android:gravity="center"
-                    android:textColor="?attr/textColor"
-                    android:textSize="@dimen/individualGameTextSize"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                    />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/releasesByRegionTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
+                            android:gravity="start"
+                            android:text="@string/release_information_by_region_title"
+                            android:textAlignment="textStart"
+                            android:textColor="?attr/textColor"
+                            android:textSize="@dimen/individualGameTextSize"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginStart="@dimen/gameFragmentTextViewStartMargin"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/releasesByRegionArrowButton"
+                            android:layout_width="@dimen/gameFragmentDropdownWidth"
+                            android:layout_height="@dimen/gameFragmentDropdownHeight"
+                            android:background="@drawable/drop_down_arrow_down"
+                            android:backgroundTint="@color/white"
+                            android:backgroundTintMode="@color/white"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:drawableTint="@color/white"
+                            android:drawableTintMode="@color/white"
+                            />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <Spinner
+                        android:layout_marginHorizontal="@dimen/gameFragmentTextViewStartMargin"
+                        android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
+                        android:id="@+id/releasesByRegionSpinner"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:spinnerMode="dialog"
+                        android:prompt="@string/release_region_spinner_prompt"
+                        />
+                    <TextView
+                        android:id="@+id/releaseRegionInformationTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/individualGameTextSize"
+                        android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
+                        android:layout_marginHorizontal="@dimen/gameFragmentTextViewStartMargin"
+                        android:text="@{individualgameviewmodel.releaseInformationText}"
+                        android:visibility="visible"
+                        android:textColor="?attr/textColor"
+                        android:textAlignment="textStart"
+                        />
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
