@@ -11,13 +11,12 @@ import com.bumptech.glide.Glide
 import com.example.videogamesearcher.MainActivity
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.databinding.IndividualGameFragmentBinding
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class IndividualGameFragment : Fragment() {
 
     private val args: IndividualGameFragmentArgs by navArgs()
     private lateinit var binding: IndividualGameFragmentBinding
+
 
     private lateinit var gameFragmentViewModel: IndividualGameViewModel
 
@@ -36,6 +35,8 @@ class IndividualGameFragment : Fragment() {
 
     override fun onViewCreated(view:View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        var summaryText: String? = ""
         var imageURL = ""
         gameFragmentViewModel.gameId.postValue(args.gameId)
         gameFragmentViewModel.getAccessToken()
@@ -54,5 +55,33 @@ class IndividualGameFragment : Fragment() {
             artDialog.show(requireActivity().supportFragmentManager, "ArtDialog")
         }
 
+        //TODO: TALK TO KEVIN ABOUT IF THERE'S A WAY TO NOT REPEAT THE SAME BLOCK OF CODE.
+        // WITHOUT THE ONCLICK FOR THE ARROWBUTTON, NOTHING HAPPENS. SEEMS LIKE IT'S "ABOVE/IN FRONT OF" THE CARD VIEW
+        binding.cardViewSummary.setOnClickListener {
+
+            val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
+            binding.descriptionBlockArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+
+            binding.descriptionText.visibility = gameFragmentViewModel.setDescriptionTextVisibility(binding.descriptionText.visibility)
+
+        }
+
+        binding.descriptionBlockArrowButton.setOnClickListener {
+
+            val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
+            binding.descriptionBlockArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+
+            binding.descriptionText.visibility = gameFragmentViewModel.setDescriptionTextVisibility(binding.descriptionText.visibility)
+
+        }
+
+        gameFragmentViewModel.summaryText.observe(viewLifecycleOwner, { liveSummaryText ->
+            summaryText = liveSummaryText
+        })
+
+        binding.descriptionText.setOnClickListener {
+            val gameSummaryDialog = summaryText?.let { summaryText -> GameSummaryDialog(summaryText) }
+            gameSummaryDialog?.show(requireActivity().supportFragmentManager, "GameSummaryDialog")
+        }
     }
 }

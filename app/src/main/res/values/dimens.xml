@@ -62,5 +62,28 @@
     <!--Game Art    -->
     <dimen name="individualGameArtHeight">240dp</dimen>
 
+    <!--Text Views-->
+    <dimen name="gameFragmentTextViewStartMargin">7dp</dimen>
+    <dimen name="gameFragmentTextViewVerticalMargin">3dp</dimen>
+
+    <!--Dropdown arrow for Game Description-->
+    <dimen name="gameFragmentDropdownWidth">35dp</dimen>
+    <dimen name="gameFragmentDropdownHeight">35dp</dimen>
+
+<!--game_summary_dialog-->
+    <dimen name="cancelButtonGameSummaryWidth">50dp</dimen>
+    <dimen name="cancelButtonGameSummaryHeight">50dp</dimen>
+
+    <!--gameSummaryCardView-->
+    <dimen name="gameSummaryCardViewLayoutWidth">350dp</dimen>
+    <dimen name="gameSummaryCardViewMaxHeight">400dp</dimen>
+
+    <!--gameSummaryDialogTextView-->
+    <dimen name="gameSummaryDialogTextViewHorizontalMargin">7dp</dimen>
+    <dimen name="gameSummaryDialogTextViewVerticalMargin">3dp</dimen>
+    <dimen name="gameSummaryDialogTextViewTextSize">25sp</dimen>
+
+
+
 
 </resources>

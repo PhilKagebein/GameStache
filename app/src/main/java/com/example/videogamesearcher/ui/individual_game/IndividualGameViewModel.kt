@@ -1,6 +1,9 @@
 package com.example.videogamesearcher.ui.individual_game
 
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.videogamesearcher.R
 import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.models.individual_game.IndividualGameData
 import com.example.videogamesearcher.models.individual_game.InvolvedCompany
@@ -52,7 +55,7 @@ class IndividualGameViewModel : ViewModel() {
             }
     }
 
-    //TODO: CACHE ALL THIS LATER
+    //TODO: CACHE ALL THIS LATER, OR NOT? DISCUSS WHAT'S FASTER/BEST PRACTICE
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
         formatDate(gameData?.get(0)?.first_release_date)
     }
@@ -74,6 +77,14 @@ class IndividualGameViewModel : ViewModel() {
         getPublishers(gameData?.get(0)?.involved_companies)
     }
 
+    var summaryText: LiveData<String?> = getIndividualGameData().map { gameData ->
+        if (gameData?.get(0)?.summary.isNullOrEmpty()) {
+            NO_GAME_SUMMARY
+        } else {
+            gameData?.get(0)?.summary
+        }
+    }
+
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
         if (gameData?.get(0)?.cover?.url == null) {
             ""
@@ -89,12 +100,12 @@ class IndividualGameViewModel : ViewModel() {
 
     private fun formatDate(firstReleaseDate: Int?): String {
         if (firstReleaseDate == null) {
-            return "No release date found"
+            return NO_RELEASE_DATE_FOUND_TEXT
         } else {
             val dateString = DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(firstReleaseDate.toLong()))
             val substring = dateString.substring(0, 10)
             val localDate = LocalDate.parse(substring)
-            val formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
+            val formatter = DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT)
 
             return "Original Release Date: ${formatter.format(localDate)}"
         }
@@ -103,11 +114,11 @@ class IndividualGameViewModel : ViewModel() {
     //TODO: REVIEW THIS TO SEE IF I CAN SIMPLIFY
     private fun findOriginalPlatforms(originalReleaseDate: Int?, individualReleasesList: List<ReleaseDate?>?): String {
 
-        var originalPlatforms = "Originally released on: "
+        var originalPlatforms = ORIGINAL_PLATFORMS_START_TEXT
         var releasesList = mutableListOf<String>()
 
         if (individualReleasesList.isNullOrEmpty() || originalReleaseDate == null) {
-            originalPlatforms = "No platforms available"
+            originalPlatforms = NO_PLATFORMS_FOUND_TEXT
         } else {
             for (individualRelease in individualReleasesList.indices) {
                 if (originalReleaseDate == individualReleasesList[individualRelease]?.date) {
@@ -132,10 +143,10 @@ class IndividualGameViewModel : ViewModel() {
 
     //TODO: TALK TO KEVIN ABOUT CONDENSING THE TWO FUNCTIONS BELOW INTO ONE. CAN WE CONCATENATE "developer" IN LINE 142. IF NOT, CHAT ABOUT ALTERNATIVE METHODS (PASSING IN AN ARBITRARY VALUE)
     private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>?): String {
-        var developersList = "Developed by: "
+        var developersList = DEVELOPERS_LIST_START_TEXT
 
         if (involvedCompaniesList.isNullOrEmpty()) {
-            developersList = "No developers found"
+            developersList = NO_DEVELOPERS_FOUND_TEXT
         } else {
 
             for (company in involvedCompaniesList.indices) {
@@ -150,10 +161,10 @@ class IndividualGameViewModel : ViewModel() {
     }
 
     private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>?): String {
-        var publishersList = "Published by: "
+        var publishersList = PUBLISHERS_LIST_START_TEXT
 
         if (involvedCompaniesList.isNullOrEmpty()) {
-            publishersList = "No publishers found"
+            publishersList = NO_PUBLISHERS_FOUND_TEXT
         } else {
 
             for (company in involvedCompaniesList.indices) {
@@ -165,5 +176,33 @@ class IndividualGameViewModel : ViewModel() {
         }
 
         return publishersList
+    }
+
+    fun setDescriptionTextVisibility(descriptionTextVisibility: Int): Int {
+        if (descriptionTextVisibility == GONE) {
+            return VISIBLE
+        } else  {
+            return GONE
+        }
+    }
+
+    fun determineArrowButtonStatus(descriptionTextVisibility: Int): Int {
+        if (descriptionTextVisibility == GONE) {
+            return R.drawable.drop_down_arrow_down
+        } else {
+            return R.drawable.drop_down_arrow_up
+        }
+    }
+
+    companion object{
+        const val NO_GAME_SUMMARY = "No game description provided."
+        const val NO_RELEASE_DATE_FOUND_TEXT = "No release date found"
+        const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
+        const val ORIGINAL_PLATFORMS_START_TEXT = "Originally released on: "
+        const val NO_PLATFORMS_FOUND_TEXT = "No platforms available"
+        const val DEVELOPERS_LIST_START_TEXT = "Developed by: "
+        const val NO_DEVELOPERS_FOUND_TEXT = "No developers found"
+        const val PUBLISHERS_LIST_START_TEXT = "Published by: "
+        const val NO_PUBLISHERS_FOUND_TEXT = "No publishers found"
     }
 }
