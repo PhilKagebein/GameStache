@@ -9,5 +9,8 @@
     <string name="genre_spinner_prompt">Select a genre</string>
     <string name="game_modes_spinner_prompt">Select multiplayer capabilities</string>
     <string name="game_summary_block_heading_text">Game Description</string>
+    <string name="release_information_by_region_title">Release Information by Region</string>
+    <string name="release_region_spinner_prompt">Select a region</string>
+
 
 </resources>

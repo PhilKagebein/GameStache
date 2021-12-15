@@ -23,6 +23,7 @@ class IndividualGameViewModel : ViewModel() {
 
     private var twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
     var gameId: MutableLiveData<Int> = MutableLiveData()
+    var releaseInformationText: MutableLiveData<String> = MutableLiveData()
 
     private val individualGameRepo = IndividualGameRepository()
 
@@ -38,7 +39,7 @@ class IndividualGameViewModel : ViewModel() {
         }
     }
 
-    private fun getIndividualGameData(): LiveData<IndividualGameData?>
+    fun getIndividualGameData(): LiveData<IndividualGameData?>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameId ->
                 val individualGameSearchBody: RequestBody = "where id = $gameId;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
@@ -82,6 +83,16 @@ class IndividualGameViewModel : ViewModel() {
             NO_GAME_SUMMARY
         } else {
             gameData?.get(0)?.summary
+        }
+    }
+
+    //TODO: HOW TO CHECK WHETHER GAMEDATA.RELEASEDATES EXISTS AT ALL?
+    var regionsList: LiveData<MutableList<String>> = getIndividualGameData().map { gameData ->
+
+        if (gameData?.get(0)?.release_dates.isNullOrEmpty() || gameData.isNullOrEmpty()) {
+            mutableListOf(NO_REGIONS_FOUND_TEXT)
+        } else {
+            getRegionsReleased(gameData[0].release_dates)
         }
     }
 
@@ -178,20 +189,88 @@ class IndividualGameViewModel : ViewModel() {
         return publishersList
     }
 
-    fun setDescriptionTextVisibility(descriptionTextVisibility: Int): Int {
-        if (descriptionTextVisibility == GONE) {
+    fun changeCardViewVisibility(currentVisibility: Int): Int {
+        if (currentVisibility == GONE) {
             return VISIBLE
         } else  {
             return GONE
         }
     }
 
-    fun determineArrowButtonStatus(descriptionTextVisibility: Int): Int {
-        if (descriptionTextVisibility == GONE) {
+    fun determineArrowButtonStatus(viewVisibility: Int): Int {
+        if (viewVisibility == GONE) {
             return R.drawable.drop_down_arrow_down
         } else {
             return R.drawable.drop_down_arrow_up
         }
+    }
+
+    //TODO: CHECK IF I CAN REMOVE CHECKING IF THINGS ARE NULL IN THE FUNCTIONNS BELOW AND GET RID OF THE IF(REGIONINTS.CONTAINS(0)) LOGIC
+    private fun getRegionsReleased(individualReleasesList: List<ReleaseDate?>?): MutableList<String> {
+
+        val regionInts = getRegionIntsList(individualReleasesList)
+        if (regionInts.contains(0)) {
+            return mutableListOf(NO_REGIONS_FOUND_TEXT)
+        } else {
+            return getRegionNameListFromInts(regionInts)
+        }
+    }
+
+    private fun getRegionIntsList(individualReleasesList: List<ReleaseDate?>?): List<Int> {
+        val regionInts = mutableListOf<Int>()
+        if (individualReleasesList.isNullOrEmpty())
+        {return listOf(0)}
+        else {
+            for (release in individualReleasesList.indices) {
+                if (regionInts.contains(individualReleasesList[release]?.region)) {
+                    continue
+                } else {
+                    individualReleasesList[release]?.region.let {
+                        if (it != null) {
+                            regionInts.add(it)
+                        }
+                    }
+                }
+            }
+            return regionInts.sorted()
+        }
+    }
+
+    private fun getRegionNameListFromInts(regionInts: List<Int>): MutableList<String> {
+        var regionsList = mutableListOf(REGION_SPINNER_PROMPT)
+
+        for (regionInt in regionInts) {
+            regionsList.add(RegionReleases.values()[(regionInt-1)].regionName)
+        }
+        return regionsList
+    }
+
+    fun getReleaseInformationText(releaseDates: List<ReleaseDate?>?, selectedRegion: String): String {
+        var releaseInformationText = ""
+
+        val selectedRegionInt = getSelectedRegionInt(selectedRegion)
+
+        if (releaseDates.isNullOrEmpty()) {
+            return NO_RELEASE_INFORMATION_FOUND_TEXT
+        } else {
+            for (release in releaseDates.indices) {
+                if (selectedRegionInt == releaseDates[release]?.region) {
+                    releaseInformationText += "$INDIVIDUAL_RELEASE_START_TEXT ${releaseDates[release]?.platform?.name}, ${releaseDates[release]?.human}\n"
+                }
+            }
+            return releaseInformationText.trim()
+        }
+    }
+
+    private fun getSelectedRegionInt(selectedRegion: String): Int {
+        var regionInt = 0
+        val enumList = RegionReleases.values()
+        for (i in enumList) {
+            if (i.regionName == selectedRegion) {
+                regionInt = i.regionValue
+            }
+        }
+        return regionInt
     }
 
     companion object{
@@ -204,5 +283,23 @@ class IndividualGameViewModel : ViewModel() {
         const val NO_DEVELOPERS_FOUND_TEXT = "No developers found"
         const val PUBLISHERS_LIST_START_TEXT = "Published by: "
         const val NO_PUBLISHERS_FOUND_TEXT = "No publishers found"
+        const val INDIVIDUAL_RELEASE_START_TEXT = "Released on"
+        const val NO_REGIONS_FOUND_TEXT = "No regions found"
+        const val REGION_SPINNER_PROMPT = "Select a region"
+        const val NO_RELEASE_INFORMATION_FOUND_TEXT = "No release information found"
     }
+
+}
+
+enum class RegionReleases(val regionValue: Int, val regionName: String) {
+    EUROPE(1, "Europe"),
+    NORTH_AMERICA(2, "North America"),
+    AUSTRALIA(3, "Australia"),
+    NEW_ZEALAND(4, "New Zealand"),
+    JAPAN(5, "Japan"),
+    CHINA(6, "China"),
+    ASIA(7, "Asia"),
+    WORLDWIDE(8, "Worldwide"),
+    KOREA(9, "Korea"),
+    BRAZIL(10, "Brazil")
 }
