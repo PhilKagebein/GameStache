@@ -57,83 +57,100 @@ class IndividualGameViewModel : ViewModel() {
     }
 
     //TODO: CACHE ALL THIS LATER, OR NOT? DISCUSS WHAT'S FASTER/BEST PRACTICE
+    //TODO: IS THE LET STATEMENT CHECKING WHETHER ALL THINGS OF THE OBJECT "IT" ARE NOT NULL? OR JUST THE LAST ONE?
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
-        formatDate(gameData?.get(0)?.first_release_date)
+        gameData?.get(0)?.first_release_date?.let {
+            formatDate(it)
+        } ?: run {
+            NO_RELEASE_DATE_FOUND_TEXT
+        }
     }
 
     var originalPlatforms: LiveData<String> = getIndividualGameData().map { gameData ->
         val originalReleaseDate = gameData?.get(0)?.first_release_date
         val individualReleasesList = gameData?.get(0)?.release_dates
 
-        findOriginalPlatforms(originalReleaseDate, individualReleasesList)
+        originalReleaseDate?.let { originalDate ->
+            individualReleasesList?.let { releasesList ->
+                findOriginalPlatforms(originalDate, releasesList)
+            }
+        } ?: run {
+            NO_PLATFORMS_FOUND_TEXT
+        }
     }
 
     var developers: LiveData<String> = getIndividualGameData().map { gameData ->
 
-        getDevelopers(gameData?.get(0)?.involved_companies)
+        gameData?.get(0)?.involved_companies?.let { involvedCompanies ->
+            getDevelopers(involvedCompanies)
+        } ?: run {
+            NO_DEVELOPERS_FOUND_TEXT
+        }
     }
 
     var publishers: LiveData<String> = getIndividualGameData().map { gameData ->
 
-        getPublishers(gameData?.get(0)?.involved_companies)
+        gameData?.get(0)?.involved_companies?.let { involvedCompanies ->
+            getPublishers(involvedCompanies)
+        } ?: run {
+            NO_PUBLISHERS_FOUND_TEXT
+        }
     }
 
     var summaryText: LiveData<String?> = getIndividualGameData().map { gameData ->
-        if (gameData?.get(0)?.summary.isNullOrEmpty()) {
-            NO_GAME_SUMMARY
-        } else {
-            gameData?.get(0)?.summary
-        }
+
+        gameData?.get(0)?.summary ?: run {
+           NO_GAME_SUMMARY
+       }
+
     }
 
     //TODO: HOW TO CHECK WHETHER GAMEDATA.RELEASEDATES EXISTS AT ALL?
     var regionsList: LiveData<MutableList<String>> = getIndividualGameData().map { gameData ->
 
-        if (gameData?.get(0)?.release_dates.isNullOrEmpty() || gameData.isNullOrEmpty()) {
+        gameData?.get(0)?.release_dates?.let { releaseDatesList ->
+            getRegionsReleased(releaseDatesList)
+        } ?: run {
             mutableListOf(NO_REGIONS_FOUND_TEXT)
-        } else {
-            getRegionsReleased(gameData[0].release_dates)
         }
+
     }
 
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
-        if (gameData?.get(0)?.cover?.url == null) {
-            ""
-        } else {
+
+        gameData?.get(0)?.cover?.url?.let {
             val baseUrl = URI(gameData[0].cover?.url)
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
             //TODO: ASK KEVIN TO WALK ME THROUGH HOW MOVING THIS TO A STATIC CONSTANT WOULD WORK. COMPILER NOT HAPPY WITH VARIABLE IN THERE
             "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
+        } ?: run {
+            ""
         }
     }
 
-    private fun formatDate(firstReleaseDate: Int?): String {
-        if (firstReleaseDate == null) {
-            return NO_RELEASE_DATE_FOUND_TEXT
-        } else {
-            val dateString = DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(firstReleaseDate.toLong()))
-            val substring = dateString.substring(0, 10)
-            val localDate = LocalDate.parse(substring)
-            val formatter = DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT)
+    private fun formatDate(firstReleaseDate: Int): String {
 
-            return "Original Release Date: ${formatter.format(localDate)}"
-        }
+        val dateString = DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(firstReleaseDate.toLong()))
+        val substring = dateString.substring(0, 10)
+        val localDate = LocalDate.parse(substring)
+        val formatter = DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT)
+
+        return "Original Release Date: ${formatter.format(localDate)}"
+
     }
 
     //TODO: REVIEW THIS TO SEE IF I CAN SIMPLIFY
-    private fun findOriginalPlatforms(originalReleaseDate: Int?, individualReleasesList: List<ReleaseDate?>?): String {
+    private fun findOriginalPlatforms(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): String {
 
         var originalPlatforms = ORIGINAL_PLATFORMS_START_TEXT
-        var releasesList = mutableListOf<String>()
+        val releasesList = mutableListOf<String>()
 
-        if (individualReleasesList.isNullOrEmpty() || originalReleaseDate == null) {
-            originalPlatforms = NO_PLATFORMS_FOUND_TEXT
-        } else {
-            for (individualRelease in individualReleasesList.indices) {
-                if (originalReleaseDate == individualReleasesList[individualRelease]?.date) {
-                    individualReleasesList[individualRelease]?.platform?.name?.let { platformName -> releasesList.add(platformName) }
+        for (individualRelease in individualReleasesList.indices) {
+            if (originalReleaseDate == individualReleasesList[individualRelease]?.date) {
+                individualReleasesList[individualRelease]?.platform?.name?.let { platformName ->
+                    releasesList.add(platformName)
                 }
             }
         }
@@ -152,41 +169,43 @@ class IndividualGameViewModel : ViewModel() {
         return originalPlatforms
     }
 
-    //TODO: TALK TO KEVIN ABOUT CONDENSING THE TWO FUNCTIONS BELOW INTO ONE. CAN WE CONCATENATE "developer" IN LINE 142. IF NOT, CHAT ABOUT ALTERNATIVE METHODS (PASSING IN AN ARBITRARY VALUE)
-    private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>?): String {
+    //TODO: TALK TO KEVIN ABOUT CONDENSING THE TWO FUNCTIONS BELOW INTO ONE. CAN WE CONCATENATE "developer" IN LINE 174. IF NOT, CHAT ABOUT ALTERNATIVE METHODS (PASSING IN AN ARBITRARY VALUE)
+    private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>): String {
         var developersList = DEVELOPERS_LIST_START_TEXT
+        var developersCount = 0
 
-        if (involvedCompaniesList.isNullOrEmpty()) {
-            developersList = NO_DEVELOPERS_FOUND_TEXT
-        } else {
-
-            for (company in involvedCompaniesList.indices) {
-                if (involvedCompaniesList[company]?.developer == true) {
-                    developersList += "${involvedCompaniesList[company]?.company?.name}, "
-                }
+        for (company in involvedCompaniesList.indices) {
+            if (involvedCompaniesList[company]?.developer == true) {
+                developersList += "${involvedCompaniesList[company]?.company?.name}, "
+                developersCount++
             }
-            developersList = developersList.substring(0, developersList.length-2)
         }
+        developersList = developersList.substring(0, developersList.length - 2)
 
-        return developersList
+        if (developersCount > 0) {
+            return developersList
+        } else {
+            return NO_DEVELOPERS_FOUND_TEXT
+        }
     }
 
-    private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>?): String {
+    private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>): String {
         var publishersList = PUBLISHERS_LIST_START_TEXT
+        var publishersCount = 0
 
-        if (involvedCompaniesList.isNullOrEmpty()) {
-            publishersList = NO_PUBLISHERS_FOUND_TEXT
-        } else {
-
-            for (company in involvedCompaniesList.indices) {
-                if (involvedCompaniesList[company]?.publisher == true) {
-                    publishersList += "${involvedCompaniesList[company]?.company?.name}, "
-                }
+        for (company in involvedCompaniesList.indices) {
+            if (involvedCompaniesList[company]?.publisher == true) {
+                publishersList += "${involvedCompaniesList[company]?.company?.name}, "
+                publishersCount++
             }
-            publishersList = publishersList.substring(0, publishersList.length-2)
         }
+        publishersList = publishersList.substring(0, publishersList.length - 2)
 
-        return publishersList
+        if (publishersCount > 0) {
+            return publishersList
+        } else {
+            return NO_PUBLISHERS_FOUND_TEXT
+        }
     }
 
     fun changeCardViewVisibility(currentVisibility: Int): Int {
@@ -205,39 +224,29 @@ class IndividualGameViewModel : ViewModel() {
         }
     }
 
-    //TODO: CHECK IF I CAN REMOVE CHECKING IF THINGS ARE NULL IN THE FUNCTIONNS BELOW AND GET RID OF THE IF(REGIONINTS.CONTAINS(0)) LOGIC
-    private fun getRegionsReleased(individualReleasesList: List<ReleaseDate?>?): MutableList<String> {
+    private fun getRegionsReleased(individualReleasesList: List<ReleaseDate?>): MutableList<String> {
 
         val regionInts = getRegionIntsList(individualReleasesList)
-        if (regionInts.contains(0)) {
-            return mutableListOf(NO_REGIONS_FOUND_TEXT)
-        } else {
-            return getRegionNameListFromInts(regionInts)
-        }
+        return getRegionNameListFromInts(regionInts)
     }
 
-    private fun getRegionIntsList(individualReleasesList: List<ReleaseDate?>?): List<Int> {
+    private fun getRegionIntsList(individualReleasesList: List<ReleaseDate?>): List<Int> {
         val regionInts = mutableListOf<Int>()
-        if (individualReleasesList.isNullOrEmpty())
-        {return listOf(0)}
-        else {
-            for (release in individualReleasesList.indices) {
-                if (regionInts.contains(individualReleasesList[release]?.region)) {
-                    continue
-                } else {
-                    individualReleasesList[release]?.region.let {
-                        if (it != null) {
-                            regionInts.add(it)
-                        }
-                    }
+
+        for (release in individualReleasesList.indices) {
+            if (regionInts.contains(individualReleasesList[release]?.region)) {
+                continue
+            } else {
+                individualReleasesList[release]?.region?.let {
+                    regionInts.add(it)
                 }
             }
-            return regionInts.sorted()
         }
+        return regionInts.sorted()
     }
 
     private fun getRegionNameListFromInts(regionInts: List<Int>): MutableList<String> {
-        var regionsList = mutableListOf(REGION_SPINNER_PROMPT)
+        val regionsList = mutableListOf(REGION_SPINNER_PROMPT)
 
         for (regionInt in regionInts) {
             regionsList.add(RegionReleases.values()[(regionInt-1)].regionName)
@@ -245,7 +254,7 @@ class IndividualGameViewModel : ViewModel() {
         return regionsList
     }
 
-    fun getReleaseInformationText(releaseDates: List<ReleaseDate?>?, selectedRegion: String): String {
+    fun getReleaseInformationText(releaseDates: List<ReleaseDate?>, selectedRegion: String): String {
         var releaseInformationText = ""
 
         val selectedRegionInt = getSelectedRegionInt(selectedRegion)
@@ -278,11 +287,11 @@ class IndividualGameViewModel : ViewModel() {
         const val NO_RELEASE_DATE_FOUND_TEXT = "No release date found"
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
         const val ORIGINAL_PLATFORMS_START_TEXT = "Originally released on: "
-        const val NO_PLATFORMS_FOUND_TEXT = "No platforms available"
+        const val NO_PLATFORMS_FOUND_TEXT = "No release platforms data found"
         const val DEVELOPERS_LIST_START_TEXT = "Developed by: "
-        const val NO_DEVELOPERS_FOUND_TEXT = "No developers found"
+        const val NO_DEVELOPERS_FOUND_TEXT = "No developer data found"
         const val PUBLISHERS_LIST_START_TEXT = "Published by: "
-        const val NO_PUBLISHERS_FOUND_TEXT = "No publishers found"
+        const val NO_PUBLISHERS_FOUND_TEXT = "No publisher data found"
         const val INDIVIDUAL_RELEASE_START_TEXT = "Released on"
         const val NO_REGIONS_FOUND_TEXT = "No regions found"
         const val REGION_SPINNER_PROMPT = "Select a region"

@@ -27,7 +27,7 @@ class IndividualGameFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         gameFragmentViewModel = ViewModelProvider(this)[IndividualGameViewModel::class.java]
         binding = IndividualGameFragmentBinding.inflate(inflater, container, false)
-        val actionBar = (requireActivity() as MainActivity).supportActionBar?.setTitle(args.gameName)
+        (requireActivity() as MainActivity).supportActionBar?.title = args.gameName
 
         binding.individualGameTitle.text = args.gameName
 
@@ -42,7 +42,7 @@ class IndividualGameFragment : Fragment() {
 
         var summaryText: String? = ""
         var imageURL = ""
-        var releaseDates: List<ReleaseDate?>? = emptyList()
+        var releaseDates: List<ReleaseDate?> = emptyList()
 
         gameFragmentViewModel.gameId.postValue(args.gameId)
         gameFragmentViewModel.getAccessToken()
@@ -92,13 +92,16 @@ class IndividualGameFragment : Fragment() {
 
         //TODO: THINK ABOUT RACE CONDITION HERE
         gameFragmentViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
-            if (!gameData?.get(0)?.release_dates.isNullOrEmpty() || !gameData.isNullOrEmpty()) {
-                releaseDates = gameData?.get(0)?.release_dates
+            gameData?.get(0)?.release_dates?.let { it ->
+                releaseDates = it
+            } ?: run {
+                ""
             }
         })
 
         gameFragmentViewModel.regionsList.observe(viewLifecycleOwner, { regionsList ->
             val releaseRegionsSpinner = initReleaseRegionSpinner(regionsList)
+
             setReleaseRegionSpinnerSelection(releaseRegionsSpinner, regionsList)
             setReleaseRegionSpinnerOnClick(releaseDates, releaseRegionsSpinner)
         })
@@ -127,8 +130,10 @@ class IndividualGameFragment : Fragment() {
     private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String>) {
         if (regionsList.contains(RELEASE_REGION_SPINNER_REGION_DEFAULT)) {
             releaseRegionsSpinner.setSelection(regionsList.indexOf(RELEASE_REGION_SPINNER_REGION_DEFAULT))
-        } else {
+        } else if (regionsList.size >= 2){
             releaseRegionsSpinner.setSelection(1)
+        } else {
+            releaseRegionsSpinner.setSelection(0)
         }
     }
 
@@ -140,7 +145,8 @@ class IndividualGameFragment : Fragment() {
         return releaseRegionsSpinner
     }
 
-    private fun setReleaseRegionSpinnerOnClick(releaseDates: List<ReleaseDate?>?, releaseRegionsSpinner: Spinner) {
+    private fun setReleaseRegionSpinnerOnClick(releaseDates: List<ReleaseDate?>, releaseRegionsSpinner: Spinner) {
+
         releaseRegionsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowID: Long) {
                 val releaseInformationText = gameFragmentViewModel.getReleaseInformationText(releaseDates, releaseRegionsSpinner.getItemAtPosition(itemPosition).toString())
@@ -151,7 +157,6 @@ class IndividualGameFragment : Fragment() {
             }
         }
     }
-
 
     companion object {
         const val RELEASE_REGION_SPINNER_REGION_DEFAULT = "North America"
