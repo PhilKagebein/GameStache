@@ -42,8 +42,8 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     fun getIndividualGameData(): LiveData<IndividualGameData?>
         = twitchAuthorization.switchMap { twitchAuth ->
-            gameId.switchMap { gameId ->
-                val individualGameSearchBody: RequestBody = "where id = $gameId;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
+            gameId.switchMap { gameID ->
+                val individualGameSearchBody: RequestBody = createIndividualGameSearchBodyRequestBody(gameID)
 
                 liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
                     val response = individualGameRepo.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
@@ -287,6 +287,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
         fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
+        fun createIndividualGameSearchBodyRequestBody(gameID: Int): RequestBody = "where id = $gameID;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
 
     }
 
