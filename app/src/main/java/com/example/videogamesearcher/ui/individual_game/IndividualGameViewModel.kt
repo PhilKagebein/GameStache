@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.create
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URI
 import java.time.Instant
@@ -167,46 +168,41 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
         return originalPlatforms
     }
 
-    //TODO: USE STRING INTERPOLATION TO GET RID OF THE START TEXT AND DEVELOPERS COUNT
     private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>): String {
-        var developersList = resources.getString(R.string.developers_list_start_text)
-        var developersCount = 0
+        val developersList = createDevelopersAndPublishersList(involvedCompaniesList)["developers"]
 
-        //TODO: PULL THE FOR LOOP OUT INTO ITS OWN FUNCTION
-        for (company in involvedCompaniesList.indices) {
-            if (involvedCompaniesList[company]?.developer == true) {
-                //TODO: LOOK INTO .JOINTOSTRING() AND ELIMINATE CONCATENATION AND MAKE THIS AN ACTUAL LIST
-                developersList += "${involvedCompaniesList[company]?.company?.name}, "
-                developersCount++
-            }
-        }
-        developersList = developersList.substring(0, developersList.length - 2)
-
-        if (developersCount > 0) {
-            return developersList
+        if (!developersList.isNullOrEmpty()) {
+            return developersList.joinToString(prefix = resources.getString(R.string.developers_list_start_text), separator = ", ")
         } else {
             return resources.getString(R.string.no_developers_found_text)
         }
+
     }
 
     private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>): String {
-        var publishersList = resources.getString(R.string.publishers_list_start_text)
-        var publishersCount = 0
+        val publishersList = createDevelopersAndPublishersList(involvedCompaniesList)["publishers"]
 
-        //TODO: PULL THIS OUT TOO
-        for (company in involvedCompaniesList.indices) {
-            if (involvedCompaniesList[company]?.publisher == true) {
-                publishersList += "${involvedCompaniesList[company]?.company?.name}, "
-                publishersCount++
-            }
-        }
-        publishersList = publishersList.substring(0, publishersList.length - 2)
-
-        if (publishersCount > 0) {
-            return publishersList
+        if (!publishersList.isNullOrEmpty()) {
+            return publishersList.joinToString(prefix = resources.getString(R.string.publishers_list_start_text), separator = ", ")
         } else {
             return resources.getString(R.string.no_publishers_found_text)
         }
+
+    }
+
+    private fun createDevelopersAndPublishersList(involvedCompaniesList: List<InvolvedCompany?>): Map<String, MutableList<String>> {
+        val developerList = mutableListOf<String>()
+        val publisherList = mutableListOf<String>()
+
+        for (company in involvedCompaniesList.indices) {
+            if (involvedCompaniesList[company]?.publisher == true) {
+                involvedCompaniesList[company]?.company?.name?.let { publisherList.add(it) }
+            }
+            if (involvedCompaniesList[company]?.developer == true) {
+                involvedCompaniesList[company]?.company?.name?.let { developerList.add(it) }
+            }
+        }
+        return mapOf("publishers" to publisherList, "developers" to developerList)
     }
 
     fun changeCardViewVisibility(currentVisibility: Int): Int {
