@@ -140,10 +140,15 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     }
 
-    //TODO: REVIEW THIS TO SEE IF I CAN SIMPLIFY
     private fun findOriginalPlatforms(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): String {
 
-        var originalPlatforms = resources.getString(R.string.original_platforms_start_text)
+        val releasesList = getOriginalReleasePlatformsList(originalReleaseDate, individualReleasesList)
+
+        return releasesList.joinToString(prefix = resources.getString(R.string.original_platforms_start_text), separator = ", ")
+
+    }
+
+    private fun getOriginalReleasePlatformsList(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): MutableList<String> {
         val releasesList = mutableListOf<String>()
 
         for (individualRelease in individualReleasesList.indices) {
@@ -153,19 +158,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
                 }
             }
         }
-
-        if (releasesList.size == 1) {
-            originalPlatforms += releasesList[0]
-        } else if (releasesList.size > 1) {
-            for (release in releasesList.indices) {
-                if (release == (releasesList.size - 1) ) {
-                    originalPlatforms += releasesList[release]
-                } else {
-                    originalPlatforms += "${releasesList[release]}, "
-                }
-            }
-        }
-        return originalPlatforms
+        return releasesList
     }
 
     private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>): String {
