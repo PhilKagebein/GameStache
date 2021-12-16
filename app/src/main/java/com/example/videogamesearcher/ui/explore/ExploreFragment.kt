@@ -19,6 +19,7 @@ import com.example.videogamesearcher.models.explore_spinners.GameModesResponseIt
 import com.example.videogamesearcher.models.explore_spinners.GenericSpinnerItem
 import com.example.videogamesearcher.models.explore_spinners.GenresResponseItem
 import com.example.videogamesearcher.models.explore_spinners.PlatformsResponseItem
+import com.example.videogamesearcher.models.search_results.Platform
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -162,6 +163,7 @@ class ExploreFragment : Fragment() {
 
     }
 
+    //TODO: MAKE THE STRINGS BELOW ENUMS
     private fun setSpinnerOnClick(spinner: Spinner, spinnerName: String) {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {

@@ -1,5 +1,6 @@
 package com.example.videogamesearcher.ui.individual_game
 
+import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
@@ -19,7 +20,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class IndividualGameViewModel : ViewModel() {
+class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     private var twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
     var gameId: MutableLiveData<Int> = MutableLiveData()
@@ -57,12 +58,11 @@ class IndividualGameViewModel : ViewModel() {
     }
 
     //TODO: CACHE ALL THIS LATER, OR NOT? DISCUSS WHAT'S FASTER/BEST PRACTICE
-    //TODO: IS THE LET STATEMENT CHECKING WHETHER ALL THINGS OF THE OBJECT "IT" ARE NOT NULL? OR JUST THE LAST ONE?
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
         gameData?.get(0)?.first_release_date?.let {
             formatDate(it)
         } ?: run {
-            NO_RELEASE_DATE_FOUND_TEXT
+            resources.getString(R.string.no_release_date_found_text)
         }
     }
 
@@ -75,7 +75,7 @@ class IndividualGameViewModel : ViewModel() {
                 findOriginalPlatforms(originalDate, releasesList)
             }
         } ?: run {
-            NO_PLATFORMS_FOUND_TEXT
+            resources.getString(R.string.no_platforms_found_text)
         }
     }
 
@@ -84,7 +84,7 @@ class IndividualGameViewModel : ViewModel() {
         gameData?.get(0)?.involved_companies?.let { involvedCompanies ->
             getDevelopers(involvedCompanies)
         } ?: run {
-            NO_DEVELOPERS_FOUND_TEXT
+            resources.getString(R.string.no_developers_found_text)
         }
     }
 
@@ -93,25 +93,24 @@ class IndividualGameViewModel : ViewModel() {
         gameData?.get(0)?.involved_companies?.let { involvedCompanies ->
             getPublishers(involvedCompanies)
         } ?: run {
-            NO_PUBLISHERS_FOUND_TEXT
+            resources.getString(R.string.no_publishers_found_text)
         }
     }
 
     var summaryText: LiveData<String?> = getIndividualGameData().map { gameData ->
 
         gameData?.get(0)?.summary ?: run {
-           NO_GAME_SUMMARY
+           resources.getString(R.string.no_game_summary)
        }
 
     }
 
-    //TODO: HOW TO CHECK WHETHER GAMEDATA.RELEASEDATES EXISTS AT ALL?
     var regionsList: LiveData<MutableList<String>> = getIndividualGameData().map { gameData ->
 
         gameData?.get(0)?.release_dates?.let { releaseDatesList ->
             getRegionsReleased(releaseDatesList)
         } ?: run {
-            mutableListOf(NO_REGIONS_FOUND_TEXT)
+            mutableListOf(resources.getString(R.string.no_regions_found_text))
         }
 
     }
@@ -123,7 +122,7 @@ class IndividualGameViewModel : ViewModel() {
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            //TODO: ASK KEVIN TO WALK ME THROUGH HOW MOVING THIS TO A STATIC CONSTANT WOULD WORK. COMPILER NOT HAPPY WITH VARIABLE IN THERE
+            //TODO: LOOK INTO STATIC FUNCTION OR INTERPOLATION
             "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         } ?: run {
             ""
@@ -144,7 +143,7 @@ class IndividualGameViewModel : ViewModel() {
     //TODO: REVIEW THIS TO SEE IF I CAN SIMPLIFY
     private fun findOriginalPlatforms(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): String {
 
-        var originalPlatforms = ORIGINAL_PLATFORMS_START_TEXT
+        var originalPlatforms = resources.getString(R.string.original_platforms_start_text)
         val releasesList = mutableListOf<String>()
 
         for (individualRelease in individualReleasesList.indices) {
@@ -169,13 +168,15 @@ class IndividualGameViewModel : ViewModel() {
         return originalPlatforms
     }
 
-    //TODO: TALK TO KEVIN ABOUT CONDENSING THE TWO FUNCTIONS BELOW INTO ONE. CAN WE CONCATENATE "developer" IN LINE 174. IF NOT, CHAT ABOUT ALTERNATIVE METHODS (PASSING IN AN ARBITRARY VALUE)
+    //TODO: USE STRING INTERPOLATION TO GET RID OF THE START TEXT AND DEVELOPERS COUNT
     private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>): String {
-        var developersList = DEVELOPERS_LIST_START_TEXT
+        var developersList = resources.getString(R.string.developers_list_start_text)
         var developersCount = 0
 
+        //TODO: PULL THE FOR LOOP OUT INTO ITS OWN FUNCTION
         for (company in involvedCompaniesList.indices) {
             if (involvedCompaniesList[company]?.developer == true) {
+                //TODO: LOOK INTO .JOINTOSTRING() AND ELIMINATE CONCATENATION AND MAKE THIS AN ACTUAL LIST
                 developersList += "${involvedCompaniesList[company]?.company?.name}, "
                 developersCount++
             }
@@ -185,14 +186,15 @@ class IndividualGameViewModel : ViewModel() {
         if (developersCount > 0) {
             return developersList
         } else {
-            return NO_DEVELOPERS_FOUND_TEXT
+            return resources.getString(R.string.no_developers_found_text)
         }
     }
 
     private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>): String {
-        var publishersList = PUBLISHERS_LIST_START_TEXT
+        var publishersList = resources.getString(R.string.publishers_list_start_text)
         var publishersCount = 0
 
+        //TODO: PULL THIS OUT TOO
         for (company in involvedCompaniesList.indices) {
             if (involvedCompaniesList[company]?.publisher == true) {
                 publishersList += "${involvedCompaniesList[company]?.company?.name}, "
@@ -204,7 +206,7 @@ class IndividualGameViewModel : ViewModel() {
         if (publishersCount > 0) {
             return publishersList
         } else {
-            return NO_PUBLISHERS_FOUND_TEXT
+            return resources.getString(R.string.no_publishers_found_text)
         }
     }
 
@@ -246,7 +248,7 @@ class IndividualGameViewModel : ViewModel() {
     }
 
     private fun getRegionNameListFromInts(regionInts: List<Int>): MutableList<String> {
-        val regionsList = mutableListOf(REGION_SPINNER_PROMPT)
+        val regionsList = mutableListOf(resources.getString(R.string.region_spinner_prompt))
 
         for (regionInt in regionInts) {
             regionsList.add(RegionReleases.values()[(regionInt-1)].regionName)
@@ -260,11 +262,11 @@ class IndividualGameViewModel : ViewModel() {
         val selectedRegionInt = getSelectedRegionInt(selectedRegion)
 
         if (releaseDates.isNullOrEmpty()) {
-            return NO_RELEASE_INFORMATION_FOUND_TEXT
+            return resources.getString(R.string.no_release_information_found_text)
         } else {
             for (release in releaseDates.indices) {
                 if (selectedRegionInt == releaseDates[release]?.region) {
-                    releaseInformationText += "$INDIVIDUAL_RELEASE_START_TEXT ${releaseDates[release]?.platform?.name}, ${releaseDates[release]?.human}\n"
+                    releaseInformationText += "${resources.getString(R.string.individual_release_start_text)} ${releaseDates[release]?.platform?.name}, ${releaseDates[release]?.human}\n"
                 }
             }
             return releaseInformationText.trim()
@@ -282,20 +284,11 @@ class IndividualGameViewModel : ViewModel() {
         return regionInt
     }
 
+    //TODO: MOVE TO STRINGS.XML
     companion object{
-        const val NO_GAME_SUMMARY = "No game description provided."
-        const val NO_RELEASE_DATE_FOUND_TEXT = "No release date found"
+
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
-        const val ORIGINAL_PLATFORMS_START_TEXT = "Originally released on: "
-        const val NO_PLATFORMS_FOUND_TEXT = "No release platforms data found"
-        const val DEVELOPERS_LIST_START_TEXT = "Developed by: "
-        const val NO_DEVELOPERS_FOUND_TEXT = "No developer data found"
-        const val PUBLISHERS_LIST_START_TEXT = "Published by: "
-        const val NO_PUBLISHERS_FOUND_TEXT = "No publisher data found"
-        const val INDIVIDUAL_RELEASE_START_TEXT = "Released on"
-        const val NO_REGIONS_FOUND_TEXT = "No regions found"
-        const val REGION_SPINNER_PROMPT = "Select a region"
-        const val NO_RELEASE_INFORMATION_FOUND_TEXT = "No release information found"
+
     }
 
 }
