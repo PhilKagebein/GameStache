@@ -122,8 +122,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            //TODO: LOOK INTO STATIC FUNCTION OR INTERPOLATION
-            "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
+            addImageHashToGlideURL(imageHash)
         } ?: run {
             ""
         }
@@ -284,10 +283,10 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
         return regionInt
     }
 
-    //TODO: MOVE TO STRINGS.XML
     companion object{
 
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
+        fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
 
     }
 
