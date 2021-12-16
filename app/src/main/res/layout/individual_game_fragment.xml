@@ -163,6 +163,8 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:drawableTint="@color/white"
                             android:drawableTintMode="@color/white"
+                            android:clickable="false"
+                            android:focusable="false"
                             />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -231,6 +233,8 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:drawableTint="@color/white"
                             android:drawableTintMode="@color/white"
+                            android:clickable="false"
+                            android:focusable="false"
                             />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
