@@ -11,6 +11,18 @@
     <string name="game_summary_block_heading_text">Game Description</string>
     <string name="release_information_by_region_title">Release Information by Region</string>
     <string name="release_region_spinner_prompt">Select a region</string>
+    <string name="no_game_summary">No game description provided</string>
+    <string name="no_release_date_found_text">No release date found</string>
+    <string name="original_platforms_start_text">Originally released on:\u0020</string>
+    <string name="developers_list_start_text">Developed by:\u0020</string>
+    <string name="no_developers_found_text">No developer data found</string>
+    <string name="publishers_list_start_text">Published by:\u0020</string>
+    <string name="no_publishers_found_text">No publisher data found</string>
+    <string name="individual_release_start_text">Released on</string>
+    <string name="no_regions_found_text">No regions found</string>
+    <string name="region_spinner_prompt">Select a region</string>
+    <string name="no_release_information_found_text">No release information found</string>
+    <string name="no_platforms_found_text">No platform data found</string>
 
 
 </resources>

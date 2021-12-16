@@ -15,6 +15,8 @@ import com.example.videogamesearcher.R
 import com.example.videogamesearcher.SpinnerAdapter
 import com.example.videogamesearcher.databinding.IndividualGameFragmentBinding
 import com.example.videogamesearcher.models.individual_game.ReleaseDate
+import com.example.videogamesearcher.ui.explore.ExploreViewModel
+import com.example.videogamesearcher.ui.explore.ExploreViewModelFactory
 
 class IndividualGameFragment : Fragment() {
 
@@ -25,7 +27,7 @@ class IndividualGameFragment : Fragment() {
     private lateinit var gameFragmentViewModel: IndividualGameViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        gameFragmentViewModel = ViewModelProvider(this)[IndividualGameViewModel::class.java]
+        initIndividualGameViewModel()
         binding = IndividualGameFragmentBinding.inflate(inflater, container, false)
         (requireActivity() as MainActivity).supportActionBar?.title = args.gameName
 
@@ -61,8 +63,7 @@ class IndividualGameFragment : Fragment() {
             artDialog.show(requireActivity().supportFragmentManager, "ArtDialog")
         }
 
-        //TODO: TALK TO KEVIN ABOUT IF THERE'S A WAY TO NOT REPEAT THE SAME BLOCK OF CODE.
-        // WITHOUT THE ONCLICK FOR THE ARROWBUTTON, NOTHING HAPPENS. SEEMS LIKE IT'S "ABOVE/IN FRONT OF" THE CARD VIEW
+        //TODO: LOOK AT THE STACK OVERFLOW LINK FOR CLICKABLE/FOCUSABLE
         binding.cardViewSummary.setOnClickListener {
 
             val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
@@ -149,6 +150,7 @@ class IndividualGameFragment : Fragment() {
 
         releaseRegionsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowID: Long) {
+                //TODO: TRY TO MAKE ALL THIS FUNCTIONALITY TIED TO LIVE DATA ANDMESS WITH THE RACE CONDITION ABOVE
                 val releaseInformationText = gameFragmentViewModel.getReleaseInformationText(releaseDates, releaseRegionsSpinner.getItemAtPosition(itemPosition).toString())
                 gameFragmentViewModel.releaseInformationText.postValue(releaseInformationText)
             }
@@ -157,6 +159,12 @@ class IndividualGameFragment : Fragment() {
             }
         }
     }
+
+    private fun initIndividualGameViewModel() {
+        val factory = IndividualGameViewModelFactory(resources)
+        gameFragmentViewModel = ViewModelProvider(this, factory)[IndividualGameViewModel::class.java]
+    }
+
 
     companion object {
         const val RELEASE_REGION_SPINNER_REGION_DEFAULT = "North America"

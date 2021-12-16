@@ -25,6 +25,7 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
 
     private val spinnersPostRequestBody: RequestBody = "fields name;\n limit 500;".toRequestBody("text/plain".toMediaTypeOrNull())
 
+
     //Text for filters to be included with searches
     var platformText: MutableLiveData<String> = MutableLiveData("")
     var genreText: MutableLiveData<String> = MutableLiveData("")
