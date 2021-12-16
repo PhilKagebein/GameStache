@@ -15,8 +15,6 @@ import com.example.videogamesearcher.R
 import com.example.videogamesearcher.SpinnerAdapter
 import com.example.videogamesearcher.databinding.IndividualGameFragmentBinding
 import com.example.videogamesearcher.models.individual_game.ReleaseDate
-import com.example.videogamesearcher.ui.explore.ExploreViewModel
-import com.example.videogamesearcher.ui.explore.ExploreViewModelFactory
 
 class IndividualGameFragment : Fragment() {
 
@@ -63,17 +61,7 @@ class IndividualGameFragment : Fragment() {
             artDialog.show(requireActivity().supportFragmentManager, "ArtDialog")
         }
 
-        //TODO: LOOK AT THE STACK OVERFLOW LINK FOR CLICKABLE/FOCUSABLE
         binding.cardViewSummary.setOnClickListener {
-
-            val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
-            binding.descriptionBlockArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
-
-            binding.descriptionText.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.descriptionText.visibility)
-
-        }
-
-        binding.descriptionBlockArrowButton.setOnClickListener {
 
             val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
             binding.descriptionBlockArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
@@ -116,16 +104,6 @@ class IndividualGameFragment : Fragment() {
             binding.releaseRegionInformationTextView.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.releaseRegionInformationTextView.visibility)
         }
 
-        binding.releasesByRegionArrowButton.setOnClickListener {
-
-            val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.releasesByRegionSpinner.visibility)
-            binding.releasesByRegionArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
-
-            binding.releasesByRegionSpinner.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.releasesByRegionSpinner.visibility)
-            binding.releaseRegionInformationTextView.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.releaseRegionInformationTextView.visibility)
-
-        }
-
     }
 
     private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String>) {
@@ -164,7 +142,6 @@ class IndividualGameFragment : Fragment() {
         val factory = IndividualGameViewModelFactory(resources)
         gameFragmentViewModel = ViewModelProvider(this, factory)[IndividualGameViewModel::class.java]
     }
-
 
     companion object {
         const val RELEASE_REGION_SPINNER_REGION_DEFAULT = "North America"
