@@ -1,12 +1,16 @@
 package com.example.videogamesearcher.models.individual_game
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.videogamesearcher.models.search_results.GameMode
 
+@Entity(tableName = "individual_game_table")
 data class IndividualGameDataItem(
+    @PrimaryKey(autoGenerate = false)
+    val id: Int?,
     val cover: Cover?,
     val first_release_date: Int?,
     val genres: List<Genre?>?,
-    val id: Int?,
     val game_modes: List<GameMode?>?,
     val involved_companies: List<InvolvedCompany?>?,
     val name: String?,

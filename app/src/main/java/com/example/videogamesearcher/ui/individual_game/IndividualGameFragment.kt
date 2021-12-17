@@ -81,7 +81,7 @@ class IndividualGameFragment : Fragment() {
 
         //TODO: THINK ABOUT RACE CONDITION HERE
         gameFragmentViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
-            gameData?.get(0)?.release_dates?.let { it ->
+            gameData?.release_dates?.let { it ->
                 releaseDates = it
             } ?: run {
                 ""
@@ -139,8 +139,9 @@ class IndividualGameFragment : Fragment() {
     }
 
     private fun initIndividualGameViewModel() {
-        val factory = IndividualGameViewModelFactory(resources)
-        gameFragmentViewModel = ViewModelProvider(this, factory)[IndividualGameViewModel::class.java]
+        val factory =
+            activity?.application?.let { IndividualGameViewModelFactory(resources, it)}
+        gameFragmentViewModel = factory?.let { ViewModelProvider(this, it) }?.get(IndividualGameViewModel::class.java) as IndividualGameViewModel
     }
 
     companion object {

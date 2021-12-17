@@ -1,12 +1,14 @@
 package com.example.videogamesearcher.ui.individual_game
 
+import android.app.Application
 import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.models.TwitchAuthorization
-import com.example.videogamesearcher.models.individual_game.IndividualGameData
+import com.example.videogamesearcher.models.explore_spinners.GameStashDatabase
+import com.example.videogamesearcher.models.individual_game.IndividualGameDataItem
 import com.example.videogamesearcher.models.individual_game.InvolvedCompany
 import com.example.videogamesearcher.models.individual_game.ReleaseDate
 import com.example.videogamesearcher.repository.IndividualGameRepository
@@ -15,18 +17,24 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.lang.NullPointerException
 import java.net.URI
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
+class IndividualGameViewModel(private val resources: Resources, app: Application) : ViewModel() {
 
     private var twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
     var gameId: MutableLiveData<Int> = MutableLiveData()
     var releaseInformationText: MutableLiveData<String> = MutableLiveData()
 
-    private val individualGameRepo = IndividualGameRepository()
+    private val individualGameRepo: IndividualGameRepository
+
+    init {
+        val individualGameDao = GameStashDatabase.getGameStashDatabase(app).individualGameDao()
+        individualGameRepo = IndividualGameRepository(individualGameDao)
+    }
 
     fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -40,26 +48,47 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
         }
     }
 
-    fun getIndividualGameData(): LiveData<IndividualGameData?>
+    private fun checkIfGameIsInRoom(): LiveData<Int> = gameId.switchMap { gameID ->
+        individualGameRepo.checkIfGameIsInRoom(gameID)
+    }
+
+    fun getIndividualGameData(): LiveData<IndividualGameDataItem?>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
-                val individualGameSearchBody: RequestBody = createIndividualGameSearchBodyRequestBody(gameID)
+                checkIfGameIsInRoom().switchMap { gameStatusInRoom ->
+                    if (gameStatusInRoom == GAME_NOT_IN_ROOM) {
+                        val individualGameSearchBody: RequestBody = createIndividualGameSearchBodyRequestBody(gameID)
 
-                liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-                    val response = individualGameRepo.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
-                    if (response.isSuccessful){
-                        emit(response.body())
-                    } else{
-                        println("getIndividualGameData Response not successful")
-                        emit(IndividualGameData())
+                        liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
+                            val response = individualGameRepo.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
+                            if (response.isSuccessful){
+                                response.body()?.let {
+                                    storeIndividualGameDataToRoom(it)
+                                    emit(it)
+                                } ?: throw NullPointerException()
+
+                            } else{
+                                //TODO: LOOK INTO HOW TO BETTER HANDLE A NULL RESPONSE
+                                println("getIndividualGameData Response not successful")
+                                throw NullPointerException()
+                            }
+                        }
+                    } else {
+                        individualGameRepo.getIndividualGameDataFromRoom(gameID)
                     }
                 }
             }
     }
 
+    private suspend fun storeIndividualGameDataToRoom(individualGameData: IndividualGameDataItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            individualGameRepo.storeIndividualGameToRoom(individualGameData)
+        }
+    }
+
     //TODO: CACHE ALL THIS LATER, OR NOT? DISCUSS WHAT'S FASTER/BEST PRACTICE
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
-        gameData?.get(0)?.first_release_date?.let {
+        gameData?.first_release_date?.let {
             formatDate(it)
         } ?: run {
             resources.getString(R.string.no_release_date_found_text)
@@ -67,8 +96,8 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
     }
 
     var originalPlatforms: LiveData<String> = getIndividualGameData().map { gameData ->
-        val originalReleaseDate = gameData?.get(0)?.first_release_date
-        val individualReleasesList = gameData?.get(0)?.release_dates
+        val originalReleaseDate = gameData?.first_release_date
+        val individualReleasesList = gameData?.release_dates
 
         originalReleaseDate?.let { originalDate ->
             individualReleasesList?.let { releasesList ->
@@ -81,7 +110,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     var developers: LiveData<String> = getIndividualGameData().map { gameData ->
 
-        gameData?.get(0)?.involved_companies?.let { involvedCompanies ->
+        gameData?.involved_companies?.let { involvedCompanies ->
             getDevelopers(involvedCompanies)
         } ?: run {
             resources.getString(R.string.no_developers_found_text)
@@ -90,7 +119,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     var publishers: LiveData<String> = getIndividualGameData().map { gameData ->
 
-        gameData?.get(0)?.involved_companies?.let { involvedCompanies ->
+        gameData?.involved_companies?.let { involvedCompanies ->
             getPublishers(involvedCompanies)
         } ?: run {
             resources.getString(R.string.no_publishers_found_text)
@@ -99,7 +128,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     var summaryText: LiveData<String?> = getIndividualGameData().map { gameData ->
 
-        gameData?.get(0)?.summary ?: run {
+        gameData?.summary ?: run {
            resources.getString(R.string.no_game_summary)
        }
 
@@ -107,7 +136,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     var regionsList: LiveData<MutableList<String>> = getIndividualGameData().map { gameData ->
 
-        gameData?.get(0)?.release_dates?.let { releaseDatesList ->
+        gameData?.release_dates?.let { releaseDatesList ->
             getRegionsReleased(releaseDatesList)
         } ?: run {
             mutableListOf(resources.getString(R.string.no_regions_found_text))
@@ -117,8 +146,8 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
 
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
 
-        gameData?.get(0)?.cover?.url?.let {
-            val baseUrl = URI(gameData[0].cover?.url)
+        gameData?.cover?.url?.let {
+            val baseUrl = URI(gameData.cover.url)
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
@@ -274,6 +303,7 @@ class IndividualGameViewModel(private val resources: Resources) : ViewModel() {
     companion object{
 
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
+        const val GAME_NOT_IN_ROOM= 0
         fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         fun createIndividualGameSearchBodyRequestBody(gameID: Int): RequestBody = "where id = $gameID;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
 

@@ -7,7 +7,7 @@ import androidx.room.*
 interface PlatformSpinnerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addPlatformsList(vararg spinnerList: PlatformsResponseItem)
+    suspend fun addPlatformsList(spinnerList: PlatformsResponseItem)
 
     @Transaction
     @Query("SELECT * FROM platforms_list_table ORDER BY name ASC")

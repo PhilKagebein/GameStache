@@ -1,6 +1,11 @@
 package com.example.videogamesearcher.models.individual_game
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class MultiplayerModesItem(
+    @PrimaryKey
     val campaigncoop: Boolean,
     val checksum: String,
     val dropin: Boolean,
