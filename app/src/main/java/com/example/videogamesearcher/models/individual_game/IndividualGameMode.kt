@@ -1,6 +1,9 @@
 package com.example.videogamesearcher.models.individual_game
 
-data class GameMode(
+import androidx.room.Entity
+
+@Entity
+data class IndividualGameMode(
     val id: Int,
     val name: String
 )

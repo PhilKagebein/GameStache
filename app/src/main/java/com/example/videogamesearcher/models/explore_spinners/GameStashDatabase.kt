@@ -4,13 +4,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.videogamesearcher.Converters
+import com.example.videogamesearcher.models.individual_game.IndividualGameDataItem
+import com.example.videogamesearcher.ui.individual_game.IndividualGameDao
 
-@Database(entities = [PlatformsResponseItem::class, GenresResponseItem::class, GameModesResponseItem::class], version = 1, exportSchema = false)
+@Database(entities = [PlatformsResponseItem::class, GenresResponseItem::class, GameModesResponseItem::class, IndividualGameDataItem::class], version = 1, exportSchema = false)
+@TypeConverters( Converters::class )
 abstract class GameStashDatabase: RoomDatabase() {
 
     abstract fun platformSpinnerDao(): PlatformSpinnerDao
     abstract fun genresSpinnerDao(): GenresSpinnerDao
     abstract fun gameModesSpinnerDao(): GameModesSpinnerDao
+    abstract fun individualGameDao(): IndividualGameDao
 
     companion object{
         @Volatile
