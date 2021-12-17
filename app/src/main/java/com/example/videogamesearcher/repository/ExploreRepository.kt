@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import com.example.videogamesearcher.Constants.Companion.CLIENT_ID
 import com.example.videogamesearcher.Constants.Companion.CLIENT_SECRET
 import com.example.videogamesearcher.Constants.Companion.GRANT_TYPE
+import com.example.videogamesearcher.room.GameModesSpinnerDao
+import com.example.videogamesearcher.room.GenresSpinnerDao
+import com.example.videogamesearcher.room.PlatformSpinnerDao
 import com.example.videogamesearcher.api.RetrofitInstance
 import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.*

@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.videogamesearcher.room.GameStashDatabase
 import com.example.videogamesearcher.models.*
 import com.example.videogamesearcher.models.explore_spinners.*
 import com.example.videogamesearcher.models.search_results.*
