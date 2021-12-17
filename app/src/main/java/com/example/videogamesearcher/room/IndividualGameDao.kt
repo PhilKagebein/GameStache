@@ -1,4 +1,4 @@
-package com.example.videogamesearcher.ui.individual_game
+package com.example.videogamesearcher.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

@@ -7,7 +7,7 @@ import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.videogamesearcher.R
 import com.example.videogamesearcher.models.TwitchAuthorization
-import com.example.videogamesearcher.models.explore_spinners.GameStashDatabase
+import com.example.videogamesearcher.room.GameStashDatabase
 import com.example.videogamesearcher.models.individual_game.IndividualGameDataItem
 import com.example.videogamesearcher.models.individual_game.InvolvedCompany
 import com.example.videogamesearcher.models.individual_game.ReleaseDate

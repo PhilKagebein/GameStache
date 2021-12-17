@@ -7,7 +7,7 @@ import com.example.videogamesearcher.Constants.Companion.GRANT_TYPE
 import com.example.videogamesearcher.api.RetrofitInstance
 import com.example.videogamesearcher.models.TwitchAuthorization
 import com.example.videogamesearcher.models.individual_game.IndividualGameDataItem
-import com.example.videogamesearcher.ui.individual_game.IndividualGameDao
+import com.example.videogamesearcher.room.IndividualGameDao
 import okhttp3.RequestBody
 import retrofit2.Response
 

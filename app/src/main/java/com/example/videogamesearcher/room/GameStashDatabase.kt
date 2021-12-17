@@ -1,4 +1,4 @@
-package com.example.videogamesearcher.models.explore_spinners
+package com.example.videogamesearcher.room
 
 import android.content.Context
 import androidx.room.Database
@@ -7,7 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.videogamesearcher.Converters
 import com.example.videogamesearcher.models.individual_game.IndividualGameDataItem
-import com.example.videogamesearcher.ui.individual_game.IndividualGameDao
+import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
+import com.example.videogamesearcher.models.explore_spinners.GenresResponseItem
+import com.example.videogamesearcher.models.explore_spinners.PlatformsResponseItem
 
 @Database(entities = [PlatformsResponseItem::class, GenresResponseItem::class, GameModesResponseItem::class, IndividualGameDataItem::class], version = 1, exportSchema = false)
 @TypeConverters( Converters::class )
@@ -23,7 +25,7 @@ abstract class GameStashDatabase: RoomDatabase() {
         private var INSTANCE: GameStashDatabase? = null
 
 
-        fun getGameStashDatabase(context: Context): GameStashDatabase{
+        fun getGameStashDatabase(context: Context): GameStashDatabase {
             val tempInstance = INSTANCE
             if(tempInstance != null){
                 return tempInstance

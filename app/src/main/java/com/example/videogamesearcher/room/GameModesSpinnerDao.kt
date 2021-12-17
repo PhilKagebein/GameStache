@@ -1,7 +1,9 @@
-package com.example.videogamesearcher.models.explore_spinners
+package com.example.videogamesearcher.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.videogamesearcher.models.explore_spinners.GameModesResponseItem
+import com.example.videogamesearcher.models.explore_spinners.GenericSpinnerItem
 
 @Dao
 interface GameModesSpinnerDao {
