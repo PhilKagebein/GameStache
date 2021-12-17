@@ -14,17 +14,17 @@ import retrofit2.Response
 class IndividualGameRepository(private val individualGameDao: IndividualGameDao) {
 
     fun checkIfGameIsInRoom(gameID: Int): LiveData<Int> = individualGameDao.checkIfGameExistsInRoom(gameID)
-    fun getIndividualGameDataFromRoom(gameID: Int): LiveData<IndividualGameDataItem?> = individualGameDao.getIndividualGameDataFromRoom(gameID)
+    fun getIndividualGameDataFromRoom(gameID: Int): LiveData<List<IndividualGameDataItem?>> = individualGameDao.getIndividualGameDataFromRoom(gameID)
 
     suspend fun getAccessToken(): Response<TwitchAuthorization> {
         return RetrofitInstance.apiAccessToken.getAccessToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)
     }
 
-    suspend fun getIndividualGameData(accessToken: String, individualGameSearch: RequestBody): Response<IndividualGameDataItem> {
+    suspend fun getIndividualGameData(accessToken: String, individualGameSearch: RequestBody): Response<List<IndividualGameDataItem>> {
         return RetrofitInstance.api.getIndividualGameData("Bearer $accessToken", individualGameSearch)
     }
 
-    suspend fun storeIndividualGameToRoom(individualGameData: IndividualGameDataItem) {
+    suspend fun storeIndividualGameToRoom(individualGameData: List<IndividualGameDataItem>) {
         individualGameDao.storeIndividualGameDataInRoom(individualGameData)
     }
 

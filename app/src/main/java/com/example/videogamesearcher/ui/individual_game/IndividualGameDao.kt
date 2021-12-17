@@ -8,11 +8,11 @@ import com.example.videogamesearcher.models.individual_game.IndividualGameDataIt
 interface IndividualGameDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun storeIndividualGameDataInRoom(vararg individualGameData: IndividualGameDataItem)
+    suspend fun storeIndividualGameDataInRoom(individualGameData: List<IndividualGameDataItem>)
 
     @Transaction
-    @Query("SELECT * FROM individual_game_table WHERE :gameID = id")
-    fun getIndividualGameDataFromRoom(gameID: Int): LiveData<IndividualGameDataItem?>
+    @Query("SELECT * FROM individual_game_table WHERE id = :gameID")
+    fun getIndividualGameDataFromRoom(gameID: Int): LiveData<List<IndividualGameDataItem?>>
 
     @Transaction
     @Query("SELECT COUNT(id) FROM individual_game_table WHERE id = :gameID")

@@ -81,7 +81,7 @@ class IndividualGameFragment : Fragment() {
 
         //TODO: THINK ABOUT RACE CONDITION HERE
         gameFragmentViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
-            gameData?.release_dates?.let { it ->
+            gameData[0]?.release_dates?.let { it ->
                 releaseDates = it
             } ?: run {
                 ""

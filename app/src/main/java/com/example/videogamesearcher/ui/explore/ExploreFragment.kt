@@ -36,8 +36,8 @@ class ExploreFragment : Fragment() {
     private lateinit var binding: FragmentExploreBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        initExploreViewModel()
 
+        initExploreViewModel()
         binding = FragmentExploreBinding.inflate(inflater, container, false)
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = viewLifecycleOwner

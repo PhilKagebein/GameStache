@@ -52,7 +52,7 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
         individualGameRepo.checkIfGameIsInRoom(gameID)
     }
 
-    fun getIndividualGameData(): LiveData<IndividualGameDataItem?>
+    fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
                 checkIfGameIsInRoom().switchMap { gameStatusInRoom ->
@@ -80,15 +80,14 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
             }
     }
 
-    private suspend fun storeIndividualGameDataToRoom(individualGameData: IndividualGameDataItem) {
+    private suspend fun storeIndividualGameDataToRoom(individualGameData: List<IndividualGameDataItem>) {
         viewModelScope.launch(Dispatchers.IO) {
             individualGameRepo.storeIndividualGameToRoom(individualGameData)
         }
     }
 
-    //TODO: CACHE ALL THIS LATER, OR NOT? DISCUSS WHAT'S FASTER/BEST PRACTICE
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
-        gameData?.first_release_date?.let {
+        gameData[0]?.first_release_date?.let {
             formatDate(it)
         } ?: run {
             resources.getString(R.string.no_release_date_found_text)
@@ -96,8 +95,8 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
     }
 
     var originalPlatforms: LiveData<String> = getIndividualGameData().map { gameData ->
-        val originalReleaseDate = gameData?.first_release_date
-        val individualReleasesList = gameData?.release_dates
+        val originalReleaseDate = gameData[0]?.first_release_date
+        val individualReleasesList = gameData[0]?.release_dates
 
         originalReleaseDate?.let { originalDate ->
             individualReleasesList?.let { releasesList ->
@@ -110,7 +109,7 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
 
     var developers: LiveData<String> = getIndividualGameData().map { gameData ->
 
-        gameData?.involved_companies?.let { involvedCompanies ->
+        gameData[0]?.involved_companies?.let { involvedCompanies ->
             getDevelopers(involvedCompanies)
         } ?: run {
             resources.getString(R.string.no_developers_found_text)
@@ -119,7 +118,7 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
 
     var publishers: LiveData<String> = getIndividualGameData().map { gameData ->
 
-        gameData?.involved_companies?.let { involvedCompanies ->
+        gameData[0]?.involved_companies?.let { involvedCompanies ->
             getPublishers(involvedCompanies)
         } ?: run {
             resources.getString(R.string.no_publishers_found_text)
@@ -128,7 +127,7 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
 
     var summaryText: LiveData<String?> = getIndividualGameData().map { gameData ->
 
-        gameData?.summary ?: run {
+        gameData[0]?.summary ?: run {
            resources.getString(R.string.no_game_summary)
        }
 
@@ -136,7 +135,7 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
 
     var regionsList: LiveData<MutableList<String>> = getIndividualGameData().map { gameData ->
 
-        gameData?.release_dates?.let { releaseDatesList ->
+        gameData[0]?.release_dates?.let { releaseDatesList ->
             getRegionsReleased(releaseDatesList)
         } ?: run {
             mutableListOf(resources.getString(R.string.no_regions_found_text))
@@ -146,8 +145,8 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
 
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
 
-        gameData?.cover?.url?.let {
-            val baseUrl = URI(gameData.cover.url)
+        gameData[0]?.cover?.url?.let {
+            val baseUrl = URI(gameData[0]?.cover?.url)
             val segments = baseUrl.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))

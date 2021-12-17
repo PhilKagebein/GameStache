@@ -53,5 +53,5 @@ interface TwitchApi {
     suspend fun getIndividualGameData(
         @Header("Authorization") accessToken: String,
         @Body individualGamePostRequestBody: RequestBody
-    ): Response<IndividualGameDataItem>
+    ): Response<List<IndividualGameDataItem>>
 }
