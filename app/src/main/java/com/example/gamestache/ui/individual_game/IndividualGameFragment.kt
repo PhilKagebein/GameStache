@@ -15,6 +15,7 @@ import com.example.gamestache.R
 import com.example.gamestache.SpinnerAdapter
 import com.example.gamestache.databinding.IndividualGameFragmentBinding
 import com.example.gamestache.models.individual_game.ReleaseDate
+import java.lang.NullPointerException
 
 class IndividualGameFragment : Fragment() {
 
@@ -42,7 +43,7 @@ class IndividualGameFragment : Fragment() {
 
         var summaryText: String? = ""
         var imageURL = ""
-        var releaseDates: List<ReleaseDate?> = emptyList()
+        val releaseRegionSpinner = binding.releasesByRegionSpinner
 
         gameFragmentViewModel.gameId.postValue(args.gameId)
         gameFragmentViewModel.getAccessToken()
@@ -79,20 +80,13 @@ class IndividualGameFragment : Fragment() {
             gameSummaryDialog?.show(requireActivity().supportFragmentManager, "GameSummaryDialog")
         }
 
-        //TODO: THINK ABOUT RACE CONDITION HERE
-        gameFragmentViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
-            gameData[0]?.release_dates?.let { it ->
-                releaseDates = it
-            } ?: run {
-                ""
-            }
-        })
-
         gameFragmentViewModel.regionsList.observe(viewLifecycleOwner, { regionsList ->
-            val releaseRegionsSpinner = initReleaseRegionSpinner(regionsList)
+            gameFragmentViewModel.getReleaseDatesList().observe(viewLifecycleOwner, { releaseDates ->
+                val spinner = initReleaseRegionSpinner(regionsList, releaseRegionSpinner)
 
-            setReleaseRegionSpinnerSelection(releaseRegionsSpinner, regionsList)
-            setReleaseRegionSpinnerOnClick(releaseDates, releaseRegionsSpinner)
+                setReleaseRegionSpinnerSelection(spinner, regionsList)
+                setOnClickForReleaseRegionSpinner(releaseDates, releaseRegionSpinner)
+            })
         })
 
         binding.releaseRegionsCardView.setOnClickListener {
@@ -116,20 +110,20 @@ class IndividualGameFragment : Fragment() {
         }
     }
 
-    private fun initReleaseRegionSpinner(regionsList: MutableList<String>): Spinner {
-        val releaseRegionsSpinner = binding.releasesByRegionSpinner
+    private fun initReleaseRegionSpinner(regionsList: MutableList<String>, spinner: Spinner): Spinner {
         val customAdapter = SpinnerAdapter(requireContext(), regionsList)
-        releaseRegionsSpinner.adapter = customAdapter
+        spinner.adapter = customAdapter
 
-        return releaseRegionsSpinner
+        return spinner
     }
 
-    private fun setReleaseRegionSpinnerOnClick(releaseDates: List<ReleaseDate?>, releaseRegionsSpinner: Spinner) {
+    private fun setOnClickForReleaseRegionSpinner(releaseDates: List<ReleaseDate?>?, releaseRegionsSpinner: Spinner) {
 
         releaseRegionsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowID: Long) {
-                //TODO: TRY TO MAKE ALL THIS FUNCTIONALITY TIED TO LIVE DATA ANDMESS WITH THE RACE CONDITION ABOVE
-                val releaseInformationText = gameFragmentViewModel.getReleaseInformationText(releaseDates, releaseRegionsSpinner.getItemAtPosition(itemPosition).toString())
+                val releaseInformationText = releaseDates?.let {
+                    gameFragmentViewModel.getReleaseInformationText(it, releaseRegionsSpinner.getItemAtPosition(itemPosition).toString())
+                } ?: throw NullPointerException()
                 gameFragmentViewModel.releaseInformationText.postValue(releaseInformationText)
             }
 

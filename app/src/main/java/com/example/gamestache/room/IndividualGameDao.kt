@@ -17,4 +17,5 @@ interface IndividualGameDao {
     @Transaction
     @Query("SELECT COUNT(id) FROM individual_game_table WHERE id = :gameID")
     fun checkIfGameExistsInRoom(gameID: Int): LiveData<Int>
+
 }
