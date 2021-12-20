@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_favorites"
-        android:name="com.example.videogamesearcher.ui.favorites.FavoritesFragment"
+        android:name="com.example.gamestache.ui.favorites.FavoritesFragment"
         android:label="@string/title_favorites"
         tools:layout="@layout/fragment_favorites" />
 
     <fragment
         android:id="@+id/navigation_explore"
-        android:name="com.example.videogamesearcher.ui.explore.ExploreFragment"
+        android:name="com.example.gamestache.ui.explore.ExploreFragment"
         android:label="@string/title_explore"
         tools:layout="@layout/fragment_explore" >
         <action
@@ -29,12 +29,12 @@
 
     <fragment
         android:id="@+id/navigation_wishlist"
-        android:name="com.example.videogamesearcher.ui.wishlist.WishlistFragment"
+        android:name="com.example.gamestache.ui.wishlist.WishlistFragment"
         android:label="@string/title_wishlist"
         tools:layout="@layout/fragment_wishlist" />
     <fragment
         android:id="@+id/individualGameFragment"
-        android:name="com.example.videogamesearcher.ui.individual_game.IndividualGameFragment"
+        android:name="com.example.gamestache.ui.individual_game.IndividualGameFragment"
         android:label="individual_game_fragment"
         tools:layout="@layout/individual_game_fragment" >
         <argument
