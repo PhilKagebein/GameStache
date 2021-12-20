@@ -80,6 +80,11 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
             }
     }
 
+    fun getReleaseDatesList(): LiveData<List<ReleaseDate?>?> =
+        getIndividualGameData().map { gameData ->
+            gameData[0]?.release_dates
+        }
+
     private suspend fun storeIndividualGameDataToRoom(individualGameData: List<IndividualGameDataItem>) {
         viewModelScope.launch(Dispatchers.IO) {
             individualGameRepo.storeIndividualGameToRoom(individualGameData)
