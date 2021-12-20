@@ -6,7 +6,7 @@
     <data>
         <variable
             name="individualgameviewmodel"
-            type="com.example.videogamesearcher.ui.individual_game.IndividualGameViewModel"/>
+            type="com.example.gamestache.ui.individual_game.IndividualGameViewModel"/>
     </data>
 
     <ScrollView
