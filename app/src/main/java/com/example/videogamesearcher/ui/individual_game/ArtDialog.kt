@@ -26,12 +26,6 @@ class ArtDialog(private val url: String): DialogFragment() {
             dismiss()
         }
 
-        rootView.setOnTouchListener(object: View.OnTouchListener {
-            override fun onTouch(view: View?, event: MotionEvent?): Boolean {
-                ScaleGestureDetector(requireContext(), PinchZoomListener(rootView.artDialogImageView)).onTouchEvent(event)
-                return true
-            }
-        })
         return rootView
     }
 
