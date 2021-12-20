@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -30,7 +32,6 @@ class ExploreFragment : Fragment() {
     private lateinit var binding: FragmentExploreBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
         initExploreViewModel()
         binding = FragmentExploreBinding.inflate(inflater, container, false)
         binding.exploreviewmodel = exploreViewModel
@@ -56,22 +57,22 @@ class ExploreFragment : Fragment() {
         }
         exploreViewModel.getAccessToken()
 
-        //Creating the Spinners
+        //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
         //TODO WALK THROUGH WITH KEVIN WHAT I DID WITH INITSPINNERS AND SETSPINNERONCLICK TO SEE IF THIS IS THE BEST WAY OF DOING IT
         exploreViewModel.currentPlatformListInRoomDB.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            if (spinnerListFromRoom != null) {
+             if (spinnerListFromRoom != null) {
                 platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
-                platformSpinner?.let { setSpinnerOnClick(it, "platform") }
+                platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
             }
         })
 
         exploreViewModel.currentGenreListInRoomDB.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
-            genreSpinner?.let {setSpinnerOnClick(it, "genre")}
+            genreSpinner?.let {setSpinnerOnClick(it, "genre", savedInstanceState)}
         })
         exploreViewModel.currentGameModesListInRoomDB.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
-            gameModesSpinner?.let {setSpinnerOnClick(it, "gameMode")}
+            gameModesSpinner?.let {setSpinnerOnClick(it, "gameMode", savedInstanceState)}
         })
 
         //TODO: TALK TO KEVIN ABOUT NOT ELIMINATING THIS BECAUSE I DON'T WANT THE SEARCH TO BE PERFORMED AUTOMATICALLY
@@ -132,7 +133,6 @@ class ExploreFragment : Fragment() {
         binding.btnClearMultiplayerSpinner.setOnClickListener {
             gameModesSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
-
     }
 
     private fun performGameSearch(searchText: RequestBody) {
@@ -158,25 +158,25 @@ class ExploreFragment : Fragment() {
     }
 
     //TODO: MAKE THE STRINGS BELOW ENUMS
-    private fun setSpinnerOnClick(spinner: Spinner, spinnerName: String) {
+    private fun setSpinnerOnClick(spinner: Spinner, spinnerName: String, savedInstanceState: Bundle?) {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
                 when (spinnerName) {
-                    "platform" -> binding.btnClearPlatformSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
-                    "genre" -> binding.btnClearGenreSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
-                    "gameMode" -> binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                    ExploreSpinners.PLATFORM_SPINNER.spinnerName -> binding.btnClearPlatformSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                    ExploreSpinners.GENRE_SPINNER.spinnerName -> binding.btnClearGenreSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                    ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                 }
                 if (itemPosition == 0) {
                     when (spinnerName) {
-                        "platform" -> exploreViewModel.platformText.postValue("")
-                        "genre" -> exploreViewModel.genreText.postValue("")
-                        "gameMode" -> exploreViewModel.gameModesText.postValue("")
+                        ExploreSpinners.PLATFORM_SPINNER.spinnerName -> exploreViewModel.platformText.postValue("")
+                        ExploreSpinners.GENRE_SPINNER.spinnerName -> exploreViewModel.genreText.postValue("")
+                        ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> exploreViewModel.gameModesText.postValue("")
                     }
                 } else {
                     when (spinnerName) {
-                        "platform" -> exploreViewModel.platformText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
-                        "genre" -> exploreViewModel.genreText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
-                        "gameMode" -> exploreViewModel.gameModesText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
+                        ExploreSpinners.PLATFORM_SPINNER.spinnerName -> exploreViewModel.platformText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
+                        ExploreSpinners.GENRE_SPINNER.spinnerName -> exploreViewModel.genreText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
+                        ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> exploreViewModel.gameModesText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
                     }
                 }
             }
@@ -197,4 +197,10 @@ class ExploreFragment : Fragment() {
         const val GAME_MODES_SPINNER_PROMPT = "Select multiplayer capabilities"
     }
 
+}
+
+enum class ExploreSpinners(val spinnerName: String) {
+    PLATFORM_SPINNER("platform"),
+    GENRE_SPINNER("genre"),
+    GAME_MODE_SPINNER("gameMode")
 }
