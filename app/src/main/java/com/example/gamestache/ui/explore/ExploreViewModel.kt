@@ -1,15 +1,12 @@
 package com.example.gamestache.ui.explore
 
-import android.app.Application
-import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import com.example.gamestache.room.GameStacheDatabase
 import com.example.gamestache.models.*
 import com.example.gamestache.models.explore_spinners.*
 import com.example.gamestache.models.search_results.*
-import com.example.gamestache.repository.ExploreRepository
+import com.example.gamestache.repository.GameStacheRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -17,12 +14,12 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URI
 
-class ExploreViewModel(private val app: Application, private val resources: Resources) : ViewModel() {
+class ExploreViewModel(private val exploreRepository: GameStacheRepository) : ViewModel() {
     //Live Data for the Access/Authorization Token
     val twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
 
     //Live Data for the Search functionality
-    val gamesList: MutableLiveData<SearchResultsResponse> = MutableLiveData()
+    private val gamesList: MutableLiveData<SearchResultsResponse> = MutableLiveData()
 
     private val spinnersPostRequestBody: RequestBody = "fields name;\n limit 500;".toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -32,38 +29,25 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
     var gameModesText: MutableLiveData<String> = MutableLiveData("")
     val nameSearchText: MutableLiveData<String> = MutableLiveData("")
 
-    val currentPlatformListInRoomDB: LiveData<List<GenericSpinnerItem>>
-    val currentGenreListInRoomDB: LiveData<List<GenericSpinnerItem>>
-    val currentGameModesListInRoomDB: LiveData<List<GenericSpinnerItem>>
-
-    private val exploreRepository: ExploreRepository
-
-    init {
-        //TODO: UNDERSTAND THE NOTATION BELOW
-        val platformsListDao = GameStacheDatabase.getGameStacheDatabase(app).platformSpinnerDao()
-        val genresListDao = GameStacheDatabase.getGameStacheDatabase(app).genresSpinnerDao()
-        val gameModesDao = GameStacheDatabase.getGameStacheDatabase(app).gameModesSpinnerDao()
-        exploreRepository = ExploreRepository(platformsListDao, genresListDao, gameModesDao)
-        currentPlatformListInRoomDB = exploreRepository.readPlatformsList
-        currentGenreListInRoomDB = exploreRepository.readGenresList
-        currentGameModesListInRoomDB = exploreRepository.readGameModesListFromRoomDB
-    }
+    val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getPlatformsList()
+    val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGenresList()
+    val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGameModesList()
 
     fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.addPlatformsListToRoom(spinnerResponseItem)
+            exploreRepository.storePlatformsListToDb(spinnerResponseItem)
         }
     }
 
     fun addGenresListToRoom(spinnerResponseItem: GenresResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.addGenresListToRoom(spinnerResponseItem)
+            exploreRepository.storeGenresListToDb(spinnerResponseItem)
         }
     }
 
     fun addGameModesListToRoom(spinnerResponseItem: GameModesResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.addGameModesListToRoom(spinnerResponseItem)
+            exploreRepository.storeGameModesListToDb(spinnerResponseItem)
         }
     }
 
@@ -132,6 +116,7 @@ class ExploreViewModel(private val app: Application, private val resources: Reso
             val segments = url.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
+            //TODO: MAKE STATIC FUNCTION BELOW
             return "https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg"
         }
     }

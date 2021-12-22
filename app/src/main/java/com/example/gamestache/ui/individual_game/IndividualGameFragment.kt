@@ -1,6 +1,5 @@
 package com.example.gamestache.ui.individual_game
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,24 +14,22 @@ import com.example.gamestache.R
 import com.example.gamestache.SpinnerAdapter
 import com.example.gamestache.databinding.IndividualGameFragmentBinding
 import com.example.gamestache.models.individual_game.ReleaseDate
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.lang.NullPointerException
 
 class IndividualGameFragment : Fragment() {
 
     private val args: IndividualGameFragmentArgs by navArgs()
+    val individualGameViewModel: IndividualGameViewModel by viewModel()
     private lateinit var binding: IndividualGameFragmentBinding
 
-
-    private lateinit var gameFragmentViewModel: IndividualGameViewModel
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        initIndividualGameViewModel()
         binding = IndividualGameFragmentBinding.inflate(inflater, container, false)
         (requireActivity() as MainActivity).supportActionBar?.title = args.gameName
 
         binding.individualGameTitle.text = args.gameName
 
-        binding.individualgameviewmodel = gameFragmentViewModel
+        binding.individualgameviewmodel = individualGameViewModel
         binding.lifecycleOwner = this
 
         return binding.root
@@ -45,10 +42,10 @@ class IndividualGameFragment : Fragment() {
         var imageURL = ""
         val releaseRegionSpinner = binding.releasesByRegionSpinner
 
-        gameFragmentViewModel.gameId.postValue(args.gameId)
-        gameFragmentViewModel.getAccessToken()
+        individualGameViewModel.gameId.postValue(args.gameId)
+        individualGameViewModel.getAccessToken()
 
-        gameFragmentViewModel.createImageURLForGlide().observe(viewLifecycleOwner, { url ->
+        individualGameViewModel.createImageURLForGlide().observe(viewLifecycleOwner, { url ->
             imageURL = url
             Glide.with(this)
                 .load(url)
@@ -64,14 +61,14 @@ class IndividualGameFragment : Fragment() {
 
         binding.cardViewSummary.setOnClickListener {
 
-            val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
+            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
             binding.descriptionBlockArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
 
-            binding.descriptionText.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.descriptionText.visibility)
+            binding.descriptionText.visibility = individualGameViewModel.changeCardViewVisibility(binding.descriptionText.visibility)
 
         }
 
-        gameFragmentViewModel.summaryText.observe(viewLifecycleOwner, { liveSummaryText ->
+        individualGameViewModel.summaryText.observe(viewLifecycleOwner, { liveSummaryText ->
             summaryText = liveSummaryText
         })
 
@@ -80,8 +77,8 @@ class IndividualGameFragment : Fragment() {
             gameSummaryDialog?.show(requireActivity().supportFragmentManager, "GameSummaryDialog")
         }
 
-        gameFragmentViewModel.regionsList.observe(viewLifecycleOwner, { regionsList ->
-            gameFragmentViewModel.getReleaseDatesList().observe(viewLifecycleOwner, { releaseDates ->
+        individualGameViewModel.regionsList.observe(viewLifecycleOwner, { regionsList ->
+            individualGameViewModel.getReleaseDatesList().observe(viewLifecycleOwner, { releaseDates ->
                 val spinner = initReleaseRegionSpinner(regionsList, releaseRegionSpinner)
 
                 setReleaseRegionSpinnerSelection(spinner, regionsList)
@@ -91,11 +88,11 @@ class IndividualGameFragment : Fragment() {
 
         binding.releaseRegionsCardView.setOnClickListener {
 
-            val arrowButtonBackGroundResource = gameFragmentViewModel.determineArrowButtonStatus(binding.releasesByRegionSpinner.visibility)
+            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.releasesByRegionSpinner.visibility)
             binding.releasesByRegionArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
 
-            binding.releasesByRegionSpinner.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.releasesByRegionSpinner.visibility)
-            binding.releaseRegionInformationTextView.visibility = gameFragmentViewModel.changeCardViewVisibility(binding.releaseRegionInformationTextView.visibility)
+            binding.releasesByRegionSpinner.visibility = individualGameViewModel.changeCardViewVisibility(binding.releasesByRegionSpinner.visibility)
+            binding.releaseRegionInformationTextView.visibility = individualGameViewModel.changeCardViewVisibility(binding.releaseRegionInformationTextView.visibility)
         }
 
     }
@@ -122,20 +119,14 @@ class IndividualGameFragment : Fragment() {
         releaseRegionsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowID: Long) {
                 val releaseInformationText = releaseDates?.let {
-                    gameFragmentViewModel.getReleaseInformationText(it, releaseRegionsSpinner.getItemAtPosition(itemPosition).toString())
+                    individualGameViewModel.getReleaseInformationText(it, releaseRegionsSpinner.getItemAtPosition(itemPosition).toString())
                 } ?: throw NullPointerException()
-                gameFragmentViewModel.releaseInformationText.postValue(releaseInformationText)
+                individualGameViewModel.releaseInformationText.postValue(releaseInformationText)
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
         }
-    }
-
-    private fun initIndividualGameViewModel() {
-        val factory =
-            activity?.application?.let { IndividualGameViewModelFactory(resources, it)}
-        gameFragmentViewModel = factory?.let { ViewModelProvider(this, it) }?.get(IndividualGameViewModel::class.java) as IndividualGameViewModel
     }
 
     companion object {
