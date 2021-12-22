@@ -9,9 +9,9 @@ import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 interface GameModesSpinnerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addGameModesList(spinner: GameModesResponseItem)
+    suspend fun addGameModesListToDb(spinner: GameModesResponseItem)
 
     @Transaction
     @Query("SELECT * FROM game_modes_list_table ORDER BY name ASC")
-    fun getGameModesListData(): LiveData<List<GenericSpinnerItem>>
+    fun getGameModesListFromDb(): LiveData<List<GenericSpinnerItem>>
 }

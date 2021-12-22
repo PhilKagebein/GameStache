@@ -9,10 +9,10 @@ import com.example.gamestache.models.explore_spinners.GenresResponseItem
 interface GenresSpinnerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addGenresList(spinnerList: GenresResponseItem)
+    suspend fun addGenresListToDb(spinnerList: GenresResponseItem)
 
     @Transaction
     @Query("SELECT * FROM genres_list_table ORDER BY name ASC")
-    fun getGenresListData(): LiveData<List<GenericSpinnerItem>>
+    fun getGenresListFromDb(): LiveData<List<GenericSpinnerItem>>
 
 }

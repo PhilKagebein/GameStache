@@ -4,14 +4,11 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,15 +21,14 @@ import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ExploreFragment : Fragment() {
 
-    private lateinit var exploreViewModel: ExploreViewModel
+    val exploreViewModel: ExploreViewModel by viewModel()
     private lateinit var binding: FragmentExploreBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        initExploreViewModel()
         binding = FragmentExploreBinding.inflate(inflater, container, false)
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = viewLifecycleOwner
@@ -59,18 +55,18 @@ class ExploreFragment : Fragment() {
 
         //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
         //TODO WALK THROUGH WITH KEVIN WHAT I DID WITH INITSPINNERS AND SETSPINNERONCLICK TO SEE IF THIS IS THE BEST WAY OF DOING IT
-        exploreViewModel.currentPlatformListInRoomDB.observe(viewLifecycleOwner, { spinnerListFromRoom ->
+        exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
              if (spinnerListFromRoom != null) {
                 platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
                 platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
             }
         })
 
-        exploreViewModel.currentGenreListInRoomDB.observe(viewLifecycleOwner, { spinnerListFromRoom ->
+        exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
             genreSpinner?.let {setSpinnerOnClick(it, "genre", savedInstanceState)}
         })
-        exploreViewModel.currentGameModesListInRoomDB.observe(viewLifecycleOwner, { spinnerListFromRoom ->
+        exploreViewModel.currentGameModesListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
             gameModesSpinner?.let {setSpinnerOnClick(it, "gameMode", savedInstanceState)}
         })
@@ -157,7 +153,6 @@ class ExploreFragment : Fragment() {
 
     }
 
-    //TODO: MAKE THE STRINGS BELOW ENUMS
     private fun setSpinnerOnClick(spinner: Spinner, spinnerName: String, savedInstanceState: Bundle?) {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
@@ -183,11 +178,6 @@ class ExploreFragment : Fragment() {
             override fun onNothingSelected(adapterview: AdapterView<*>?) {
             }
         }
-    }
-
-    private fun initExploreViewModel() {
-             val factory = activity?.let { activity -> ExploreViewModelFactory(activity.application, resources) }
-             exploreViewModel = factory?.let {customFactory -> ViewModelProvider(this, customFactory) }?.get(ExploreViewModel::class.java) as ExploreViewModel
     }
 
     companion object{

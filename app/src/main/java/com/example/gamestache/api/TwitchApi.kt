@@ -13,13 +13,6 @@ import retrofit2.http.*
 
 interface TwitchApi {
 
-    @POST("oauth2/token")
-    suspend fun getAccessToken(
-        @Query("client_id") client_id: String,
-        @Query("client_secret") client_secret: String,
-        @Query("grant_type") grant_type: String
-    ): Response<TwitchAuthorization>
-
     @Headers("Client-ID: $CLIENT_ID")
     @POST("games")
     suspend fun searchGames(

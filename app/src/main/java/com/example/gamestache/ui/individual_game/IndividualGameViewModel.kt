@@ -1,17 +1,15 @@
 package com.example.gamestache.ui.individual_game
 
-import android.app.Application
 import android.content.res.Resources
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.gamestache.R
 import com.example.gamestache.models.TwitchAuthorization
-import com.example.gamestache.room.GameStacheDatabase
 import com.example.gamestache.models.individual_game.IndividualGameDataItem
 import com.example.gamestache.models.individual_game.InvolvedCompany
 import com.example.gamestache.models.individual_game.ReleaseDate
-import com.example.gamestache.repository.IndividualGameRepository
+import com.example.gamestache.repository.GameStacheRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -23,22 +21,15 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class IndividualGameViewModel(private val resources: Resources, app: Application) : ViewModel() {
+class IndividualGameViewModel(private val repository: GameStacheRepository, private val resources: Resources) : ViewModel() {
 
     private var twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
     var gameId: MutableLiveData<Int> = MutableLiveData()
     var releaseInformationText: MutableLiveData<String> = MutableLiveData()
 
-    private val individualGameRepo: IndividualGameRepository
-
-    init {
-        val individualGameDao = GameStacheDatabase.getGameStacheDatabase(app).individualGameDao()
-        individualGameRepo = IndividualGameRepository(individualGameDao)
-    }
-
     fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = individualGameRepo.getAccessToken()
+            val response = repository.getAccessToken()
             if (response.isSuccessful) {
                 twitchAuthorization.postValue(response.body())
             } else {
@@ -49,10 +40,10 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
     }
 
     private fun checkIfGameIsInRoom(): LiveData<Int> = gameId.switchMap { gameID ->
-        individualGameRepo.checkIfGameIsInRoom(gameID)
+        repository.checkIfGameIsInRoom(gameID)
     }
 
-    fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
+    private fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
                 checkIfGameIsInRoom().switchMap { gameStatusInRoom ->
@@ -60,10 +51,10 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
                         val individualGameSearchBody: RequestBody = createIndividualGameSearchBodyRequestBody(gameID)
 
                         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-                            val response = individualGameRepo.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
+                            val response = repository.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
                             if (response.isSuccessful){
                                 response.body()?.let {
-                                    storeIndividualGameDataToRoom(it)
+                                    storeIndividualGameToDb(it)
                                     emit(it)
                                 } ?: throw NullPointerException()
 
@@ -74,7 +65,7 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
                             }
                         }
                     } else {
-                        individualGameRepo.getIndividualGameDataFromRoom(gameID)
+                        repository.getIndividualGameDataFromRoom(gameID)
                     }
                 }
             }
@@ -85,9 +76,9 @@ class IndividualGameViewModel(private val resources: Resources, app: Application
             gameData[0]?.release_dates
         }
 
-    private suspend fun storeIndividualGameDataToRoom(individualGameData: List<IndividualGameDataItem>) {
+    private suspend fun storeIndividualGameToDb(individualGameData: List<IndividualGameDataItem>) {
         viewModelScope.launch(Dispatchers.IO) {
-            individualGameRepo.storeIndividualGameToRoom(individualGameData)
+            repository.storeIndividualGameToDb(individualGameData)
         }
     }
 

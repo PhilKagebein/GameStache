@@ -9,10 +9,10 @@ import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 interface PlatformSpinnerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addPlatformsList(spinnerList: PlatformsResponseItem)
+    suspend fun addPlatformsListToDb(spinnerList: PlatformsResponseItem)
 
     @Transaction
     @Query("SELECT * FROM platforms_list_table ORDER BY name ASC")
-    fun getPlatformsListData(): LiveData<List<GenericSpinnerItem>>
+    fun getPlatformsListFromDb(): LiveData<List<GenericSpinnerItem>>
 
 }
