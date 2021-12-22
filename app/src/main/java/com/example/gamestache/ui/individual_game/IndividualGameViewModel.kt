@@ -6,9 +6,7 @@ import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.gamestache.R
 import com.example.gamestache.models.TwitchAuthorization
-import com.example.gamestache.models.individual_game.IndividualGameDataItem
-import com.example.gamestache.models.individual_game.InvolvedCompany
-import com.example.gamestache.models.individual_game.ReleaseDate
+import com.example.gamestache.models.individual_game.*
 import com.example.gamestache.repository.GameStacheRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -82,6 +80,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         }
     }
 
+    //TODO: IS THERE ANY REASON TO PULL A SUBSET OF GAMEDATA FROM THE DB WHEN GETINDIVIDUALGAMEDATA() IS ALREADY GETTING THE MOST UP TO DATE DATA?
     var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
         gameData[0]?.first_release_date?.let {
             formatDate(it)
@@ -137,6 +136,22 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
             mutableListOf(resources.getString(R.string.no_regions_found_text))
         }
 
+    }
+
+    var playerPerspectivesText: LiveData<String> = getIndividualGameData().map { gameData ->
+        gameData[0]?.player_perspectives?.let { playerPerspectives ->
+            getPlayerPerspectivesText(playerPerspectives)
+        } ?: run {
+            resources.getString(R.string.no_player_perspectives)
+        }
+    }
+
+    var genresText: LiveData<String> = getIndividualGameData().map { gameData ->
+        gameData[0]?.genres?.let { genres ->
+            getGenreText(genres)
+        } ?: run {
+            resources.getString(R.string.no_genres_found_text)
+        }
     }
 
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
@@ -293,6 +308,26 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
             }
         }
         return regionInt
+    }
+
+    private fun getPlayerPerspectivesText(playerPerspectives: List<PlayerPerspective?>): String {
+        val playerPerspectivesList = mutableListOf<String>()
+
+        for (perspective in playerPerspectives.indices) {
+            playerPerspectives[perspective]?.name?.let { playerPerspectivesList.add(it) }
+        }
+
+        return playerPerspectivesList.joinToString(prefix = resources.getString(R.string.player_perspectives_prefix), separator = ", ")
+    }
+
+    private fun getGenreText(genres: List<Genre?>): String {
+        val genresList = mutableListOf<String>()
+
+        for (perspective in genres.indices) {
+            genres[perspective]?.name?.let { genresList.add(it) }
+        }
+
+        return genresList.joinToString(prefix = resources.getString(R.string.genres_prefix), separator = ", ")
     }
 
     companion object{

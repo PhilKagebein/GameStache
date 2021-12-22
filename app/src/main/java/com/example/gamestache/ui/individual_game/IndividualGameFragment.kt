@@ -95,6 +95,16 @@ class IndividualGameFragment : Fragment() {
             binding.releaseRegionInformationTextView.visibility = individualGameViewModel.changeCardViewVisibility(binding.releaseRegionInformationTextView.visibility)
         }
 
+        binding.cardViewGenresAndPerspectives.setOnClickListener {
+
+            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.individualGamePlayerPerspectivesTV.visibility)
+            binding.playerPerspectivesAndGenresArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+
+            binding.individualGameGenresTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.individualGameGenresTV.visibility)
+            binding.individualGamePlayerPerspectivesTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.individualGamePlayerPerspectivesTV.visibility)
+
+        }
+
     }
 
     private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String>) {
