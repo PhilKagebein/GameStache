@@ -29,9 +29,9 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
     var gameModesText: MutableLiveData<String> = MutableLiveData("")
     val nameSearchText: MutableLiveData<String> = MutableLiveData("")
 
-    val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getPlatformsList()
-    val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGenresList()
-    val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGameModesList()
+    val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getPlatformsListFromDb()
+    val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGenresListFromDb()
+    val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGameModesListFromDb()
 
     fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
@@ -147,21 +147,21 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
 
     fun getPlatformsListFromRoom(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsList(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
             emit(response?.body())
             }
     }
 
     fun genresResponse(): LiveData<List<GenresResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGenresList(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGenresListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
             emit(response?.body())
         }
     }
 
     fun gameModesResponse(): LiveData<List<GameModesResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGameModesList(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGameModesListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
             emit(response?.body())
         }
     }

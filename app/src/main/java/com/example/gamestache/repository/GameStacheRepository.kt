@@ -19,11 +19,11 @@ import retrofit2.Response
 
 class GameStacheRepository(private val api: TwitchApi, private val authApi: TwitchApiAuth, private val individualGameDao: IndividualGameDao, private val platformsResponseDao: PlatformSpinnerDao, private val genresResponseDao: GenresSpinnerDao, private val gameModesResponseDao: GameModesSpinnerDao){
 
-    fun getPlatformsList(): LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListFromDb()
-    fun getGenresList(): LiveData<List<GenericSpinnerItem>> = genresResponseDao.getGenresListFromDb()
-    fun getGameModesList(): LiveData<List<GenericSpinnerItem>> = gameModesResponseDao.getGameModesListFromDb()
-    fun checkIfGameIsInRoom(gameID: Int): LiveData<Int> = individualGameDao.checkIfGameExistsInRoom(gameID)
-    fun getIndividualGameDataFromRoom(gameID: Int): LiveData<List<IndividualGameDataItem?>> = individualGameDao.getIndividualGameDataFromRoom(gameID)
+    fun getPlatformsListFromDb(): LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListFromDb()
+    fun getGenresListFromDb(): LiveData<List<GenericSpinnerItem>> = genresResponseDao.getGenresListFromDb()
+    fun getGameModesListFromDb(): LiveData<List<GenericSpinnerItem>> = gameModesResponseDao.getGameModesListFromDb()
+    fun checkIfGameIsInDb(gameID: Int): LiveData<Int> = individualGameDao.checkIfGameExistsInRoom(gameID)
+    fun getIndividualGameDataFromDb(gameID: Int): LiveData<List<IndividualGameDataItem?>> = individualGameDao.getIndividualGameDataFromRoom(gameID)
 
      suspend fun storePlatformsListToDb(spinnerResponseItem: PlatformsResponseItem) {
         platformsResponseDao.addPlatformsListToDb(spinnerResponseItem)
@@ -49,15 +49,15 @@ class GameStacheRepository(private val api: TwitchApi, private val authApi: Twit
         return api.searchGames("Bearer $accessToken", gamesSearch)
     }
 
-     suspend fun getPlatformsList(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
+     suspend fun getPlatformsListFromDb(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
         return api.getPlatformsList("Bearer $accessToken", platformsPostRequestBody)
     }
 
-     suspend fun getGenresList(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
+     suspend fun getGenresListFromDb(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
         return api.getGenresList("Bearer $accessToken", genrePostRequestBody)
     }
 
-     suspend fun getGameModesList(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
+     suspend fun getGameModesListFromDb(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
         return api.getGameModesList("Bearer $accessToken", gameModesPostRequestBody)
     }
 
