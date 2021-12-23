@@ -13,7 +13,11 @@ data class MultiplayerModesItem(
     val id: Int,
     val lancoop: Boolean,
     val offlinecoop: Boolean,
+    val offlinecoopmax: Int?,
+    val offlinemax: Int?,
     val onlinecoop: Boolean,
+    val onlinecoopmax: Int?,
+    val onlinemax: Int?,
     val platform: Int,
     val splitscreen: Boolean
 )

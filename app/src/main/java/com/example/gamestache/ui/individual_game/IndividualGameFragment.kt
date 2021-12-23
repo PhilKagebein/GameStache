@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
@@ -13,7 +15,10 @@ import com.example.gamestache.MainActivity
 import com.example.gamestache.R
 import com.example.gamestache.SpinnerAdapter
 import com.example.gamestache.databinding.IndividualGameFragmentBinding
+import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
+import com.example.gamestache.models.individual_game.MultiplayerModesItem
 import com.example.gamestache.models.individual_game.ReleaseDate
+import kotlinx.android.synthetic.main.individual_game_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.lang.NullPointerException
 
@@ -41,6 +46,7 @@ class IndividualGameFragment : Fragment() {
         var summaryText: String? = ""
         var imageURL = ""
         val releaseRegionSpinner = binding.releasesByRegionSpinner
+        val multiplayerOnPlatformSpinner = binding.multiplayerOnPlatformSpinner
 
         individualGameViewModel.gameId.postValue(args.gameId)
         individualGameViewModel.getAccessToken()
@@ -79,10 +85,31 @@ class IndividualGameFragment : Fragment() {
 
         individualGameViewModel.regionsList.observe(viewLifecycleOwner, { regionsList ->
             individualGameViewModel.getReleaseDatesList().observe(viewLifecycleOwner, { releaseDates ->
-                val spinner = initReleaseRegionSpinner(regionsList, releaseRegionSpinner)
+                val spinner = initSpinner(regionsList, releaseRegionSpinner)
 
                 setReleaseRegionSpinnerSelection(spinner, regionsList)
                 setOnClickForReleaseRegionSpinner(releaseDates, releaseRegionSpinner)
+            })
+        })
+
+        individualGameViewModel.getPlatformsListForMultiplayerModesSpinner().observe(viewLifecycleOwner, { platformListForSpinner ->
+            individualGameViewModel.platformListFromDb.observe(viewLifecycleOwner, { platformListFromDb ->
+                individualGameViewModel.getMultiplayerModesList().observe(viewLifecycleOwner, {multiplayerModesList ->
+
+                    if (multiplayerModesList.isNullOrEmpty()) {
+                        binding.multiplayerCapabilitiesSectionTitleTV.visibility = GONE
+                        multiplayerOnPlatformSpinner.visibility = GONE
+                        binding.coopCapabilitiesTV.visibility = GONE
+                        binding.offlineCapabilities.visibility = GONE
+                        binding.onlineCapabilities.visibility = GONE
+                        binding.onlineCapablitiesTitleTV.visibility = GONE
+                        binding.offlineCapabilitiesTitleTV.visibility = GONE
+                        binding.coopCapabilitiesTitleTV.visibility = GONE
+                    }
+                    val spinner = initSpinner(platformListForSpinner, multiplayerOnPlatformSpinner)
+
+                    setOnClickForMultiplayerPlatformSpinner(multiplayerModesList, spinner, platformListFromDb)
+                })
             })
         })
 
@@ -105,6 +132,28 @@ class IndividualGameFragment : Fragment() {
 
         }
 
+        individualGameViewModel.getMultiplayerModesList().observe(viewLifecycleOwner, { multiplayerModes ->
+            binding.gameModesCardView.setOnClickListener {
+
+                val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.gameModesTV.visibility)
+                binding.gameModesArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+
+                binding.gameModesTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.gameModesTV.visibility)
+                binding.multiplayerCapabilitiesSectionTitleTV.visibility = individualGameViewModel.getMultiplayerTitleAndSpinnerVisibility( binding.multiplayerCapabilitiesSectionTitleTV.visibility, multiplayerModes)
+                multiplayerOnPlatformSpinner.visibility = individualGameViewModel.getMultiplayerTitleAndSpinnerVisibility(multiplayerOnPlatformSpinner.visibility, multiplayerModes)
+
+                //TODO: IF ALL OF THESE WILL ALWAYS SHARE THE SAME VISIBILITY, DO I WRAP THESE AROUND A LINEAR LAYOUT OR SOMETHING AND JUST CHANGE THE VISIBILITY ON THAT?
+                binding.coopCapabilitiesTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.coopCapabilitiesTV.visibility)
+                binding.offlineCapabilities.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.offlineCapabilities.visibility)
+                binding.onlineCapabilities.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.onlineCapabilities.visibility)
+                binding.onlineCapablitiesTitleTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.onlineCapablitiesTitleTV.visibility)
+                binding.offlineCapabilitiesTitleTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.offlineCapabilitiesTitleTV.visibility)
+                binding.coopCapabilitiesTitleTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.coopCapabilitiesTitleTV.visibility)
+
+            }
+        })
+
+
     }
 
     private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String>) {
@@ -117,8 +166,8 @@ class IndividualGameFragment : Fragment() {
         }
     }
 
-    private fun initReleaseRegionSpinner(regionsList: MutableList<String>, spinner: Spinner): Spinner {
-        val customAdapter = SpinnerAdapter(requireContext(), regionsList)
+    private fun initSpinner(itemsList: MutableList<String>, spinner: Spinner): Spinner {
+        val customAdapter = SpinnerAdapter(requireContext(), itemsList)
         spinner.adapter = customAdapter
 
         return spinner
@@ -135,6 +184,40 @@ class IndividualGameFragment : Fragment() {
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
+    }
+
+    private fun getMultiplayerModeItemVisibility(itemSelected: Int): Int {
+        if (itemSelected == 0) return GONE
+        else return VISIBLE
+    }
+
+    private fun setOnClickForMultiplayerPlatformSpinner(multiplayerModes: List<MultiplayerModesItem?>?, spinner: Spinner, platformListFromDb: List<GenericSpinnerItem>) {
+        multiplayerOnPlatformSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+
+                getMultiplayerModeItemVisibility(itemPosition).apply {
+                    binding.coopCapabilitiesTV.visibility = this
+                    binding.coopCapabilitiesTitleTV.visibility = this
+                    binding.offlineCapabilities.visibility = this
+                    binding.offlineCapabilitiesTitleTV.visibility = this
+                    binding.onlineCapabilities.visibility = this
+                    binding.onlineCapablitiesTitleTV.visibility = this
+                }
+
+                val coopCapabilitiesText: String = individualGameViewModel.getCoopCapabilitiesText(multiplayerModes, spinner.getItemAtPosition(itemPosition).toString(), platformListFromDb)
+                individualGameViewModel.coopCapabilitiesText.postValue(coopCapabilitiesText)
+
+                val offlineCapabilitiesText: String = individualGameViewModel.getOfflineCapabilitiesText(multiplayerModes, spinner.getItemAtPosition(itemPosition).toString(), platformListFromDb)
+                individualGameViewModel.offlineCapabilitiesText.postValue(offlineCapabilitiesText)
+
+                val onlineCapabilitiesText: String = individualGameViewModel.getOnlineCapabilitiesText(multiplayerModes, spinner.getItemAtPosition(itemPosition).toString(), platformListFromDb)
+                individualGameViewModel.onlineCapabilitiesText.postValue(onlineCapabilitiesText)
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
             }
         }
     }

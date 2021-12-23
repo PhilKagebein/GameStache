@@ -18,5 +18,5 @@ data class IndividualGameDataItem(
     val release_dates: List<ReleaseDate?>?,
     val similar_games: List<SimilarGame?>?,
     val summary: String?,
-    val multiplayerModes: List<MultiplayerModesItem?>?
+    val multiplayer_modes: List<MultiplayerModesItem?>?
 )

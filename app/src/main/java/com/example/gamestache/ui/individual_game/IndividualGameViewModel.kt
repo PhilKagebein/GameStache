@@ -6,6 +6,7 @@ import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.gamestache.R
 import com.example.gamestache.models.TwitchAuthorization
+import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.individual_game.*
 import com.example.gamestache.repository.GameStacheRepository
 import kotlinx.coroutines.Dispatchers
@@ -18,12 +19,18 @@ import java.net.URI
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.max
 
 class IndividualGameViewModel(private val repository: GameStacheRepository, private val resources: Resources) : ViewModel() {
 
     private var twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
     var gameId: MutableLiveData<Int> = MutableLiveData()
     var releaseInformationText: MutableLiveData<String> = MutableLiveData()
+    var coopCapabilitiesText: MutableLiveData<String> = MutableLiveData()
+    var offlineCapabilitiesText: MutableLiveData<String> = MutableLiveData()
+    var onlineCapabilitiesText: MutableLiveData<String> = MutableLiveData()
+
+    val platformListFromDb = repository.getPlatformsListFromDb()
 
     fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -38,7 +45,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
     }
 
     private fun checkIfGameIsInRoom(): LiveData<Int> = gameId.switchMap { gameID ->
-        repository.checkIfGameIsInRoom(gameID)
+        repository.checkIfGameIsInDb(gameID)
     }
 
     private fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
@@ -63,7 +70,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
                             }
                         }
                     } else {
-                        repository.getIndividualGameDataFromRoom(gameID)
+                        repository.getIndividualGameDataFromDb(gameID)
                     }
                 }
             }
@@ -154,6 +161,186 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         }
     }
 
+    var gameModesText: LiveData<String> = getIndividualGameData().map { gameData ->
+        gameData[0]?.game_modes?.let { gameModes ->
+            getGameModesText(gameModes)
+        } ?: run {
+            resources.getString(R.string.no_game_modes_text)
+        }
+    }
+
+    private fun getGameModesText(gameModes: List<IndividualGameMode?>): String {
+        val gameModesList = mutableListOf<String>()
+
+        for (gameMode in gameModes.indices) {
+            gameModes[gameMode]?.name?.let { gameModesList.add(it) }
+        }
+
+        return gameModesList.joinToString(prefix = resources.getString(R.string.game_modes_list_prefix), separator = resources.getString(R.string.game_modes_list_separator))
+    }
+
+    fun getPlatformsListForMultiplayerModesSpinner(): LiveData<MutableList<String>>
+        = getIndividualGameData().switchMap { gameData ->
+            platformListFromDb.map { platformListFromDb ->
+                val multiplayerModesRaw = gameData[0]?.multiplayer_modes
+                val platformIntsList = mutableListOf<Int>()
+                val platformNamesList = mutableListOf(resources.getString(R.string.platform_spinner_prompt))
+
+                multiplayerModesRaw?.let {
+                    for (platform in multiplayerModesRaw.indices) {
+                        multiplayerModesRaw[platform]?.platform?.let { platformInt -> platformIntsList.add(platformInt) }
+                    }
+                }
+                    for (int in platformIntsList) {
+                        for (entry in platformListFromDb.indices) {
+                            if (int == platformListFromDb[entry].id) {
+                                platformNamesList.add(platformListFromDb[entry].name)
+                            }
+                        }
+                    }
+                platformNamesList
+        }
+    }
+
+    fun getCoopCapabilitiesText(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatform: String, platformsListFromDb: List<GenericSpinnerItem>): String {
+        val selectedPlatformInt = getSelectedPlatformInt(selectedPlatform, platformsListFromDb)
+        val coopCapabilitiesList = getMultiplayerCapabilitiesMap(multiplayerModes, selectedPlatformInt)["coop"]
+
+        if (coopCapabilitiesList != null) {
+            return coopCapabilitiesList.joinToString(prefix = resources.getString(R.string.multiplayer_capabilities_prefix), separator = resources.getString(R.string.multiplayer_capabilities_separator))
+        } else {
+            return resources.getString(R.string.none)
+        }
+
+    }
+
+
+    fun getOfflineCapabilitiesText(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatform: String, platformsListFromDb: List<GenericSpinnerItem>): String {
+        val selectedPlatformInt = getSelectedPlatformInt(selectedPlatform, platformsListFromDb)
+        val offlineCapabilitiesList = getMultiplayerCapabilitiesMap(multiplayerModes, selectedPlatformInt)["offline"]
+
+        if (offlineCapabilitiesList != null) {
+            return offlineCapabilitiesList.joinToString(prefix = resources.getString(R.string.multiplayer_capabilities_prefix), separator = resources.getString(R.string.multiplayer_capabilities_separator))
+        } else {
+            return resources.getString(R.string.none)
+        }
+    }
+
+
+    fun getOnlineCapabilitiesText(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatform: String, platformsListFromDb: List<GenericSpinnerItem>): String {
+        val selectedPlatformInt = getSelectedPlatformInt(selectedPlatform, platformsListFromDb)
+        val onlineCapabilitiesList = getMultiplayerCapabilitiesMap(multiplayerModes, selectedPlatformInt)["online"]
+
+        if (onlineCapabilitiesList != null) {
+            return onlineCapabilitiesList.joinToString(prefix = resources.getString(R.string.multiplayer_capabilities_prefix), separator = resources.getString(R.string.multiplayer_capabilities_separator))
+        } else {
+            return resources.getString(R.string.none)
+        }
+    }
+
+    private fun getMultiplayerCapabilitiesMap(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatformInt: Int): Map<String, MutableList<String>> {
+        val coopCapabilitiesList = mutableListOf<String>()
+        val offlineCapabilitiesList = mutableListOf<String>()
+        val onlineCapabilitiesList = mutableListOf<String>()
+
+        if (selectedPlatformInt == 0) {
+            coopCapabilitiesList.add(resources.getString(R.string.none))
+            offlineCapabilitiesList.add(resources.getString(R.string.none))
+            onlineCapabilitiesList.add(resources.getString(R.string.none))
+        } else {
+
+            multiplayerModes?.let {
+                for (platform in multiplayerModes.indices) {
+                    if (selectedPlatformInt == multiplayerModes[platform]?.platform) {
+
+                        //TODO: DO I BREAK UP EACH ONE OF THESE INTO FUNCTIONS FOR CLARITY?
+                        if (multiplayerModes[platform]?.campaigncoop == true) {
+                            coopCapabilitiesList.add(resources.getString(R.string.campaign_coop))
+                        }
+                        if (multiplayerModes[platform]?.lancoop == true) {
+                            coopCapabilitiesList.add(resources.getString(R.string.lan_coop))
+                        }
+
+                        if (multiplayerModes[platform]?.offlinecoop == true) {
+                            offlineCapabilitiesList.add(resources.getString(R.string.offline_coop))
+                        }
+                        if (multiplayerModes[platform]?.splitscreen == true) {
+                            offlineCapabilitiesList.add(resources.getString(R.string.split_screen))
+                        }
+
+                        if (multiplayerModes[platform]?.onlinecoop == true) {
+                            onlineCapabilitiesList.add(resources.getString(R.string.online_coop))
+                        }
+                        if (multiplayerModes[platform]?.dropin == true) {
+                            onlineCapabilitiesList.add(resources.getString(R.string.drop_in_multi))
+                        }
+
+                        if (offlineCapabilitiesList.isNullOrEmpty()) {
+                            offlineCapabilitiesList.add(resources.getString(R.string.none))
+                        } else {
+                            val offlineCoopMax = multiplayerModes[platform]?.offlinecoopmax
+                            val offlineMax = multiplayerModes[platform]?.offlinemax
+
+                            offlineCapabilitiesList.add(determineMaxPlayers(offlineCoopMax, offlineMax))
+
+                        }
+
+                        if (onlineCapabilitiesList.isNullOrEmpty()) {
+                            onlineCapabilitiesList.add(resources.getString(R.string.none))
+                        } else {
+                            val onlineCoopMax = multiplayerModes[platform]?.onlinecoopmax
+                            val onlineMax = multiplayerModes[platform]?.onlinemax
+
+                            onlineCapabilitiesList.add(determineMaxPlayers(onlineCoopMax, onlineMax))
+                        }
+
+                        if (coopCapabilitiesList.isNullOrEmpty()) {
+                            coopCapabilitiesList.add(resources.getString(R.string.none))
+                        }
+
+                    }
+
+                }
+            } ?: run {
+                coopCapabilitiesList.add(resources.getString(R.string.none))
+                offlineCapabilitiesList.add(resources.getString(R.string.none))
+                onlineCapabilitiesList.add(resources.getString(R.string.none))
+            }
+        }
+        return mapOf("coop" to coopCapabilitiesList, "offline" to offlineCapabilitiesList, "online" to onlineCapabilitiesList)
+    }
+
+    private fun determineMaxPlayers(coopMax: Int?, max: Int?): String {
+        var localCoopMax = coopMax
+        var localMax = max
+
+        if (localCoopMax == null) localCoopMax = 0
+        if (localMax == null) localMax = 0
+
+        if ( (localCoopMax != 0) || (localMax != 0) ) {
+            return resources.getString(R.string.max_players, max(localCoopMax, localMax))
+        } else {
+            return ""
+        }
+
+    }
+
+    private fun getSelectedPlatformInt(selectedPlatform: String, platformList: List<GenericSpinnerItem>): Int {
+        var platformInt = 0
+        for (i in platformList.indices) {
+            if (platformList[i].name == selectedPlatform) {
+                platformInt = platformList[i].id
+            }
+        }
+        return platformInt
+    }
+
+    fun getMultiplayerModesList(): LiveData<List<MultiplayerModesItem?>?>
+        = getIndividualGameData().map { gameData ->
+            gameData[0]?.multiplayer_modes
+         }
+
+
     fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
 
         gameData[0]?.cover?.url?.let {
@@ -174,7 +361,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         val localDate = LocalDate.parse(substring)
         val formatter = DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT)
 
-        return "Original Release Date: ${formatter.format(localDate)}"
+        return resources.getString(R.string.original_release_date, formatter.format(localDate))
 
     }
 
@@ -242,6 +429,26 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         } else  {
             return GONE
         }
+    }
+
+    fun getMultiplayerTitleAndSpinnerVisibility(currentVisibility: Int, multiplayerModes: List<MultiplayerModesItem?>?): Int {
+        if (multiplayerModes.isNullOrEmpty()) return GONE
+        else {
+            if (currentVisibility == GONE) {
+                return VISIBLE
+            } else  {
+                return GONE
+            }        }
+    }
+
+    fun getMultiplayerCapabilitiesInfoVisibility(spinnerSelection: Int, currentVisibility: Int): Int {
+         if (spinnerSelection != 0) {
+            if (currentVisibility == GONE) {
+                return VISIBLE
+            } else  {
+                 return GONE
+            }
+        } else return GONE
     }
 
     fun determineArrowButtonStatus(viewVisibility: Int): Int {

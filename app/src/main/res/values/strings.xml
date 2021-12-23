@@ -28,6 +28,28 @@
     <string name="genres_prefix">Genres:\u0020</string>
     <string name="no_genres_found_text">No genre data found</string>
     <string name="player_perspectives_prefix">Player Perspectives:\u0020</string>
-
+    <string name="game_modes_and_multiplayer_title">Game Modes and Multiplayer Capabilities</string>
+    <string name="no_game_modes_text">No single or multiplayer data found</string>
+    <string name="game_modes_list_prefix">Game modes:\u0009</string>
+    <string name="no_multiplayer_capabilities_text">No multiplayer available</string>
+    <string name="multiplayer_capabilities_title">Multiplayer Capabilities</string>
+    <string name="no_coop_capabilities">No co-op capabilities found/string</string>
+    <string name="no_offline_capabilities">No offline capabilities found</string>
+    <string name="no_online_capabilities">No online capabilities found</string>
+    <string name="coop_capabilities_title">Co-op Capabilities:</string>
+    <string name="offline_capabilities_title">Offline Multiplayer Capabilities:</string>
+    <string name="online_capabilities_title">Online Multiplayer Capabilities:</string>
+    <string name="none">None</string>
+    <string name="campaign_coop">Campaign co-op</string>
+    <string name="lan_coop">Lan co-op</string>
+    <string name="multiplayer_capabilities_prefix">\u0009-\u0020</string>
+    <string name="multiplayer_capabilities_separator">\u000A\u0009-\u0020</string>
+    <string name="offline_coop">Offline co-op</string>
+    <string name="split_screen">Split Screen</string>
+    <string name="online_coop">Online co-op</string>
+    <string name="drop_in_multi">Drop-in multiplayer</string>
+    <string name="max_players">%1$d players max</string>
+    <string name="game_modes_list_separator">\u000A\u0009-\u0020</string>
+    <string name="original_release_date">Original Release Date: %1$s</string>
 
 </resources>
