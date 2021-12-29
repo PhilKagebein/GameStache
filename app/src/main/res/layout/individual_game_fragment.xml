@@ -524,28 +524,6 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewOtherInvoledCompanies"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                app:cardCornerRadius="@dimen/cardViewsCornerRadius"
-                android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
-                android:layout_marginTop="@dimen/individualGameMarginTop"
-                >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Other Involved Companies"
-                    android:gravity="center"
-                    android:textColor="?attr/textColor"
-                    android:textSize="@dimen/individualGameTextSize"
-
-                    />
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewSimilarGames"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
