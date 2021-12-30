@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.lang.NullPointerException
 import java.net.URI
 import java.time.Instant
 import java.time.LocalDate
@@ -70,12 +69,24 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
                             }
                         }
                     } else {
-                        repository.getIndividualGameDataFromDb(gameID)
+                       repository.getIndividualGameDataFromDb(gameID)
                     }
                 }
             }
     }
 
+    fun similarGamesMap(): LiveData<List<SimilarGame?>>
+        = getIndividualGameData().map{ gameData ->
+
+            gameData[0]?.similar_games?.let { similarGames ->
+                similarGames
+            } ?: run {
+                emptyList()
+            }
+
+    }
+
+    //TODO: RATHER THAN MAPPING EACH OF THESE TO GETINDIVIDUALGAMEDATA(), SHOULD I CALL SEAPARATE FUNCTIONS FROM GETINDIVIDUALGAMEDATA() AFTER THE RESPONSE IS SUCCESSFUL?
     fun getReleaseDatesList(): LiveData<List<ReleaseDate?>?> =
         getIndividualGameData().map { gameData ->
             gameData[0]?.release_dates
@@ -169,6 +180,8 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         }
     }
 
+
+
     private fun getGameModesText(gameModes: List<IndividualGameMode?>): String {
         val gameModesList = mutableListOf<String>()
 
@@ -214,7 +227,6 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
 
     }
 
-
     fun getOfflineCapabilitiesText(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatform: String, platformsListFromDb: List<GenericSpinnerItem>): String {
         val selectedPlatformInt = getSelectedPlatformInt(selectedPlatform, platformsListFromDb)
         val offlineCapabilitiesList = getMultiplayerCapabilitiesMap(multiplayerModes, selectedPlatformInt)["offline"]
@@ -225,7 +237,6 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
             return resources.getString(R.string.none)
         }
     }
-
 
     fun getOnlineCapabilitiesText(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatform: String, platformsListFromDb: List<GenericSpinnerItem>): String {
         val selectedPlatformInt = getSelectedPlatformInt(selectedPlatform, platformsListFromDb)

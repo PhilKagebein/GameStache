@@ -25,6 +25,7 @@
     <string name="no_release_information_found_text">No release information found</string>
     <string name="no_platforms_found_text">No platform data found</string>
     <string name="player_perspectives_and_genres_block_title">Player Perspectives and Genres</string>
+    <string name="similar_games_block_title">Similar Games</string>
     <string name="genres_prefix">Genres:\u0020</string>
     <string name="no_genres_found_text">No genre data found</string>
     <string name="player_perspectives_prefix">Player Perspectives:\u0020</string>
@@ -51,5 +52,6 @@
     <string name="max_players">%1$d players max</string>
     <string name="game_modes_list_separator">\u000A\u0009-\u0020</string>
     <string name="original_release_date">Original Release Date: %1$s</string>
+    <string name="similar_game">-\u0020%1$s</string>
 
 </resources>

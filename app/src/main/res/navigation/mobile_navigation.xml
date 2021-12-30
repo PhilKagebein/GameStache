@@ -43,5 +43,8 @@
         <argument
             android:name="gameName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_individualGameFragment_self"
+            app:destination="@id/individualGameFragment" />
     </fragment>
 </navigation>

@@ -100,7 +100,7 @@ val exploreViewModelModule = module {
 
 val individualGameViewModelModule = module {
 
-    viewModel { IndividualGameViewModel(get(), get()) }
+    viewModel { IndividualGameViewModel(get(), get())}
 
     single { androidApplication().resources }
 

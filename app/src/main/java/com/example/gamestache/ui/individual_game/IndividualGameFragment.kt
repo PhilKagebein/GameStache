@@ -1,14 +1,17 @@
 package com.example.gamestache.ui.individual_game
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.gamestache.MainActivity
@@ -18,9 +21,9 @@ import com.example.gamestache.databinding.IndividualGameFragmentBinding
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.individual_game.MultiplayerModesItem
 import com.example.gamestache.models.individual_game.ReleaseDate
+import com.example.gamestache.models.individual_game.SimilarGame
 import kotlinx.android.synthetic.main.individual_game_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.lang.NullPointerException
 
 class IndividualGameFragment : Fragment() {
 
@@ -47,6 +50,9 @@ class IndividualGameFragment : Fragment() {
         var imageURL = ""
         val releaseRegionSpinner = binding.releasesByRegionSpinner
         val multiplayerOnPlatformSpinner = binding.multiplayerOnPlatformSpinner
+        var count = 0
+        val similarGamesTextViews = mutableListOf<TextView>()
+
 
         individualGameViewModel.gameId.postValue(args.gameId)
         individualGameViewModel.getAccessToken()
@@ -153,7 +159,58 @@ class IndividualGameFragment : Fragment() {
             }
         })
 
+        binding.similarGamesCardView.setOnClickListener {
+            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(similarGamesTextViews[0].visibility)
+            binding.similarGamesArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
 
+            for (textView in similarGamesTextViews.indices) {
+                similarGamesTextViews[textView].visibility = individualGameViewModel.changeCardViewVisibility(similarGamesTextViews[textView].visibility)
+            }
+        }
+
+        individualGameViewModel.similarGamesMap().observe(viewLifecycleOwner, { similarGamesList ->
+            populateSimilarGamesTextViews(similarGamesList, count, similarGamesTextViews)
+            count++
+            formatSimilarGamesTextViews(similarGamesTextViews)
+            setSimilarGameOnClickListener(similarGamesList, similarGamesTextViews)
+        })
+
+    }
+
+    private fun setSimilarGameOnClickListener(similarGamesList: List<SimilarGame?>, similarGamesTextViews: MutableList<TextView>) {
+        for (textView in similarGamesTextViews.indices) {
+            similarGamesTextViews[textView].setOnClickListener {
+                similarGamesList[textView]?.id?.let { id ->
+                    similarGamesList[textView]?.name?.let { name ->
+                        val action = IndividualGameFragmentDirections.actionIndividualGameFragmentSelf(id, name)
+                        view?.let { view -> Navigation.findNavController(view).navigate(action) }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun populateSimilarGamesTextViews(similarGamesList: List<SimilarGame?>, count: Int, similarGamesTextViews: MutableList<TextView>) {
+        if (count == 0) {
+            for ( game in similarGamesList.indices ) {
+                val similarGameTextView = TextView(context)
+                similarGameTextView.text = getString(R.string.similar_game, similarGamesList[game]?.name)
+                binding.similarGamesLinearLayout.addView(similarGameTextView)
+                similarGamesTextViews.add(similarGameTextView)
+            }
+        }
+    }
+
+    private fun formatSimilarGamesTextViews(similarGamesTextViews: MutableList<TextView>) {
+        for (textView in similarGamesTextViews) {
+            textView.apply {
+                textSize = SIMILAR_GAME_TEXT_SIZE
+                setPadding(SIMILAR_GAME_LEFT_PADDING, SIMILAR_GAME_TOP_PADDING, SIMILAR_GAME_RIGHT_PADDING, SIMILAR_GAME_BOTTOM_PADDING)
+                setTextColor(resources.getColor(R.color.white, context.theme))
+                textAlignment = left
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+        }
     }
 
     private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String>) {
@@ -224,5 +281,11 @@ class IndividualGameFragment : Fragment() {
 
     companion object {
         const val RELEASE_REGION_SPINNER_REGION_DEFAULT = "North America"
+        const val SIMILAR_GAME_TEXT_SIZE = 18F
+        const val SIMILAR_GAME_LEFT_PADDING = 17
+        const val SIMILAR_GAME_TOP_PADDING = 3
+        const val SIMILAR_GAME_RIGHT_PADDING = 17
+        const val SIMILAR_GAME_BOTTOM_PADDING = 3
+
     }
 }

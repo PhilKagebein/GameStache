@@ -524,24 +524,61 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewSimilarGames"
+                android:id="@+id/similarGamesCardView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameMarginTop"
                 android:layout_marginVertical="@dimen/individualGameVerticalMargin"
                 >
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/similarGamesLinearLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Similar Games"
-                    android:gravity="center"
-                    android:textColor="?attr/textColor"
-                    android:textSize="@dimen/individualGameTextSize"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                    />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/similarGamesTitleTV"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
+                            android:gravity="start"
+                            android:text="@string/similar_games_block_title"
+                            android:textAlignment="textStart"
+                            android:textColor="?attr/textColor"
+                            android:textSize="@dimen/individualGameTextSize"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginStart="@dimen/gameFragmentTextViewStartMargin"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/similarGamesArrowButton"
+                            android:layout_width="@dimen/gameFragmentDropdownWidth"
+                            android:layout_height="@dimen/gameFragmentDropdownHeight"
+                            android:background="@drawable/drop_down_arrow_down"
+                            android:backgroundTint="@color/white"
+                            android:backgroundTintMode="@color/white"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:drawableTint="@color/white"
+                            android:drawableTintMode="@color/white"
+                            android:clickable="false"
+                            android:focusable="false"
+                            />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
