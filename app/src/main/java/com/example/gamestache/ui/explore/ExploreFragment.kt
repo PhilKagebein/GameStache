@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -80,7 +82,7 @@ class ExploreFragment : Fragment() {
             exploreAdapter.submitList(gamesList)
         })
 
-        binding.etVideoGameSearch.setOnEditorActionListener {_, actionId, _ ->
+        binding.exploreSearchFieldEditText.setOnEditorActionListener {_, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performGameSearch(searchText)
             }
@@ -129,6 +131,14 @@ class ExploreFragment : Fragment() {
         binding.btnClearMultiplayerSpinner.setOnClickListener {
             gameModesSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
+
+        binding.clearEditTextButton.setOnClickListener {
+            exploreViewModel.nameSearchText.postValue("")
+        }
+
+        exploreViewModel.nameSearchText.observe(viewLifecycleOwner, { nameSearchText ->
+                binding.clearEditTextButton.visibility = exploreViewModel.clearEditTextField(nameSearchText)
+        })
     }
 
     private fun performGameSearch(searchText: RequestBody) {

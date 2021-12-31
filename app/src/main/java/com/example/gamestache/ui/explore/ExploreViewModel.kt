@@ -225,6 +225,13 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
         else return VISIBLE
     }
 
+    fun clearEditTextField(observedFieldValue: String): Int {
+        if (!observedFieldValue.isNullOrEmpty() || observedFieldValue.isNotBlank()) {
+            return VISIBLE
+        } else {
+            return GONE
+        }
+    }
     companion object {
         const val BASIC_SEARCH_TEXT = "\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;"
     }

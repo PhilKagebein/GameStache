@@ -15,19 +15,48 @@
         tools:context=".ui.explore.ExploreFragment"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etVideoGameSearch"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@={exploreviewmodel.nameSearchText}"
-            android:textSize="@dimen/etTextSize"
-            android:layout_marginStart="@dimen/etMarginStart"
-            android:layout_marginEnd="@dimen/etMarginEnd"
-            android:hint="@string/searchview_query_text"
-            android:singleLine="true"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            />
+            android:layout_marginStart="@dimen/spnLayoutStart"
+            android:layout_marginEnd="@dimen/spnLayoutEnd"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/exploreSearchFieldEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@={exploreviewmodel.nameSearchText}"
+                android:textSize="@dimen/etTextSize"
+                android:hint="@string/searchview_query_text"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                app:layout_constraintEnd_toStartOf="@id/clearEditTextButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                />
+
+            <ImageView
+                android:id="@+id/clearEditTextButton"
+                android:layout_width="@dimen/clearButtonWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/clearButtonMarginEnd"
+                android:background="@drawable/spinner_clear"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/exploreSearchFieldEditText"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/platformSpinnerLayout"
