@@ -52,6 +52,6 @@
     <string name="max_players">%1$d players max</string>
     <string name="game_modes_list_separator">\u000A\u0009-\u0020</string>
     <string name="original_release_date">Original Release Date: %1$s</string>
-    <string name="similar_game">-\u0020%1$s</string>
+    <string name="similar_game">\u0009-\u0020%1$s</string>
 
 </resources>
