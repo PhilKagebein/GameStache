@@ -53,5 +53,6 @@
     <string name="game_modes_list_separator">\u000A\u0009-\u0020</string>
     <string name="original_release_date">Original Release Date: %1$s</string>
     <string name="similar_game">\u0009-\u0020%1$s</string>
+    <string name="blank_search_attempt_error_message">You must enter a game or select one option from a spinner</string>
 
 </resources>

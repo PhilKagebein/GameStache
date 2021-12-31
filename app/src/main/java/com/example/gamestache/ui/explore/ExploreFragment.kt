@@ -4,8 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -14,12 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamestache.R
 import com.example.gamestache.SpinnerAdapter
 import com.example.gamestache.databinding.FragmentExploreBinding
 import com.example.gamestache.models.explore_spinners.GameModesResponseItem
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.explore_spinners.GenresResponseItem
 import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
+import kotlinx.android.synthetic.main.fragment_explore.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -30,7 +30,11 @@ class ExploreFragment : Fragment() {
     val exploreViewModel: ExploreViewModel by viewModel()
     private lateinit var binding: FragmentExploreBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentExploreBinding.inflate(inflater, container, false)
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = viewLifecycleOwner
@@ -45,10 +49,10 @@ class ExploreFragment : Fragment() {
         var genreSpinner: Spinner? = binding.spnGenre
         var gameModesSpinner: Spinner? = binding.spnMultiplayer
 
-        var searchText : RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
+        var searchRequestBody: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
         val exploreAdapter = GamesListSearchResultsAdapter(resources)
 
-        binding.rvExplore.apply{
+        binding.rvExplore.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = exploreAdapter
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
@@ -57,41 +61,65 @@ class ExploreFragment : Fragment() {
 
         //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
         //TODO WALK THROUGH WITH KEVIN WHAT I DID WITH INITSPINNERS AND SETSPINNERONCLICK TO SEE IF THIS IS THE BEST WAY OF DOING IT
-        exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-             if (spinnerListFromRoom != null) {
-                platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
-                platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
-            }
-        })
+        exploreViewModel.currentPlatformListInDb.observe(
+            viewLifecycleOwner,
+            { spinnerListFromRoom ->
+                if (spinnerListFromRoom != null) {
+                    platformSpinner = platformSpinner?.let {
+                        initSpinners(
+                            it,
+                            spinnerListFromRoom,
+                            PLATFORM_SPINNER_PROMPT
+                        )
+                    }
+                    platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
+                }
+            })
 
         exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
-            genreSpinner?.let {setSpinnerOnClick(it, "genre", savedInstanceState)}
+            genreSpinner =
+                genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
+            genreSpinner?.let { setSpinnerOnClick(it, "genre", savedInstanceState) }
         })
-        exploreViewModel.currentGameModesListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
-            gameModesSpinner?.let {setSpinnerOnClick(it, "gameMode", savedInstanceState)}
-        })
+        exploreViewModel.currentGameModesListInDb.observe(
+            viewLifecycleOwner,
+            { spinnerListFromRoom ->
+                gameModesSpinner = gameModesSpinner?.let {
+                    initSpinners(
+                        it,
+                        spinnerListFromRoom,
+                        GAME_MODES_SPINNER_PROMPT
+                    )
+                }
+                gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode", savedInstanceState) }
+            })
 
         //TODO: TALK TO KEVIN ABOUT NOT ELIMINATING THIS BECAUSE I DON'T WANT THE SEARCH TO BE PERFORMED AUTOMATICALLY
         exploreViewModel.searchText().observe(viewLifecycleOwner, { text ->
-                   searchText = text
+            searchRequestBody = text
         })
 
         exploreViewModel.transformDataForListAdapter().observe(viewLifecycleOwner, { gamesList ->
             exploreAdapter.submitList(gamesList)
         })
 
-        binding.exploreSearchFieldEditText.setOnEditorActionListener {_, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                performGameSearch(searchText)
-            }
-            true
-        }
-
-        binding.btnExploreSearch.setOnClickListener {
-            performGameSearch(searchText)
-        }
+        exploreViewModel.nameSearchText.observe(viewLifecycleOwner, { editText ->
+            exploreViewModel.platformText.observe(viewLifecycleOwner, { platformText ->
+                exploreViewModel.genreText.observe(viewLifecycleOwner, {genreText ->
+                    exploreViewModel.gameModesText.observe(viewLifecycleOwner, { gameModeText ->
+                        binding.exploreSearchFieldEditText.setOnEditorActionListener { _, actionId, _ ->
+                            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                                checkForEmptySearch(editText, platformText, genreText, gameModeText, searchRequestBody)
+                            }
+                            true
+                        }
+                        binding.btnExploreSearch.setOnClickListener {
+                            checkForEmptySearch(editText, platformText, genreText, gameModeText, searchRequestBody)
+                        }
+                    })
+                })
+            })
+        })
 
         //Storing Spinner data in Room
         exploreViewModel.getPlatformsListFromRoom().observe(viewLifecycleOwner, { response ->
@@ -137,15 +165,27 @@ class ExploreFragment : Fragment() {
         }
 
         exploreViewModel.nameSearchText.observe(viewLifecycleOwner, { nameSearchText ->
-                binding.clearEditTextButton.visibility = exploreViewModel.clearEditTextField(nameSearchText)
+            binding.clearEditTextButton.visibility =
+                exploreViewModel.clearEditTextField(nameSearchText)
         })
     }
 
-    private fun performGameSearch(searchText: RequestBody) {
+    private fun checkForEmptySearch(editText: String, platformText: String, genreText: String, gameModeText: String, searchRequestBody: RequestBody) {
+        if (editText.isBlank() && platformText.isBlank() && genreText.isBlank() && gameModeText.isBlank()) {
+            Toast.makeText(requireContext(),
+                getString(R.string.blank_search_attempt_error_message),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            performGameSearch(searchRequestBody)
+        }
+    }
+
+    private fun performGameSearch(searchRequestBody: RequestBody) {
         collapseKeyboard()
 
-        exploreViewModel.twitchAuthorization.value?.access_token?.let {twitchAccessToken ->
-            exploreViewModel.searchGames(twitchAccessToken, searchText)
+        exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAccessToken ->
+            exploreViewModel.searchGames(twitchAccessToken, searchRequestBody)
         }
 
     }
@@ -185,22 +225,23 @@ class ExploreFragment : Fragment() {
                     }
                 }
             }
+
             override fun onNothingSelected(adapterview: AdapterView<*>?) {
             }
         }
     }
 
-    companion object{
+    companion object {
         const val SPINNER_RESET_VALUE = 0
         const val PLATFORM_SPINNER_PROMPT = "Select a platform"
         const val GENRE_SPINNER_PROMPT = "Select a genre"
         const val GAME_MODES_SPINNER_PROMPT = "Select multiplayer capabilities"
     }
 
+    enum class ExploreSpinners(val spinnerName: String) {
+        PLATFORM_SPINNER("platform"),
+        GENRE_SPINNER("genre"),
+        GAME_MODE_SPINNER("gameMode")
+    }
 }
 
-enum class ExploreSpinners(val spinnerName: String) {
-    PLATFORM_SPINNER("platform"),
-    GENRE_SPINNER("genre"),
-    GAME_MODE_SPINNER("gameMode")
-}
