@@ -523,6 +523,7 @@
 
             </androidx.cardview.widget.CardView>
 
+            <!--Similar Games Card-->
             <androidx.cardview.widget.CardView
                 android:id="@+id/similarGamesCardView"
                 android:layout_width="match_parent"

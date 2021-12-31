@@ -31,7 +31,7 @@
     <string name="player_perspectives_prefix">Player Perspectives:\u0020</string>
     <string name="game_modes_and_multiplayer_title">Game Modes and Multiplayer Capabilities</string>
     <string name="no_game_modes_text">No single or multiplayer data found</string>
-    <string name="game_modes_list_prefix">Game modes:\u0009</string>
+    <string name="game_modes_list_prefix">Game modes:\u000A\u0009-\u0020</string>
     <string name="no_multiplayer_capabilities_text">No multiplayer available</string>
     <string name="multiplayer_capabilities_title">Multiplayer Capabilities</string>
     <string name="no_coop_capabilities">No co-op capabilities found/string</string>
