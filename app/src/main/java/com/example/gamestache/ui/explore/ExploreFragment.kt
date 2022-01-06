@@ -1,5 +1,6 @@
 package com.example.gamestache.ui.explore
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -51,6 +52,7 @@ class ExploreFragment : Fragment() {
 
         var searchRequestBody: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
         val exploreAdapter = GamesListSearchResultsAdapter(resources)
+        val loadingDialog = Dialog(requireContext())
 
         binding.rvExplore.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
@@ -61,36 +63,19 @@ class ExploreFragment : Fragment() {
 
         //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
         //TODO WALK THROUGH WITH KEVIN WHAT I DID WITH INITSPINNERS AND SETSPINNERONCLICK TO SEE IF THIS IS THE BEST WAY OF DOING IT
-        exploreViewModel.currentPlatformListInDb.observe(
-            viewLifecycleOwner,
-            { spinnerListFromRoom ->
-                if (spinnerListFromRoom != null) {
-                    platformSpinner = platformSpinner?.let {
-                        initSpinners(
-                            it,
-                            spinnerListFromRoom,
-                            PLATFORM_SPINNER_PROMPT
-                        )
-                    }
+        exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
+            if (spinnerListFromRoom != null) { platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
                     platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
                 }
             })
 
         exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            genreSpinner =
-                genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
+            genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
             genreSpinner?.let { setSpinnerOnClick(it, "genre", savedInstanceState) }
         })
-        exploreViewModel.currentGameModesListInDb.observe(
-            viewLifecycleOwner,
-            { spinnerListFromRoom ->
-                gameModesSpinner = gameModesSpinner?.let {
-                    initSpinners(
-                        it,
-                        spinnerListFromRoom,
-                        GAME_MODES_SPINNER_PROMPT
-                    )
-                }
+
+        exploreViewModel.currentGameModesListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
+                gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
                 gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode", savedInstanceState) }
             })
 
@@ -121,6 +106,7 @@ class ExploreFragment : Fragment() {
             })
         })
 
+        //TODO: CAN I PUT THIS IN THE VIEW MODEL?
         //Storing Spinner data in Room
         exploreViewModel.getPlatformsListFromRoom().observe(viewLifecycleOwner, { response ->
             if (response != null) {
@@ -167,6 +153,15 @@ class ExploreFragment : Fragment() {
         exploreViewModel.nameSearchText.observe(viewLifecycleOwner, { nameSearchText ->
             binding.clearEditTextButton.visibility =
                 exploreViewModel.clearEditTextField(nameSearchText)
+        })
+
+        exploreViewModel.progressBarIsVisible.observe(viewLifecycleOwner, { progressBarVisibility ->
+            if (progressBarVisibility) {
+                loadingDialog.setContentView(R.layout.loading_dialog)
+                loadingDialog.show()
+            } else {
+                loadingDialog.dismiss()
+            }
         })
     }
 

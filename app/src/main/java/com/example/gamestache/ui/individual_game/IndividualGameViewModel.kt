@@ -28,6 +28,20 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
     var coopCapabilitiesText: MutableLiveData<String> = MutableLiveData()
     var offlineCapabilitiesText: MutableLiveData<String> = MutableLiveData()
     var onlineCapabilitiesText: MutableLiveData<String> = MutableLiveData()
+    val glideURL: MutableLiveData<String> = MutableLiveData()
+    val similarGamesList: MutableLiveData<List<SimilarGame?>> = MutableLiveData()
+    val releaseDatesList: MutableLiveData<List<ReleaseDate?>?> = MutableLiveData()
+    val originalReleaseDate: MutableLiveData<String> = MutableLiveData()
+    val originalPlatforms: MutableLiveData<String> = MutableLiveData()
+    val developers: MutableLiveData<String> = MutableLiveData()
+    val publishers: MutableLiveData<String> = MutableLiveData()
+    val summaryText: MutableLiveData<String> = MutableLiveData()
+    val regionsList: MutableLiveData<MutableList<String?>?> = MutableLiveData()
+    val playerPerspectivesText: MutableLiveData<String> = MutableLiveData()
+    val genresText: MutableLiveData<String> = MutableLiveData()
+    val gameModesText: MutableLiveData<String> = MutableLiveData()
+    val platformsListForMultiplayerModesSpinner: MutableLiveData<MutableList<String?>> = MutableLiveData()
+    val multiplayerModesList: MutableLiveData<List<MultiplayerModesItem?>?> = MutableLiveData()
 
     val platformListFromDb = repository.getPlatformsListFromDb()
 
@@ -75,114 +89,141 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
             }
     }
 
-    fun similarGamesMap(): LiveData<List<SimilarGame?>>
-        = getIndividualGameData().map{ gameData ->
-
-            gameData[0]?.similar_games?.let { similarGames ->
-                similarGames
-            } ?: run {
-                emptyList()
-            }
-
-    }
-
-    //TODO: RATHER THAN MAPPING EACH OF THESE TO GETINDIVIDUALGAMEDATA(), SHOULD I CALL SEAPARATE FUNCTIONS FROM GETINDIVIDUALGAMEDATA() AFTER THE RESPONSE IS SUCCESSFUL?
-    fun getReleaseDatesList(): LiveData<List<ReleaseDate?>?> =
-        getIndividualGameData().map { gameData ->
-            gameData[0]?.release_dates
-        }
-
     private suspend fun storeIndividualGameToDb(individualGameData: List<IndividualGameDataItem>) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.storeIndividualGameToDb(individualGameData)
         }
     }
 
-    //TODO: IS THERE ANY REASON TO PULL A SUBSET OF GAMEDATA FROM THE DB WHEN GETINDIVIDUALGAMEDATA() IS ALREADY GETTING THE MOST UP TO DATE DATA?
-    var originalReleaseDate: LiveData<String> = getIndividualGameData().map { gameData ->
-        gameData[0]?.first_release_date?.let {
-            formatDate(it)
-        } ?: run {
-            resources.getString(R.string.no_release_date_found_text)
+    val progressBarIsVisible: LiveData<Boolean>
+    = getIndividualGameData().switchMap { gameData ->
+        platformListFromDb.map { platformsListInDb ->
+            getImageURLForGlide(gameData)
+            getSimilarGamesList(gameData)
+            getReleaseDatesList(gameData)
+            getOriginalReleaseDateText(gameData)
+            getOriginalPlatformsText(gameData)
+            getDevelopersText(gameData)
+            getPublishersText(gameData)
+            getSummaryText(gameData)
+            getRegionsList(gameData)
+            getPlayerPerspectivesText(gameData)
+            getGenresText(gameData)
+            getGameModesText(gameData)
+            getPlatformsListForMultiplayerModesSpinner(gameData, platformsListInDb)
+            getMultiplayerModesList(gameData)
+            false
         }
     }
 
-    var originalPlatforms: LiveData<String> = getIndividualGameData().map { gameData ->
+    private fun getImageURLForGlide(gameData: List<IndividualGameDataItem?>) {
+        gameData[0]?.cover?.url?.let {
+            val baseUrl = URI(gameData[0]?.cover?.url)
+            val segments = baseUrl.path.split("/")
+            val lastSegment = segments[segments.size - 1]
+            val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
+            glideURL.postValue( addImageHashToGlideURL(imageHash) )
+        } ?: run {
+            glideURL.postValue("")
+        }
+    }
+
+    private fun getSimilarGamesList(gameData: List<IndividualGameDataItem?>) {
+        gameData[0]?.similar_games?.let { similarGames ->
+            similarGamesList.postValue(similarGames)
+        } ?: run {
+            similarGamesList.postValue(emptyList())
+        }
+    }
+
+    private fun getReleaseDatesList(gameData: List<IndividualGameDataItem?>) {
+        releaseDatesList.postValue(gameData[0]?.release_dates)
+    }
+
+    private fun getOriginalReleaseDateText(gameData: List<IndividualGameDataItem?>) {
+        gameData[0]?.first_release_date?.let {
+            originalReleaseDate.postValue( formatDate(it) )
+        } ?: run {
+            originalReleaseDate.postValue( resources.getString(R.string.no_release_date_found_text) )
+        }
+    }
+
+    private fun getOriginalPlatformsText(gameData: List<IndividualGameDataItem?>) {
         val originalReleaseDate = gameData[0]?.first_release_date
         val individualReleasesList = gameData[0]?.release_dates
 
         originalReleaseDate?.let { originalDate ->
             individualReleasesList?.let { releasesList ->
-                findOriginalPlatforms(originalDate, releasesList)
+                originalPlatforms.postValue( createOriginalReleasePlatformsText(originalDate, releasesList) )
             }
         } ?: run {
-            resources.getString(R.string.no_platforms_found_text)
+            originalPlatforms.postValue( resources.getString(R.string.no_platforms_found_text) )
         }
     }
 
-    var developers: LiveData<String> = getIndividualGameData().map { gameData ->
-
+    private fun getDevelopersText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.involved_companies?.let { involvedCompanies ->
-            getDevelopers(involvedCompanies)
+            developers.postValue( createDevelopersText(involvedCompanies) )
         } ?: run {
-            resources.getString(R.string.no_developers_found_text)
+            developers.postValue( resources.getString(R.string.no_developers_found_text) )
         }
     }
 
-    var publishers: LiveData<String> = getIndividualGameData().map { gameData ->
-
+    private fun getPublishersText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.involved_companies?.let { involvedCompanies ->
-            getPublishers(involvedCompanies)
+            publishers.postValue( createPublishersText(involvedCompanies) )
         } ?: run {
-            resources.getString(R.string.no_publishers_found_text)
+            publishers.postValue( resources.getString(R.string.no_publishers_found_text) )
         }
     }
 
-    var summaryText: LiveData<String?> = getIndividualGameData().map { gameData ->
+    private fun getSummaryText(gameData: List<IndividualGameDataItem?>) {
 
-        gameData[0]?.summary ?: run {
-           resources.getString(R.string.no_game_summary)
-       }
-
+        gameData[0]?.summary?.let {
+            summaryText.postValue( it )
+        } ?: run {
+            summaryText.postValue( resources.getString(R.string.no_game_summary) )
+        }
     }
 
-    var regionsList: LiveData<MutableList<String>> = getIndividualGameData().map { gameData ->
-
+    private fun getRegionsList(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.release_dates?.let { releaseDatesList ->
-            getRegionsReleased(releaseDatesList)
+            regionsList.postValue( getRegionsReleasedList(releaseDatesList) )
         } ?: run {
-            mutableListOf(resources.getString(R.string.no_regions_found_text))
+            regionsList.postValue( null )
         }
-
     }
 
-    var playerPerspectivesText: LiveData<String> = getIndividualGameData().map { gameData ->
+    private fun getPlayerPerspectivesText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.player_perspectives?.let { playerPerspectives ->
-            getPlayerPerspectivesText(playerPerspectives)
+            playerPerspectivesText.postValue( createPlayerPerspectivesText(playerPerspectives) )
         } ?: run {
-            resources.getString(R.string.no_player_perspectives)
+            playerPerspectivesText.postValue( resources.getString(R.string.no_player_perspectives) )
         }
     }
 
-    var genresText: LiveData<String> = getIndividualGameData().map { gameData ->
+    private fun getGenresText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.genres?.let { genres ->
-            getGenreText(genres)
+            genresText.postValue( createGenresText(genres) )
         } ?: run {
-            resources.getString(R.string.no_genres_found_text)
+            genresText.postValue( resources.getString(R.string.no_genres_found_text) )
         }
     }
 
-    var gameModesText: LiveData<String> = getIndividualGameData().map { gameData ->
+    private fun getGameModesText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.game_modes?.let { gameModes ->
-            getGameModesText(gameModes)
+            gameModesText.postValue( createGameModesText(gameModes) )
         } ?: run {
-            resources.getString(R.string.no_game_modes_text)
+            gameModesText.postValue( resources.getString(R.string.no_game_modes_text) )
         }
     }
 
+    private fun getMultiplayerModesList(gameData: List<IndividualGameDataItem?>) {
+        multiplayerModesList.postValue( gameData[0]?.multiplayer_modes )
+    }
 
-
-    private fun getGameModesText(gameModes: List<IndividualGameMode?>): String {
+    //TODO: CHANGE NAME
+    private fun createGameModesText(gameModes: List<IndividualGameMode?>): String {
         val gameModesList = mutableListOf<String>()
 
         for (gameMode in gameModes.indices) {
@@ -192,27 +233,24 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         return gameModesList.joinToString(prefix = resources.getString(R.string.game_modes_list_prefix), separator = resources.getString(R.string.game_modes_list_separator))
     }
 
-    fun getPlatformsListForMultiplayerModesSpinner(): LiveData<MutableList<String>>
-        = getIndividualGameData().switchMap { gameData ->
-            platformListFromDb.map { platformListFromDb ->
-                val multiplayerModesRaw = gameData[0]?.multiplayer_modes
-                val platformIntsList = mutableListOf<Int>()
-                val platformNamesList = mutableListOf(resources.getString(R.string.platform_spinner_prompt))
+    private fun getPlatformsListForMultiplayerModesSpinner(gameData: List<IndividualGameDataItem?>, platformsListInDb: List<GenericSpinnerItem>) {
+        val multiplayerModesRaw = gameData[0]?.multiplayer_modes
+        val platformIntsList = mutableListOf<Int>()
+        val platformNamesList: MutableList<String?> = mutableListOf(resources.getString(R.string.platform_spinner_prompt))
 
-                multiplayerModesRaw?.let {
-                    for (platform in multiplayerModesRaw.indices) {
-                        multiplayerModesRaw[platform]?.platform?.let { platformInt -> platformIntsList.add(platformInt) }
-                    }
-                }
-                    for (int in platformIntsList) {
-                        for (entry in platformListFromDb.indices) {
-                            if (int == platformListFromDb[entry].id) {
-                                platformNamesList.add(platformListFromDb[entry].name)
-                            }
-                        }
-                    }
-                platformNamesList
+        multiplayerModesRaw?.let {
+            for (platform in multiplayerModesRaw.indices) {
+                multiplayerModesRaw[platform]?.platform?.let { platformInt -> platformIntsList.add(platformInt) }
+            }
         }
+        for (int in platformIntsList) {
+            for (entry in platformsListInDb.indices) {
+                if (int == platformsListInDb[entry].id) {
+                    platformNamesList.add(platformsListInDb[entry].name)
+                }
+            }
+        }
+        platformsListForMultiplayerModesSpinner.postValue( platformNamesList )
     }
 
     fun getCoopCapabilitiesText(multiplayerModes: List<MultiplayerModesItem?>?, selectedPlatform: String, platformsListFromDb: List<GenericSpinnerItem>): String {
@@ -291,8 +329,12 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
                         } else {
                             val offlineCoopMax = multiplayerModes[platform]?.offlinecoopmax
                             val offlineMax = multiplayerModes[platform]?.offlinemax
+                            val maxPlayersOffline = determineMaxPlayers(offlineCoopMax, offlineMax)
 
-                            offlineCapabilitiesList.add(determineMaxPlayers(offlineCoopMax, offlineMax))
+                            if (maxPlayersOffline.isNotBlank()) {
+                                offlineCapabilitiesList.add(maxPlayersOffline)
+                            }
+
 
                         }
 
@@ -301,8 +343,11 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
                         } else {
                             val onlineCoopMax = multiplayerModes[platform]?.onlinecoopmax
                             val onlineMax = multiplayerModes[platform]?.onlinemax
+                            val maxPlayersOnline = determineMaxPlayers(onlineCoopMax, onlineMax)
 
-                            onlineCapabilitiesList.add(determineMaxPlayers(onlineCoopMax, onlineMax))
+                            if (maxPlayersOnline.isNotBlank()) {
+                                onlineCapabilitiesList.add(maxPlayersOnline)
+                            }
                         }
 
                         if (coopCapabilitiesList.isNullOrEmpty()) {
@@ -346,25 +391,6 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         return platformInt
     }
 
-    fun getMultiplayerModesList(): LiveData<List<MultiplayerModesItem?>?>
-        = getIndividualGameData().map { gameData ->
-            gameData[0]?.multiplayer_modes
-         }
-
-
-    fun createImageURLForGlide(): LiveData<String> = getIndividualGameData().map { gameData ->
-
-        gameData[0]?.cover?.url?.let {
-            val baseUrl = URI(gameData[0]?.cover?.url)
-            val segments = baseUrl.path.split("/")
-            val lastSegment = segments[segments.size - 1]
-            val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            addImageHashToGlideURL(imageHash)
-        } ?: run {
-            ""
-        }
-    }
-
     private fun formatDate(firstReleaseDate: Int): String {
 
         val dateString = DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochSecond(firstReleaseDate.toLong()))
@@ -376,7 +402,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
 
     }
 
-    private fun findOriginalPlatforms(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): String {
+    private fun createOriginalReleasePlatformsText(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): String {
 
         val releasesList = getOriginalReleasePlatformsList(originalReleaseDate, individualReleasesList)
 
@@ -397,7 +423,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         return releasesList
     }
 
-    private fun getDevelopers(involvedCompaniesList: List<InvolvedCompany?>): String {
+    private fun createDevelopersText(involvedCompaniesList: List<InvolvedCompany?>): String {
         val developersList = createDevelopersAndPublishersList(involvedCompaniesList)["developers"]
 
         if (!developersList.isNullOrEmpty()) {
@@ -408,7 +434,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
 
     }
 
-    private fun getPublishers(involvedCompaniesList: List<InvolvedCompany?>): String {
+    private fun createPublishersText(involvedCompaniesList: List<InvolvedCompany?>): String {
         val publishersList = createDevelopersAndPublishersList(involvedCompaniesList)["publishers"]
 
         if (!publishersList.isNullOrEmpty()) {
@@ -470,10 +496,10 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         }
     }
 
-    private fun getRegionsReleased(individualReleasesList: List<ReleaseDate?>): MutableList<String> {
+    private fun getRegionsReleasedList(individualReleasesList: List<ReleaseDate?>): MutableList<String?> {
 
         val regionInts = getRegionIntsList(individualReleasesList)
-        return getRegionNameListFromInts(regionInts)
+        return createRegionsReleasedList(regionInts)
     }
 
     private fun getRegionIntsList(individualReleasesList: List<ReleaseDate?>): List<Int> {
@@ -491,8 +517,8 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         return regionInts.sorted()
     }
 
-    private fun getRegionNameListFromInts(regionInts: List<Int>): MutableList<String> {
-        val regionsList = mutableListOf(resources.getString(R.string.region_spinner_prompt))
+    private fun createRegionsReleasedList(regionInts: List<Int>): MutableList<String?> {
+        val regionsList: MutableList<String?> = mutableListOf(resources.getString(R.string.region_spinner_prompt))
 
         for (regionInt in regionInts) {
             regionsList.add(RegionReleases.values()[(regionInt-1)].regionName)
@@ -528,7 +554,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         return regionInt
     }
 
-    private fun getPlayerPerspectivesText(playerPerspectives: List<PlayerPerspective?>): String {
+    private fun createPlayerPerspectivesText(playerPerspectives: List<PlayerPerspective?>): String {
         val playerPerspectivesList = mutableListOf<String>()
 
         for (perspective in playerPerspectives.indices) {
@@ -538,7 +564,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
         return playerPerspectivesList.joinToString(prefix = resources.getString(R.string.player_perspectives_prefix), separator = ", ")
     }
 
-    private fun getGenreText(genres: List<Genre?>): String {
+    private fun createGenresText(genres: List<Genre?>): String {
         val genresList = mutableListOf<String>()
 
         for (perspective in genres.indices) {

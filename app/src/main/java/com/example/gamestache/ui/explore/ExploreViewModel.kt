@@ -28,6 +28,7 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
     var genreText: MutableLiveData<String> = MutableLiveData("")
     var gameModesText: MutableLiveData<String> = MutableLiveData("")
     val nameSearchText: MutableLiveData<String> = MutableLiveData("")
+    val progressBarIsVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getPlatformsListFromDb()
     val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGenresListFromDb()
@@ -66,6 +67,7 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
 
     fun searchGames(accessToken: String, gamesSearch: RequestBody) {
         viewModelScope.launch(Dispatchers.IO) {
+            progressBarIsVisible.postValue(true)
             val response = exploreRepository.searchGames(accessToken, gamesSearch)
             if (response.isSuccessful) {
                 gamesList.postValue(response.body())
@@ -73,6 +75,7 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
                 //Change how this is handled in the future.
                 println("Twitch auth token response not successful.")
             }
+            progressBarIsVisible.postValue(false)
         }
     }
 
@@ -145,6 +148,7 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
             }
         }
 
+    //TODO: CHANGE THIS NAME
     fun getPlatformsListFromRoom(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
@@ -167,8 +171,8 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
     }
 
     //TODO: TALK TO KEVIN ABOUT WHY I MADE GENERICSPINNERITEM CLASS AND THIS SOLUTION TO THE PROBLEM
-    fun addPromptToSpinnerList(spinnerList: List<GenericSpinnerItem>?, spinnerPrompt: String): MutableList<String> {
-        val list: MutableList<String> = emptyList<String>().toMutableList()
+    fun addPromptToSpinnerList(spinnerList: List<GenericSpinnerItem>?, spinnerPrompt: String): MutableList<String?> {
+        val list: MutableList<String?> = emptyList<String>().toMutableList()
         list.add(spinnerPrompt)
         if (spinnerList != null) {
             for (i in spinnerList.indices) {
