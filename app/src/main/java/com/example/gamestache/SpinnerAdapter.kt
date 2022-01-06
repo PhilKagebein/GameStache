@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 
-class SpinnerAdapter(context: Context, spinnerList: MutableList<String>):
+class SpinnerAdapter(context: Context, spinnerList: MutableList<String?>):
     ArrayAdapter<String>(context, 0, spinnerList) {
 
         val inflater = LayoutInflater.from(context)

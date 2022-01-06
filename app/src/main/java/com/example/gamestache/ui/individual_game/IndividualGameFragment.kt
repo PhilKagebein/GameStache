@@ -1,6 +1,9 @@
 package com.example.gamestache.ui.individual_game
 
+import android.app.Dialog
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -40,11 +43,17 @@ class IndividualGameFragment : Fragment() {
         binding.individualgameviewmodel = individualGameViewModel
         binding.lifecycleOwner = this
 
+
+
         return binding.root
     }
 
     override fun onViewCreated(view:View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val loadingDialog = Dialog(requireContext())
+        loadingDialog.setContentView(R.layout.loading_dialog)
+        loadingDialog.show()
 
         var summaryText: String? = ""
         var imageURL = ""
@@ -57,7 +66,25 @@ class IndividualGameFragment : Fragment() {
         individualGameViewModel.gameId.postValue(args.gameId)
         individualGameViewModel.getAccessToken()
 
-        individualGameViewModel.createImageURLForGlide().observe(viewLifecycleOwner, { url ->
+        individualGameViewModel.progressBarIsVisible.observe(viewLifecycleOwner, { progressBarStatus ->
+
+            if (progressBarStatus) {
+                loadingDialog.show()
+            } else {
+                object : CountDownTimer(500, 500) {
+                    override fun onFinish() {
+                        loadingDialog.dismiss()
+                    }
+
+                    override fun onTick(p0: Long) {
+                    }
+
+                }.start()
+            }
+
+        })
+
+        individualGameViewModel.glideURL.observe(viewLifecycleOwner, { url ->
             imageURL = url
             Glide.with(this)
                 .load(url)
@@ -90,17 +117,21 @@ class IndividualGameFragment : Fragment() {
         }
 
         individualGameViewModel.regionsList.observe(viewLifecycleOwner, { regionsList ->
-            individualGameViewModel.getReleaseDatesList().observe(viewLifecycleOwner, { releaseDates ->
-                val spinner = initSpinner(regionsList, releaseRegionSpinner)
+            individualGameViewModel.releaseDatesList.observe(viewLifecycleOwner, { releaseDates ->
+                if (regionsList.isNullOrEmpty() || releaseDates.isNullOrEmpty()) {
+                    binding.releaseRegionsCardView.visibility = GONE
+                } else {
+                    val spinner = initSpinner(regionsList, releaseRegionSpinner)
 
-                setReleaseRegionSpinnerSelection(spinner, regionsList)
-                setOnClickForReleaseRegionSpinner(releaseDates, releaseRegionSpinner)
+                    setReleaseRegionSpinnerSelection(spinner, regionsList)
+                    setOnClickForReleaseRegionSpinner(releaseDates, releaseRegionSpinner)
+                }
             })
         })
 
-        individualGameViewModel.getPlatformsListForMultiplayerModesSpinner().observe(viewLifecycleOwner, { platformListForSpinner ->
+        individualGameViewModel.platformsListForMultiplayerModesSpinner.observe(viewLifecycleOwner, { platformListForSpinner ->
             individualGameViewModel.platformListFromDb.observe(viewLifecycleOwner, { platformListFromDb ->
-                individualGameViewModel.getMultiplayerModesList().observe(viewLifecycleOwner, {multiplayerModesList ->
+                individualGameViewModel.multiplayerModesList.observe(viewLifecycleOwner, { multiplayerModesList ->
 
                     if (multiplayerModesList.isNullOrEmpty()) {
                         binding.multiplayerCapabilitiesSectionTitleTV.visibility = GONE
@@ -138,7 +169,7 @@ class IndividualGameFragment : Fragment() {
 
         }
 
-        individualGameViewModel.getMultiplayerModesList().observe(viewLifecycleOwner, { multiplayerModes ->
+        individualGameViewModel.multiplayerModesList.observe(viewLifecycleOwner, { multiplayerModes ->
             binding.gameModesCardView.setOnClickListener {
 
                 val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.gameModesTV.visibility)
@@ -168,7 +199,7 @@ class IndividualGameFragment : Fragment() {
             }
         }
 
-        individualGameViewModel.similarGamesMap().observe(viewLifecycleOwner, { similarGamesList ->
+        individualGameViewModel.similarGamesList.observe(viewLifecycleOwner, { similarGamesList ->
             populateSimilarGamesTextViews(similarGamesList, count, similarGamesTextViews)
             count++
             formatSimilarGamesTextViews(similarGamesTextViews)
@@ -213,7 +244,7 @@ class IndividualGameFragment : Fragment() {
         }
     }
 
-    private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String>) {
+    private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String?>) {
         if (regionsList.contains(RELEASE_REGION_SPINNER_REGION_DEFAULT)) {
             releaseRegionsSpinner.setSelection(regionsList.indexOf(RELEASE_REGION_SPINNER_REGION_DEFAULT))
         } else if (regionsList.size >= 2){
@@ -223,7 +254,7 @@ class IndividualGameFragment : Fragment() {
         }
     }
 
-    private fun initSpinner(itemsList: MutableList<String>, spinner: Spinner): Spinner {
+    private fun initSpinner(itemsList: MutableList<String?>, spinner: Spinner): Spinner {
         val customAdapter = SpinnerAdapter(requireContext(), itemsList)
         spinner.adapter = customAdapter
 

@@ -49,6 +49,7 @@ class GameStacheRepository(private val api: TwitchApi, private val authApi: Twit
         return api.searchGames("Bearer $accessToken", gamesSearch)
     }
 
+    //TODO: CHANGE BELOW NAMES TO ELIMINTATE "FROM DB"
      suspend fun getPlatformsListFromDb(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
         return api.getPlatformsList("Bearer $accessToken", platformsPostRequestBody)
     }
