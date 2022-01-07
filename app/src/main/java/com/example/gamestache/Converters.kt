@@ -4,6 +4,9 @@ import androidx.room.TypeConverter
 import com.example.gamestache.models.individual_game.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class Converters {
 
@@ -127,6 +130,16 @@ class Converters {
     @TypeConverter
     fun multiplayerModesListToString(multiplayerModesObject: List<MultiplayerModesItem?>?): String?{
         return Gson().toJson(multiplayerModesObject)
+    }
+
+    @TypeConverter
+    fun fromTimestamp(value: Long?): LocalDateTime? {
+        return value?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC) }
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: LocalDateTime?): Long? {
+        return date?.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
     }
 
 }

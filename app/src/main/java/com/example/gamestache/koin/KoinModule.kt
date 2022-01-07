@@ -74,21 +74,26 @@ val gameStacheDatabaseModule = module {
         return database.individualGameDao()
     }
 
+    fun provideTwitchAuthorizationDao(database: GameStacheDatabase): TwitchAuthorizationDao {
+        return database.twitchAuthDao()
+    }
+
     single { provideGameStacheDatabase(androidApplication()) }
     single { providePlatformSpinnerDao(get()) }
     single { provideGenreSpinnerDao(get()) }
     single { provideGameModeSpinnerDao(get()) }
     single { provideIndividualGameDataDao(get()) }
+    single { provideTwitchAuthorizationDao(get()) }
 
 }
 
 val gameStacheRepositoryModule = module {
 
-    fun provideGameStacheRepository(twitchApi: TwitchApi, authApi: TwitchApiAuth, individualGameDao: IndividualGameDao, platformsSpinnerDao: PlatformSpinnerDao, genresSpinnerDao: GenresSpinnerDao, gameModesSpinnerDao: GameModesSpinnerDao): GameStacheRepository {
-        return GameStacheRepository(twitchApi, authApi, individualGameDao, platformsSpinnerDao, genresSpinnerDao, gameModesSpinnerDao)
+    fun provideGameStacheRepository(twitchApi: TwitchApi, authApi: TwitchApiAuth, individualGameDao: IndividualGameDao, platformsSpinnerDao: PlatformSpinnerDao, genresSpinnerDao: GenresSpinnerDao, gameModesSpinnerDao: GameModesSpinnerDao, twitchAuthorizationDao: TwitchAuthorizationDao): GameStacheRepository {
+        return GameStacheRepository(twitchApi, authApi, individualGameDao, platformsSpinnerDao, genresSpinnerDao, gameModesSpinnerDao, twitchAuthorizationDao)
     }
 
-    single { provideGameStacheRepository(get(), get(), get(), get(), get(), get()) }
+    single { provideGameStacheRepository(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 
