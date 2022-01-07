@@ -3,9 +3,13 @@ package com.example.gamestache.ui.explore
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import com.example.gamestache.models.*
-import com.example.gamestache.models.explore_spinners.*
-import com.example.gamestache.models.search_results.*
+import com.example.gamestache.models.TwitchAuthorization
+import com.example.gamestache.models.explore_spinners.GameModesResponseItem
+import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
+import com.example.gamestache.models.explore_spinners.GenresResponseItem
+import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
+import com.example.gamestache.models.search_results.SearchResultsResponse
+import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,9 +18,9 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URI
 
-class ExploreViewModel(private val exploreRepository: GameStacheRepository) : ViewModel() {
+class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewModel() {
     //Live Data for the Access/Authorization Token
-    val twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
+    val twitchAuthorization: MutableLiveData<TwitchAuthorization?> = MutableLiveData()
 
     //Live Data for the Search functionality
     private val gamesList: MutableLiveData<SearchResultsResponse> = MutableLiveData()
@@ -30,45 +34,44 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
     val nameSearchText: MutableLiveData<String> = MutableLiveData("")
     val progressBarIsVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getPlatformsListFromDb()
-    val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGenresListFromDb()
-    val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = exploreRepository.getGameModesListFromDb()
+    val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getPlatformsListFromDb()
+    val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGenresListFromDb()
+    val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGameModesListFromDb()
 
     fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.storePlatformsListToDb(spinnerResponseItem)
+            gameStacheRepo.storePlatformsListToDb(spinnerResponseItem)
         }
     }
 
     fun addGenresListToRoom(spinnerResponseItem: GenresResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.storeGenresListToDb(spinnerResponseItem)
+            gameStacheRepo.storeGenresListToDb(spinnerResponseItem)
         }
     }
 
     fun addGameModesListToRoom(spinnerResponseItem: GameModesResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.storeGameModesListToDb(spinnerResponseItem)
+            gameStacheRepo.storeGameModesListToDb(spinnerResponseItem)
         }
     }
 
-    fun getAccessToken() {
+    fun getAuthToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = exploreRepository.getAccessToken()
-            if (response.isSuccessful){
-                twitchAuthorization.postValue(response.body())
+            //TODO: WHY IS THE RUN STATEMENT GREYED OUT? GAMESTACHEREPO.GETAUTHTOKEN() IS NULLABLE AND CAN RETURN NULL
+            gameStacheRepo.getAuthToken().let {
+                twitchAuthorization.postValue(it)
+            } ?: run {
+                twitchAuthorization.postValue(null)
             }
-            else {
-                //Change how this is handled in the future.
-                println("Twitch auth token response not successful.")
-            }
+
         }
     }
 
     fun searchGames(accessToken: String, gamesSearch: RequestBody) {
         viewModelScope.launch(Dispatchers.IO) {
             progressBarIsVisible.postValue(true)
-            val response = exploreRepository.searchGames(accessToken, gamesSearch)
+            val response = gameStacheRepo.searchGames(accessToken, gamesSearch)
             if (response.isSuccessful) {
                 gamesList.postValue(response.body())
             } else {
@@ -151,21 +154,21 @@ class ExploreViewModel(private val exploreRepository: GameStacheRepository) : Vi
     //TODO: CHANGE THIS NAME
     fun getPlatformsListFromRoom(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getPlatformsListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> gameStacheRepo.getPlatformsListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
             emit(response?.body())
             }
     }
 
     fun genresResponse(): LiveData<List<GenresResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGenresListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> gameStacheRepo.getGenresListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
             emit(response?.body())
         }
     }
 
     fun gameModesResponse(): LiveData<List<GameModesResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> exploreRepository.getGameModesListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
+            val response = twitchAuthorization?.let { twitchAuthorization -> gameStacheRepo.getGameModesListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
             emit(response?.body())
         }
     }

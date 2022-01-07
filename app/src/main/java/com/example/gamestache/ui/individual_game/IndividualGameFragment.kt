@@ -3,7 +3,6 @@ package com.example.gamestache.ui.individual_game
 import android.app.Dialog
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -42,8 +41,6 @@ class IndividualGameFragment : Fragment() {
 
         binding.individualgameviewmodel = individualGameViewModel
         binding.lifecycleOwner = this
-
-
 
         return binding.root
     }

@@ -20,9 +20,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
-class IndividualGameViewModel(private val repository: GameStacheRepository, private val resources: Resources) : ViewModel() {
+class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, private val resources: Resources) : ViewModel() {
 
-    private var twitchAuthorization: MutableLiveData<TwitchAuthorization> = MutableLiveData()
+    private var twitchAuthorization: MutableLiveData<TwitchAuthorization?> = MutableLiveData()
     var gameId: MutableLiveData<Int> = MutableLiveData()
     var releaseInformationText: MutableLiveData<String> = MutableLiveData()
     var coopCapabilitiesText: MutableLiveData<String> = MutableLiveData()
@@ -43,47 +43,49 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
     val platformsListForMultiplayerModesSpinner: MutableLiveData<MutableList<String?>> = MutableLiveData()
     val multiplayerModesList: MutableLiveData<List<MultiplayerModesItem?>?> = MutableLiveData()
 
-    val platformListFromDb = repository.getPlatformsListFromDb()
+    val platformListFromDb = gameStacheRepo.getPlatformsListFromDb()
 
     fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.getAccessToken()
-            if (response.isSuccessful) {
-                twitchAuthorization.postValue(response.body())
-            } else {
-                //Change how this is handled in the future.
-                println("Twitch auth token response not successful.")
+            //TODO: WHY IS THIS NULL TOO
+            gameStacheRepo.getAuthToken().let {
+                twitchAuthorization.postValue(it)
+            } ?: run {
+                twitchAuthorization.postValue(null)
             }
         }
     }
 
     private fun checkIfGameIsInRoom(): LiveData<Int> = gameId.switchMap { gameID ->
-        repository.checkIfGameIsInDb(gameID)
+        gameStacheRepo.checkIfGameIsInDb(gameID)
     }
 
     private fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
                 checkIfGameIsInRoom().switchMap { gameStatusInRoom ->
-                    if (gameStatusInRoom == GAME_NOT_IN_ROOM) {
+                    if (gameStatusInRoom == GAME_NOT_IN_DB) {
                         val individualGameSearchBody: RequestBody = createIndividualGameSearchBodyRequestBody(gameID)
 
                         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-                            val response = repository.getIndividualGameData(twitchAuth.access_token, individualGameSearchBody)
-                            if (response.isSuccessful){
-                                response.body()?.let {
-                                    storeIndividualGameToDb(it)
-                                    emit(it)
-                                } ?: throw NullPointerException()
+                            twitchAuth?.access_token?.let { authToken ->
+                                val response = gameStacheRepo.getIndividualGameData(authToken, individualGameSearchBody)
+                                if (response.isSuccessful){
+                                    response.body()?.let {
+                                        storeIndividualGameToDb(it)
+                                        emit(it)
+                                    } ?: throw NullPointerException()
 
-                            } else{
-                                //TODO: LOOK INTO HOW TO BETTER HANDLE A NULL RESPONSE
-                                println("getIndividualGameData Response not successful")
+                                } else{
+                                    throw NullPointerException()
+                                }
+                            } ?: run {
                                 throw NullPointerException()
                             }
                         }
+
                     } else {
-                       repository.getIndividualGameDataFromDb(gameID)
+                       gameStacheRepo.getIndividualGameDataFromDb(gameID)
                     }
                 }
             }
@@ -91,7 +93,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
 
     private suspend fun storeIndividualGameToDb(individualGameData: List<IndividualGameDataItem>) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.storeIndividualGameToDb(individualGameData)
+            gameStacheRepo.storeIndividualGameToDb(individualGameData)
         }
     }
 
@@ -577,7 +579,7 @@ class IndividualGameViewModel(private val repository: GameStacheRepository, priv
     companion object{
 
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
-        const val GAME_NOT_IN_ROOM= 0
+        const val GAME_NOT_IN_DB= 0
         fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         fun createIndividualGameSearchBodyRequestBody(gameID: Int): RequestBody = "where id = $gameID;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
 

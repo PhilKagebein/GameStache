@@ -2,13 +2,16 @@ package com.example.gamestache.ui.explore
 
 import android.app.Dialog
 import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +23,6 @@ import com.example.gamestache.models.explore_spinners.GameModesResponseItem
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.explore_spinners.GenresResponseItem
 import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
-import kotlinx.android.synthetic.main.fragment_explore.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -59,7 +61,7 @@ class ExploreFragment : Fragment() {
             adapter = exploreAdapter
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
         }
-        exploreViewModel.getAccessToken()
+        exploreViewModel.getAuthToken()
 
         //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
         //TODO WALK THROUGH WITH KEVIN WHAT I DID WITH INITSPINNERS AND SETSPINNERONCLICK TO SEE IF THIS IS THE BEST WAY OF DOING IT
@@ -181,6 +183,9 @@ class ExploreFragment : Fragment() {
 
         exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAccessToken ->
             exploreViewModel.searchGames(twitchAccessToken, searchRequestBody)
+        } ?: run {
+            exploreViewModel.getAuthToken()
+            makeSearchAgainToast(requireContext(), resources).show()
         }
 
     }
@@ -231,6 +236,7 @@ class ExploreFragment : Fragment() {
         const val PLATFORM_SPINNER_PROMPT = "Select a platform"
         const val GENRE_SPINNER_PROMPT = "Select a genre"
         const val GAME_MODES_SPINNER_PROMPT = "Select multiplayer capabilities"
+        fun makeSearchAgainToast(context: Context, resources: Resources): Toast = Toast.makeText(context, resources.getString(R.string.tried_searching_with_null_twitch_auth), Toast.LENGTH_SHORT)
     }
 
     enum class ExploreSpinners(val spinnerName: String) {

@@ -6,12 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.gamestache.Converters
+import com.example.gamestache.models.TwitchAuthorization
 import com.example.gamestache.models.individual_game.IndividualGameDataItem
 import com.example.gamestache.models.explore_spinners.GameModesResponseItem
 import com.example.gamestache.models.explore_spinners.GenresResponseItem
 import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 
-@Database(entities = [PlatformsResponseItem::class, GenresResponseItem::class, GameModesResponseItem::class, IndividualGameDataItem::class], version = 1, exportSchema = false)
+@Database(entities =
+[PlatformsResponseItem::class,
+    GenresResponseItem::class,
+    GameModesResponseItem::class,
+    IndividualGameDataItem::class,
+    TwitchAuthorization::class
+], version = 1, exportSchema = false)
 @TypeConverters( Converters::class )
 abstract class GameStacheDatabase: RoomDatabase() {
 
@@ -19,6 +26,7 @@ abstract class GameStacheDatabase: RoomDatabase() {
     abstract fun genresSpinnerDao(): GenresSpinnerDao
     abstract fun gameModesSpinnerDao(): GameModesSpinnerDao
     abstract fun individualGameDao(): IndividualGameDao
+    abstract fun twitchAuthDao(): TwitchAuthorizationDao
 
     companion object{
         @Volatile
