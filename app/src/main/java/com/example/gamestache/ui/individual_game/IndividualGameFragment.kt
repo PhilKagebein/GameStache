@@ -68,7 +68,7 @@ class IndividualGameFragment : Fragment() {
             if (progressBarStatus) {
                 loadingDialog.show()
             } else {
-                object : CountDownTimer(500, 500) {
+                object : CountDownTimer(COUNTDOWN_TIMER_DELAY, COUNTDOWN_TIMER_INTERVAL) {
                     override fun onFinish() {
                         loadingDialog.dismiss()
                     }
@@ -314,6 +314,8 @@ class IndividualGameFragment : Fragment() {
         const val SIMILAR_GAME_TOP_PADDING = 3
         const val SIMILAR_GAME_RIGHT_PADDING = 17
         const val SIMILAR_GAME_BOTTOM_PADDING = 3
+        const val COUNTDOWN_TIMER_DELAY: Long = 500
+        const val COUNTDOWN_TIMER_INTERVAL: Long = 500
 
     }
 }
