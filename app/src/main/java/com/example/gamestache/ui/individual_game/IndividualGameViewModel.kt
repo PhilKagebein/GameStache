@@ -5,9 +5,12 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.gamestache.R
+import com.example.gamestache.models.GameMode
+import com.example.gamestache.models.Genre
 import com.example.gamestache.models.TwitchAuthorization
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.individual_game.*
+import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +21,7 @@ import java.net.URI
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 
 class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, private val resources: Resources) : ViewModel() {
@@ -60,7 +64,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         gameStacheRepo.checkIfGameIsInDb(gameID)
     }
 
-    private fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
+    fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
                 checkIfGameIsInRoom().switchMap { gameStatusInRoom ->
@@ -225,7 +229,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     }
 
     //TODO: CHANGE NAME
-    private fun createGameModesText(gameModes: List<IndividualGameMode?>): String {
+    private fun createGameModesText(gameModes: List<GameMode?>): String {
         val gameModesList = mutableListOf<String>()
 
         for (gameMode in gameModes.indices) {
@@ -498,6 +502,23 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
+    private fun addGameAsFavorite(favoriteGame: List<IndividualGameDataItem?>) {
+        viewModelScope.launch(Dispatchers.IO)  {
+            favoriteGame[0]?.let { favoriteGame ->
+                gameStacheRepo.addGameAsFavorite(SearchResultsResponseItem(favoriteGame.id, favoriteGame.cover, favoriteGame.game_modes, favoriteGame.genres, favoriteGame.name, favoriteGame.platforms))
+            }
+
+        }
+    }
+
+    private fun removeGameAsFavorite(gameToRemove: List<IndividualGameDataItem?>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            gameToRemove[0]?.let { game ->
+                gameStacheRepo.removeGameAsFavorite(SearchResultsResponseItem(game.id, game.cover, game.game_modes, game.genres, game.name, game.platforms))
+            }
+        }
+    }
+
     private fun getRegionsReleasedList(individualReleasesList: List<ReleaseDate?>): MutableList<String?> {
 
         val regionInts = getRegionIntsList(individualReleasesList)
@@ -576,10 +597,37 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         return genresList.joinToString(prefix = resources.getString(R.string.genres_prefix), separator = ", ")
     }
 
+    fun onFavoriteButtonPush(buttonText: String, gameData: List<IndividualGameDataItem?>): String {
+        var newButtonText = ""
+        when (buttonText) {
+            resources.getString(R.string.add_to_favorites_button_text) -> {
+                addGameAsFavorite(gameData)
+                newButtonText = resources.getString(R.string.game_is_a_favorite_text)
+            }
+            resources.getString(R.string.game_is_a_favorite_text) -> {
+                removeGameAsFavorite(gameData)
+                newButtonText = resources.getString(R.string.add_to_favorites_button_text)
+            }
+        }
+
+        return newButtonText
+    }
+
+    val currentStatusAsAFavorite: LiveData<String>
+        = gameId.switchMap { gameId ->
+            liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
+                if (gameStacheRepo.checkIfGameIsFavorited(gameId) == GAME_NOT_IN_DB) {
+                    emit(resources.getString(R.string.add_to_favorites_button_text))
+                } else {
+                    emit(resources.getString(R.string.game_is_a_favorite_text))
+                }
+            }
+    }
+
     companion object{
 
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
-        const val GAME_NOT_IN_DB= 0
+        const val GAME_NOT_IN_DB = 0
         fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         fun createIndividualGameSearchBodyRequestBody(gameID: Int): RequestBody = "where id = $gameID;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
 

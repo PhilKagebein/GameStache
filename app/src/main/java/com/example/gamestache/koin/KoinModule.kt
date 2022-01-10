@@ -9,6 +9,7 @@ import com.example.gamestache.api.TwitchApiAuth
 import com.example.gamestache.repository.GameStacheRepository
 import com.example.gamestache.room.*
 import com.example.gamestache.ui.explore.ExploreViewModel
+import com.example.gamestache.ui.favorites.FavoritesViewModel
 import com.example.gamestache.ui.individual_game.IndividualGameViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -78,22 +79,27 @@ val gameStacheDatabaseModule = module {
         return database.twitchAuthDao()
     }
 
+    fun provideFavoritesDao(database: GameStacheDatabase): FavoritesDao {
+        return database.favoritesDao()
+    }
+
     single { provideGameStacheDatabase(androidApplication()) }
     single { providePlatformSpinnerDao(get()) }
     single { provideGenreSpinnerDao(get()) }
     single { provideGameModeSpinnerDao(get()) }
     single { provideIndividualGameDataDao(get()) }
     single { provideTwitchAuthorizationDao(get()) }
+    single { provideFavoritesDao(get()) }
 
 }
 
 val gameStacheRepositoryModule = module {
 
-    fun provideGameStacheRepository(twitchApi: TwitchApi, authApi: TwitchApiAuth, individualGameDao: IndividualGameDao, platformsSpinnerDao: PlatformSpinnerDao, genresSpinnerDao: GenresSpinnerDao, gameModesSpinnerDao: GameModesSpinnerDao, twitchAuthorizationDao: TwitchAuthorizationDao): GameStacheRepository {
-        return GameStacheRepository(twitchApi, authApi, individualGameDao, platformsSpinnerDao, genresSpinnerDao, gameModesSpinnerDao, twitchAuthorizationDao)
+    fun provideGameStacheRepository(twitchApi: TwitchApi, authApi: TwitchApiAuth, individualGameDao: IndividualGameDao, platformsSpinnerDao: PlatformSpinnerDao, genresSpinnerDao: GenresSpinnerDao, gameModesSpinnerDao: GameModesSpinnerDao, twitchAuthorizationDao: TwitchAuthorizationDao, favoritesDao: FavoritesDao): GameStacheRepository {
+        return GameStacheRepository(twitchApi, authApi, individualGameDao, platformsSpinnerDao, genresSpinnerDao, gameModesSpinnerDao, twitchAuthorizationDao, favoritesDao)
     }
 
-    single { provideGameStacheRepository(get(), get(), get(), get(), get(), get(), get()) }
+    single { provideGameStacheRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
 
@@ -109,4 +115,9 @@ val individualGameViewModelModule = module {
 
     single { androidApplication().resources }
 
+}
+
+val favoritesViewModel = module {
+
+    viewModel { FavoritesViewModel(get()) }
 }

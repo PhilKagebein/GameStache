@@ -1,6 +1,10 @@
 package com.example.gamestache
 
 import androidx.room.TypeConverter
+import com.example.gamestache.models.Cover
+import com.example.gamestache.models.GameMode
+import com.example.gamestache.models.Genre
+import com.example.gamestache.models.Platform
 import com.example.gamestache.models.individual_game.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -37,14 +41,14 @@ class Converters {
     }
 
     @TypeConverter
-    fun stringToGameModeList(data: String?): List<IndividualGameMode?>? {
+    fun stringToGameModeList(data: String?): List<GameMode?>? {
         val gameModeListType = object :
-            TypeToken<List<IndividualGameMode?>?>() {}.type
-        return Gson().fromJson<List<IndividualGameMode?>?>(data, gameModeListType)
+            TypeToken<List<GameMode?>?>() {}.type
+        return Gson().fromJson<List<GameMode?>?>(data, gameModeListType)
     }
 
     @TypeConverter
-    fun gameModeListToString(individualGameModeObject: List<IndividualGameMode?>?): String?{
+    fun gameModeListToString(individualGameModeObject: List<GameMode?>?): String?{
         return Gson().toJson(individualGameModeObject)
     }
 

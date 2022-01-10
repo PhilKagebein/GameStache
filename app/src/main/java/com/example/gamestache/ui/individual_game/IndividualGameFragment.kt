@@ -59,7 +59,6 @@ class IndividualGameFragment : Fragment() {
         var count = 0
         val similarGamesTextViews = mutableListOf<TextView>()
 
-
         individualGameViewModel.gameId.postValue(args.gameId)
         individualGameViewModel.getAccessToken()
 
@@ -203,6 +202,11 @@ class IndividualGameFragment : Fragment() {
             setSimilarGameOnClickListener(similarGamesList, similarGamesTextViews)
         })
 
+        individualGameViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
+            binding.favoritesButton.setOnClickListener {
+                binding.favoritesButton.text = individualGameViewModel.onFavoriteButtonPush(binding.favoritesButton.text.toString(), gameData)
+            }
+        })
     }
 
     private fun setSimilarGameOnClickListener(similarGamesList: List<SimilarGame?>, similarGamesTextViews: MutableList<TextView>) {
@@ -279,32 +283,55 @@ class IndividualGameFragment : Fragment() {
     }
 
     private fun setOnClickForMultiplayerPlatformSpinner(multiplayerModes: List<MultiplayerModesItem?>?, spinner: Spinner, platformListFromDb: List<GenericSpinnerItem>) {
-        multiplayerOnPlatformSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
+        multiplayerOnPlatformSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    itemPosition: Int,
+                    rowId: Long
+                ) {
 
-                getMultiplayerModeItemVisibility(itemPosition).apply {
-                    binding.coopCapabilitiesTV.visibility = this
-                    binding.coopCapabilitiesTitleTV.visibility = this
-                    binding.offlineCapabilities.visibility = this
-                    binding.offlineCapabilitiesTitleTV.visibility = this
-                    binding.onlineCapabilities.visibility = this
-                    binding.onlineCapablitiesTitleTV.visibility = this
+                    getMultiplayerModeItemVisibility(itemPosition).apply {
+                        binding.coopCapabilitiesTV.visibility = this
+                        binding.coopCapabilitiesTitleTV.visibility = this
+                        binding.offlineCapabilities.visibility = this
+                        binding.offlineCapabilitiesTitleTV.visibility = this
+                        binding.onlineCapabilities.visibility = this
+                        binding.onlineCapablitiesTitleTV.visibility = this
+                    }
+
+                    val coopCapabilitiesText: String =
+                        individualGameViewModel.getCoopCapabilitiesText(
+                            multiplayerModes,
+                            spinner.getItemAtPosition(itemPosition).toString(),
+                            platformListFromDb
+                        )
+                    individualGameViewModel.coopCapabilitiesText.postValue(coopCapabilitiesText)
+
+                    val offlineCapabilitiesText: String =
+                        individualGameViewModel.getOfflineCapabilitiesText(
+                            multiplayerModes,
+                            spinner.getItemAtPosition(itemPosition).toString(),
+                            platformListFromDb
+                        )
+                    individualGameViewModel.offlineCapabilitiesText.postValue(
+                        offlineCapabilitiesText
+                    )
+
+                    val onlineCapabilitiesText: String =
+                        individualGameViewModel.getOnlineCapabilitiesText(
+                            multiplayerModes,
+                            spinner.getItemAtPosition(itemPosition).toString(),
+                            platformListFromDb
+                        )
+                    individualGameViewModel.onlineCapabilitiesText.postValue(onlineCapabilitiesText)
                 }
 
-                val coopCapabilitiesText: String = individualGameViewModel.getCoopCapabilitiesText(multiplayerModes, spinner.getItemAtPosition(itemPosition).toString(), platformListFromDb)
-                individualGameViewModel.coopCapabilitiesText.postValue(coopCapabilitiesText)
+                override fun onNothingSelected(p0: AdapterView<*>?) {
 
-                val offlineCapabilitiesText: String = individualGameViewModel.getOfflineCapabilitiesText(multiplayerModes, spinner.getItemAtPosition(itemPosition).toString(), platformListFromDb)
-                individualGameViewModel.offlineCapabilitiesText.postValue(offlineCapabilitiesText)
-
-                val onlineCapabilitiesText: String = individualGameViewModel.getOnlineCapabilitiesText(multiplayerModes, spinner.getItemAtPosition(itemPosition).toString(), platformListFromDb)
-                individualGameViewModel.onlineCapabilitiesText.postValue(onlineCapabilitiesText)
+                }
             }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
-        }
     }
 
     companion object {

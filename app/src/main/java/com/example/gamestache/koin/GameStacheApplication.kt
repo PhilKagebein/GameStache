@@ -20,7 +20,8 @@ class GameStacheApplication: Application() {
                 gameStacheDatabaseModule,
                 gameStacheRepositoryModule,
                 exploreViewModelModule,
-                individualGameViewModelModule
+                individualGameViewModelModule,
+                favoritesViewModel
             )
         }
     }

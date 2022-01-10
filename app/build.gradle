@@ -111,4 +111,7 @@ dependencies {
 
     implementation "io.insert-koin:koin-android:$koin_version"
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+
 }

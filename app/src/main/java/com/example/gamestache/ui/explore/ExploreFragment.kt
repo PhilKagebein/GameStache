@@ -33,11 +33,7 @@ class ExploreFragment : Fragment() {
     val exploreViewModel: ExploreViewModel by viewModel()
     private lateinit var binding: FragmentExploreBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentExploreBinding.inflate(inflater, container, false)
         binding.exploreviewmodel = exploreViewModel
         binding.lifecycleOwner = viewLifecycleOwner
@@ -53,7 +49,7 @@ class ExploreFragment : Fragment() {
         var gameModesSpinner: Spinner? = binding.spnMultiplayer
 
         var searchRequestBody: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
-        val exploreAdapter = GamesListSearchResultsAdapter(resources)
+        val exploreAdapter = GamesListSearchResultsAdapter(GamesListAdapterFragment.EXPLORE)
         val loadingDialog = Dialog(requireContext())
 
         binding.rvExplore.apply {

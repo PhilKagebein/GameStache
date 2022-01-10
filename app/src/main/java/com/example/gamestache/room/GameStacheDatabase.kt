@@ -11,13 +11,15 @@ import com.example.gamestache.models.individual_game.IndividualGameDataItem
 import com.example.gamestache.models.explore_spinners.GameModesResponseItem
 import com.example.gamestache.models.explore_spinners.GenresResponseItem
 import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
+import com.example.gamestache.models.search_results.SearchResultsResponseItem
 
 @Database(entities =
 [PlatformsResponseItem::class,
     GenresResponseItem::class,
     GameModesResponseItem::class,
     IndividualGameDataItem::class,
-    TwitchAuthorization::class
+    TwitchAuthorization::class,
+    SearchResultsResponseItem::class
 ], version = 1, exportSchema = false)
 @TypeConverters( Converters::class )
 abstract class GameStacheDatabase: RoomDatabase() {
@@ -27,6 +29,7 @@ abstract class GameStacheDatabase: RoomDatabase() {
     abstract fun gameModesSpinnerDao(): GameModesSpinnerDao
     abstract fun individualGameDao(): IndividualGameDao
     abstract fun twitchAuthDao(): TwitchAuthorizationDao
+    abstract fun favoritesDao(): FavoritesDao
 
     companion object{
         @Volatile

@@ -1,11 +1,11 @@
-package com.example.gamestache.models.individual_game
+package com.example.gamestache.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
 data class Platform(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = false)
     val id: Int,
-    val name: String
+    var name: String
 )

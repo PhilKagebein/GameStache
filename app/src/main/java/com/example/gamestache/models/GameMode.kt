@@ -1,4 +1,4 @@
-package com.example.gamestache.models.search_results
+package com.example.gamestache.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

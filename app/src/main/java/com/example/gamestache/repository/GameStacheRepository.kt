@@ -11,16 +11,17 @@ import com.example.gamestache.models.*
 import com.example.gamestache.models.explore_spinners.*
 import com.example.gamestache.models.individual_game.IndividualGameDataItem
 import com.example.gamestache.models.search_results.SearchResultsResponse
+import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.room.*
 import okhttp3.RequestBody
 import retrofit2.Response
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class GameStacheRepository(
     private val api: TwitchApi, private val authApi: TwitchApiAuth, private val individualGameDao: IndividualGameDao,
     private val platformsResponseDao: PlatformSpinnerDao, private val genresResponseDao: GenresSpinnerDao,
-    private val gameModesResponseDao: GameModesSpinnerDao, private val twitchAuthorizationDao: TwitchAuthorizationDao
+    private val gameModesResponseDao: GameModesSpinnerDao, private val twitchAuthorizationDao: TwitchAuthorizationDao,
+    private val favoritesDao: FavoritesDao
     ) {
 
     fun getPlatformsListFromDb(): LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListFromDb()
@@ -30,6 +31,8 @@ class GameStacheRepository(
     fun getIndividualGameDataFromDb(gameID: Int): LiveData<List<IndividualGameDataItem?>> = individualGameDao.getIndividualGameDataFromRoom(gameID)
     private fun getTwitchAuthFromDb(): TwitchAuthorization = twitchAuthorizationDao.getTwitchAuthFromDb()
     private fun getAuthStatusInDb(): Int = twitchAuthorizationDao.checkIfAuthTokenIsInDB()
+    suspend fun checkIfGameIsFavorited(gameId: Int): Int = favoritesDao.checkIfGameIsFavorited(gameId)
+    fun getFavoritesFromDb(): List<SearchResultsResponseItem?> = favoritesDao.getFavoritesFromDb()
 
      suspend fun storePlatformsListToDb(spinnerResponseItem: PlatformsResponseItem) {
         platformsResponseDao.addPlatformsListToDb(spinnerResponseItem)
@@ -50,6 +53,15 @@ class GameStacheRepository(
     private suspend fun storeTwitchAuthInDb(twitchAuthorization: TwitchAuthorization) {
         twitchAuthorizationDao.addTwitchAuthToDb(twitchAuthorization)
     }
+
+    suspend fun addGameAsFavorite(favoriteGame: SearchResultsResponseItem?) {
+        favoritesDao.addGameAsFavorite(favoriteGame)
+    }
+
+    suspend fun removeGameAsFavorite(favoriteGame: SearchResultsResponseItem?) {
+        favoritesDao.removeGameAsFavorite(favoriteGame)
+    }
+
 
     private suspend fun getNewAuthToken(): TwitchAuthorization? {
         val twitchAuth = authApi.getAccessToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)
