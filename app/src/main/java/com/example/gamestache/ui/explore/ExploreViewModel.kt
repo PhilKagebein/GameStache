@@ -11,6 +11,7 @@ import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import com.example.gamestache.models.search_results.SearchResultsResponse
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
+import com.example.gamestache.repository.GameStacheRepository.Companion.concatCoverUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -126,8 +127,7 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
             val segments = url.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            //TODO: MAKE STATIC FUNCTION BELOW
-            return "https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg"
+            return concatCoverUrl(imageHash)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.gamestache.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 
@@ -19,5 +20,9 @@ interface FavoritesDao {
     @Transaction
     @Query("SELECT COUNT(id) FROM fave_table WHERE id = :gameId")
     suspend fun checkIfGameIsFavorited(gameId: Int): Int
+
+    @Transaction
+    @Query("SELECT * FROM fave_table WHERE name LIKE :filterQuery")
+    fun filterFavoriteGames(filterQuery: String): LiveData<List<SearchResultsResponseItem>>
 
 }

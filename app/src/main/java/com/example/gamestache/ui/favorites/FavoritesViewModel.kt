@@ -3,8 +3,10 @@ package com.example.gamestache.ui.favorites
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.gamestache.koin.exploreViewModelModule
 import com.example.gamestache.models.search_results.*
 import com.example.gamestache.repository.GameStacheRepository
+import com.example.gamestache.repository.GameStacheRepository.Companion.concatCoverUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -17,25 +19,29 @@ class FavoritesViewModel(private val gameStacheRepository: GameStacheRepository)
     fun pullFavoritesListFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepository.getFavoritesFromDb().let { listOfFavorites ->
-                for (game in listOfFavorites) {
-                    game?.cover?.url = createURL(game?.cover?.url)
-                }
-                favoritesListFromDb.postValue(listOfFavorites)
+                val favoritesMassaged = massageGameCoverUrl(listOfFavorites)
+                favoritesListFromDb.postValue(favoritesMassaged)
             }
         }
     }
 
-    private fun createURL(coverURL: String?): String {
-        if (coverURL == null){
-            return ""
-        } else {
-            val url = URI(coverURL)
-            val segments = url.path.split("/")
-            val lastSegment = segments[segments.size - 1]
-            val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            //TODO: MAKE STATIC FUNCTION BELOW
-            return "https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg"
+    fun massageGameCoverUrl(gamesList: List<SearchResultsResponseItem?>): List<SearchResultsResponseItem?> {
+        for (game in gamesList) {
+
+            if (game?.cover?.url == null){
+                game?.cover?.url = ""
+            } else {
+                val url = URI(game.cover.url)
+                val segments = url.path.split("/")
+                val lastSegment = segments[segments.size - 1]
+                val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
+                game.cover.url = concatCoverUrl(imageHash)
+            }
+
         }
+
+        return gamesList
+
     }
 
     fun setNoFavoritesTextViewVisibility(favoritesList: List<SearchResultsResponseItem?>): Int {
@@ -46,6 +52,10 @@ class FavoritesViewModel(private val gameStacheRepository: GameStacheRepository)
     fun setFavoritesListRecyclerViewVisibility(favoritesList: List<SearchResultsResponseItem?>): Int {
         if (favoritesList.isNullOrEmpty()) return GONE
         else return VISIBLE
+    }
+
+    fun filterFavorites(filterQuery: String): LiveData<List<SearchResultsResponseItem>> {
+        return gameStacheRepository.filterFavoriteGames(filterQuery)
     }
 
 }

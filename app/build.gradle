@@ -102,7 +102,7 @@ dependencies {
     //CardView
     implementation("androidx.cardview:cardview:1.0.0")
 
-    def koin_version = "3.1.4"
+    def koin_version = "3.1.5"
 
     // Koin Core features
     implementation "io.insert-koin:koin-core:$koin_version"

@@ -1,27 +1,28 @@
 package com.example.gamestache.ui.favorites
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamestache.R
 import com.example.gamestache.databinding.FragmentFavoritesBinding
 import com.example.gamestache.ui.explore.GamesListAdapterFragment
 import com.example.gamestache.ui.explore.GamesListSearchResultsAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 class FavoritesFragment : Fragment() {
 
     private val favoritesViewModel: FavoritesViewModel by viewModel()
     private lateinit var binding: FragmentFavoritesBinding
+    private val favoritesAdapter = GamesListSearchResultsAdapter(GamesListAdapterFragment.FAVORITES)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         binding.favoritesviewmodel = favoritesViewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -30,7 +31,6 @@ class FavoritesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val favoritesAdapter = GamesListSearchResultsAdapter(GamesListAdapterFragment.FAVORITES)
         setupGamesListRecyclerView(favoritesAdapter)
 
         favoritesViewModel.pullFavoritesListFromDb()
@@ -42,11 +42,47 @@ class FavoritesFragment : Fragment() {
             })
         }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        val searchView = initOptionsMenu(menu, inflater)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+
+            override fun onQueryTextSubmit(textToFilter: String?): Boolean {
+                filterFavorites(textToFilter)
+                return false
+            }
+
+            override fun onQueryTextChange(textToFilter: String?): Boolean {
+                filterFavorites(textToFilter)
+                return false
+            }
+
+        })
+    }
+
+    private fun initOptionsMenu(menu: Menu, inflater: MenuInflater): SearchView {
+        inflater.inflate(R.menu.menu_item, menu)
+        val item = menu.findItem(R.id.search_action)
+        return item?.actionView as SearchView
+    }
+
     private fun setupGamesListRecyclerView(favoritesAdapter: GamesListSearchResultsAdapter) {
         binding.favoritesListRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = favoritesAdapter
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
+        }
+    }
+
+    private fun filterFavorites(query: String?) {
+        if (query != null ) {
+            val filterQuery = "%$query%"
+
+            favoritesViewModel.filterFavorites(filterQuery).observe(viewLifecycleOwner, { filteredFavoritesList ->
+                filteredFavoritesList?.let {
+                    val massagedFavoritesList = favoritesViewModel.massageGameCoverUrl(filteredFavoritesList)
+                    favoritesAdapter.submitList(massagedFavoritesList)
+                }
+            })
         }
     }
 }
