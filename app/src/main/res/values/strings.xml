@@ -55,5 +55,8 @@
     <string name="similar_game">\u0009-\u0020%1$s</string>
     <string name="blank_search_attempt_error_message">You must enter a game or select one option from a spinner</string>
     <string name="tried_searching_with_null_twitch_auth">Unable to access the database. Try searching again</string>
+    <string name="add_to_favorites_button_text">Add to Favorites</string>
+    <string name="add_to_wishlist_button_text">Add to Wishlist</string>
+    <string name="game_is_a_favorite_text">Favorited \u2713</string>
 
 </resources>

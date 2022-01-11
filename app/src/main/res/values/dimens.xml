@@ -70,6 +70,17 @@
     <dimen name="gameFragmentDropdownWidth">35dp</dimen>
     <dimen name="gameFragmentDropdownHeight">35dp</dimen>
 
+    <dimen name="favoritesAndWishlistLinearLayoutMarginTop">10dp</dimen>
+    <dimen name="favoritesAndWishlistLinearLayoutMarginBottom">-10dp</dimen>
+
+    <dimen name="favoritesButtonWidth">125dp</dimen>
+    <dimen name="favoritesButtonHeight">55dp</dimen>
+    <dimen name="favoritesButtonMarginEnd">20dp</dimen>
+
+    <dimen name="wishlistButtonWidth">125dp</dimen>
+    <dimen name="wishlistButtonHeight">55dp</dimen>
+    <dimen name="wishlistButtonMarginStart">20dp</dimen>
+
 <!--game_summary_dialog-->
     <dimen name="cancelButtonGameSummaryWidth">50dp</dimen>
     <dimen name="cancelButtonGameSummaryHeight">50dp</dimen>

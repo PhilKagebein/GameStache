@@ -34,6 +34,42 @@
                 android:layout_marginTop="@dimen/individualGameMarginTop"
                 />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/favoritesAndWishlistLinearLayoutMarginTop"
+                android:layout_marginBottom="@dimen/favoritesAndWishlistLinearLayoutMarginBottom"
+                >
+
+                <Button
+                    android:id="@+id/favoritesButton"
+                    android:layout_width="@dimen/favoritesButtonWidth"
+                    android:layout_height="@dimen/favoritesButtonHeight"
+                    android:textAlignment="center"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginEnd="@dimen/favoritesButtonMarginEnd"
+                    android:text="@{individualgameviewmodel.currentStatusAsAFavorite}"
+                    android:backgroundTint="?attr/primaryColor"
+                    />
+
+                <Button
+                    android:id="@+id/wishListButton"
+                    android:layout_width="@dimen/wishlistButtonWidth"
+                    android:layout_height="@dimen/wishlistButtonHeight"
+                    android:textAlignment="center"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                   android:layout_marginStart="@dimen/wishlistButtonMarginStart"
+                    android:text="@string/add_to_wishlist_button_text"
+                    android:backgroundTint="?attr/primaryColor"
+                    />
+            </LinearLayout>
+
+
+
             <!--Title and game release info block-->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewTitleAndOriginalRelease"

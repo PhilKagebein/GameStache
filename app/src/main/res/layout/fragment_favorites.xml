@@ -1,16 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.favorites.FavoritesFragment">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFavorites"
+    <data>
+        <variable
+            name="favoritesviewmodel"
+            type="com.example.gamestache.ui.favorites.FavoritesViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:id="@+id/recyclerViewLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginVertical="@dimen/rvFavoritesMarginVertical"
-        android:layout_marginHorizontal="@dimen/rvFavoritesMarginHorizontal"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        tools:context=".ui.explore.FavoritesFragment"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favoritesListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/rvExploreMarginVertical"
+            android:layout_marginStart="@dimen/rvExploreMarginStart"
+            android:layout_marginEnd="@dimen/rvExploreMarginEnd"
+            tools:listitem="@layout/search_results"
+            android:visibility="visible"
+            />
+        <TextView
+            android:id="@+id/noFavoritesYetTextView"
+            android:paddingHorizontal="10dp"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="You have not added any favorites yet. Add some from the explore screen then come back."
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+</layout>

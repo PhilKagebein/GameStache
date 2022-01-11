@@ -1,11 +1,11 @@
-package com.example.gamestache.models.individual_game
+package com.example.gamestache.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
 data class Cover(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = false)
     val id: Int,
-    val url: String
+    var url: String
 )

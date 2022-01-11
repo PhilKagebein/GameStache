@@ -11,6 +11,7 @@ import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import com.example.gamestache.models.search_results.SearchResultsResponse
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
+import com.example.gamestache.repository.GameStacheRepository.Companion.concatCoverUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -90,30 +91,34 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
             if (gamesList[i].platforms.isNullOrEmpty()) {
                 continue
             } else {
-                for (x in gamesList[i].platforms.indices) {
-                    gamesList[i].platforms[x]?.name = getPlatformsText(gamesList, i, x)
+                //TODO: FIX !!
+                for (x in gamesList[i].platforms?.indices!!) {
+                    gamesList[i].platforms?.get(x)?.name = getPlatformsText(gamesList, i, x)
                 }
             }
 
             if (gamesList[i].genres.isNullOrEmpty()) {
                 continue
             } else {
-                for (x in gamesList[i].genres.indices) {
-                    gamesList[i].genres[x]?.name = getGenreText(gamesList, i, x)
+                //TODO: FIX BANG BANG
+                for (x in gamesList[i].genres?.indices!!) {
+                    gamesList[i].genres?.get(x)?.name = getGenreText(gamesList, i, x)
                 }
             }
 
             if (gamesList[i].game_modes.isNullOrEmpty()) {
                 continue
             } else {
-                for (x in gamesList[i].game_modes.indices) {
-                    gamesList[i].game_modes[x]?.name = getGamesModesText(gamesList, i, x)
+                //TODO: FIX BANG BANG
+                for (x in gamesList[i].game_modes?.indices!!) {
+                    gamesList[i].game_modes?.get(x)?.name = getGamesModesText(gamesList, i, x)
                 }
             }
        }
         gamesList
     }
 
+    //TODO: I USE THIS FUNCTION MULTIPLE TIMES, BEST PLACE TO STORE IT?
     private fun getURlHash(coverURL: String?): String {
         if (coverURL == null){
             return ""
@@ -122,32 +127,31 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
             val segments = url.path.split("/")
             val lastSegment = segments[segments.size - 1]
             val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            //TODO: MAKE STATIC FUNCTION BELOW
-            return "https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg"
+            return concatCoverUrl(imageHash)
         }
     }
 
     private fun getPlatformsText(gamesList: SearchResultsResponse, i: Int, x: Int): String {
-          if (x == ((gamesList[i].platforms.size) - 1)) {
-              return gamesList[i].platforms[x]?.name.toString()
+          if (x == ((gamesList[i].platforms?.size)?.minus(1))) {
+              return gamesList[i].platforms?.get(x)?.name.toString()
           } else {
-              return "${gamesList[i].platforms[x]?.name}, "
+              return "${gamesList[i].platforms?.get(x)?.name}, "
             }
         }
 
     private fun getGenreText(gamesList: SearchResultsResponse, i: Int, x: Int): String {
-        if (x == ((gamesList[i].genres.size) - 1)) {
-            return "${gamesList[i].genres[x]?.name}"
+        if (x == ((gamesList[i].genres?.size)?.minus(1))) {
+            return "${gamesList[i].genres?.get(x)?.name}"
         } else {
-            return "${gamesList[i].genres[x]?.name}, "
+            return "${gamesList[i].genres?.get(x)?.name}, "
             }
         }
 
     private fun getGamesModesText(gamesList: SearchResultsResponse, i: Int, x: Int): String {
-        if (x == ((gamesList[i].game_modes.size) - 1)) {
-            return "${gamesList[i].game_modes[x]?.name}"
+        if (x == ((gamesList[i].game_modes?.size)?.minus(1))) {
+            return "${gamesList[i].game_modes?.get(x)?.name}"
         } else {
-            return "${gamesList[i].game_modes[x]?.name}, "
+            return "${gamesList[i].game_modes?.get(x)?.name}, "
             }
         }
 
