@@ -387,9 +387,9 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
 
     private fun getSelectedPlatformInt(selectedPlatform: String, platformList: List<GenericSpinnerItem>): Int {
         var platformInt = 0
-        for (i in platformList.indices) {
-            if (platformList[i].name == selectedPlatform) {
-                platformInt = platformList[i].id
+        for (platform in platformList) {
+            if (platform.name == selectedPlatform) {
+                platformInt = platform.id
             }
         }
         return platformInt
@@ -417,9 +417,9 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     private fun getOriginalReleasePlatformsList(originalReleaseDate: Int, individualReleasesList: List<ReleaseDate?>): MutableList<String> {
         val releasesList = mutableListOf<String>()
 
-        for (individualRelease in individualReleasesList.indices) {
-            if (originalReleaseDate == individualReleasesList[individualRelease]?.date) {
-                individualReleasesList[individualRelease]?.platform?.name?.let { platformName ->
+        for (individualRelease in individualReleasesList) {
+            if (originalReleaseDate == individualRelease?.date) {
+                individualRelease.platform?.name?.let { platformName ->
                     releasesList.add(platformName)
                 }
             }
@@ -453,12 +453,12 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         val developerList = mutableListOf<String>()
         val publisherList = mutableListOf<String>()
 
-        for (company in involvedCompaniesList.indices) {
-            if (involvedCompaniesList[company]?.publisher == true) {
-                involvedCompaniesList[company]?.company?.name?.let { publisherList.add(it) }
+        for (company in involvedCompaniesList) {
+            if (company?.publisher == true) {
+                company.company?.name?.let { publisherList.add(it) }
             }
-            if (involvedCompaniesList[company]?.developer == true) {
-                involvedCompaniesList[company]?.company?.name?.let { developerList.add(it) }
+            if (company?.developer == true) {
+                company.company?.name?.let { developerList.add(it) }
             }
         }
         return mapOf("publishers" to publisherList, "developers" to developerList)
@@ -528,11 +528,11 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     private fun getRegionIntsList(individualReleasesList: List<ReleaseDate?>): List<Int> {
         val regionInts = mutableListOf<Int>()
 
-        for (release in individualReleasesList.indices) {
-            if (regionInts.contains(individualReleasesList[release]?.region)) {
+        for (release in individualReleasesList) {
+            if (regionInts.contains(release?.region)) {
                 continue
             } else {
-                individualReleasesList[release]?.region?.let {
+                release?.region?.let {
                     regionInts.add(it)
                 }
             }
@@ -557,9 +557,9 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         if (releaseDates.isNullOrEmpty()) {
             return resources.getString(R.string.no_release_information_found_text)
         } else {
-            for (release in releaseDates.indices) {
-                if (selectedRegionInt == releaseDates[release]?.region) {
-                    releaseInformationText += "${resources.getString(R.string.individual_release_start_text)} ${releaseDates[release]?.platform?.name}, ${releaseDates[release]?.human}\n"
+            for (release in releaseDates) {
+                if (selectedRegionInt == release?.region) {
+                    releaseInformationText += "${resources.getString(R.string.individual_release_start_text)} ${release.platform?.name}, ${release.human}\n"
                 }
             }
             return releaseInformationText.trim()
@@ -580,8 +580,8 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     private fun createPlayerPerspectivesText(playerPerspectives: List<PlayerPerspective?>): String {
         val playerPerspectivesList = mutableListOf<String>()
 
-        for (perspective in playerPerspectives.indices) {
-            playerPerspectives[perspective]?.name?.let { playerPerspectivesList.add(it) }
+        for (perspective in playerPerspectives) {
+            perspective?.name?.let { playerPerspectivesList.add(it) }
         }
 
         return playerPerspectivesList.joinToString(prefix = resources.getString(R.string.player_perspectives_prefix), separator = ", ")
@@ -590,8 +590,8 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     private fun createGenresText(genres: List<Genre?>): String {
         val genresList = mutableListOf<String>()
 
-        for (perspective in genres.indices) {
-            genres[perspective]?.name?.let { genresList.add(it) }
+        for (perspective in genres) {
+            perspective?.name?.let { genresList.add(it) }
         }
 
         return genresList.joinToString(prefix = resources.getString(R.string.genres_prefix), separator = ", ")
