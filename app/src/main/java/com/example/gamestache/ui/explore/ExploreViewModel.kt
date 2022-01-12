@@ -85,41 +85,21 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
 
     fun transformDataForListAdapter(): LiveData<List<SearchResultsResponseItem>> = gamesList.map{ gamesList ->
 
-        for (i in gamesList.indices) {
-            gamesList[i].cover?.url = gamesList[i].cover?.url?.let { getURlHash(it) }.toString()
+        for (game in gamesList) {
+            game.cover?.url = game.cover?.url?.let { massageCoverUrl(it) }.toString()
 
-            if (gamesList[i].platforms.isNullOrEmpty()) {
-                continue
-            } else {
-                //TODO: FIX !!
-                for (x in gamesList[i].platforms?.indices!!) {
-                    gamesList[i].platforms?.get(x)?.name = getPlatformsText(gamesList, i, x)
-                }
-            }
+            val gameInfoListsMap = createStringMaps(game)
 
-            if (gamesList[i].genres.isNullOrEmpty()) {
-                continue
-            } else {
-                //TODO: FIX BANG BANG
-                for (x in gamesList[i].genres?.indices!!) {
-                    gamesList[i].genres?.get(x)?.name = getGenreText(gamesList, i, x)
-                }
-            }
+            game.platformsToDisplay = joinInfoListsToString(gameInfoListsMap["platforms"])
+            game.genresToDisplay = joinInfoListsToString(gameInfoListsMap["genres"])
+            game.gameModesToDisplay = joinInfoListsToString(gameInfoListsMap["gameModes"])
 
-            if (gamesList[i].game_modes.isNullOrEmpty()) {
-                continue
-            } else {
-                //TODO: FIX BANG BANG
-                for (x in gamesList[i].game_modes?.indices!!) {
-                    gamesList[i].game_modes?.get(x)?.name = getGamesModesText(gamesList, i, x)
-                }
-            }
        }
         gamesList
     }
 
     //TODO: I USE THIS FUNCTION MULTIPLE TIMES, BEST PLACE TO STORE IT?
-    private fun getURlHash(coverURL: String?): String {
+    private fun massageCoverUrl(coverURL: String?): String {
         if (coverURL == null){
             return ""
         } else {
@@ -131,28 +111,35 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
         }
     }
 
-    private fun getPlatformsText(gamesList: SearchResultsResponse, i: Int, x: Int): String {
-          if (x == ((gamesList[i].platforms?.size)?.minus(1))) {
-              return gamesList[i].platforms?.get(x)?.name.toString()
-          } else {
-              return "${gamesList[i].platforms?.get(x)?.name}, "
+    private fun createStringMaps(game: SearchResultsResponseItem): Map<String, MutableList<String>> {
+        val platformList = mutableListOf<String>()
+        val genreList = mutableListOf<String>()
+        val gameModesList = mutableListOf<String>()
+
+        game.platforms?.let { platforms ->
+            for (platform in platforms) {
+                platform?.name?.let { platformList.add(it) }
             }
         }
 
-    private fun getGenreText(gamesList: SearchResultsResponse, i: Int, x: Int): String {
-        if (x == ((gamesList[i].genres?.size)?.minus(1))) {
-            return "${gamesList[i].genres?.get(x)?.name}"
-        } else {
-            return "${gamesList[i].genres?.get(x)?.name}, "
+        game.genres?.let { genres ->
+            for (genre in genres) {
+                genre?.name?.let { genreList.add(it) }
             }
         }
 
-    private fun getGamesModesText(gamesList: SearchResultsResponse, i: Int, x: Int): String {
-        if (x == ((gamesList[i].game_modes?.size)?.minus(1))) {
-            return "${gamesList[i].game_modes?.get(x)?.name}"
-        } else {
-            return "${gamesList[i].game_modes?.get(x)?.name}, "
+        game.game_modes?.let { gameModes ->
+            for (gameMode in gameModes) {
+                gameMode?.name?.let { gameModesList.add(it) }
             }
+        }
+
+        return mapOf("platforms" to platformList, "genres" to genreList, "gameModes" to gameModesList)
+    }
+
+    private fun joinInfoListsToString(list: MutableList<String>?): String {
+        list?.let { return list.joinToString(separator = ", ") }
+            ?: run {return ""}
         }
 
     //TODO: CHANGE THIS NAME
@@ -237,7 +224,7 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
     }
 
     fun clearEditTextField(observedFieldValue: String): Int {
-        if (!observedFieldValue.isNullOrEmpty() || observedFieldValue.isNotBlank()) {
+        if (observedFieldValue.isNotEmpty() || observedFieldValue.isNotBlank()) {
             return VISIBLE
         } else {
             return GONE

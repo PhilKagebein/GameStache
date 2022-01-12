@@ -17,5 +17,8 @@ data class SearchResultsResponseItem(
     val name: String?,
     var platforms: List<Platform?>?,
     var favoriteStatus: Boolean,
-    var wishlistStatus: Boolean
+    var wishlistStatus: Boolean,
+    var platformsToDisplay: String? = "",
+    var genresToDisplay: String? = "",
+    var gameModesToDisplay: String? = ""
 )

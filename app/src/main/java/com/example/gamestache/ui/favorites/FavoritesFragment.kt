@@ -2,9 +2,7 @@ package com.example.gamestache.ui.favorites
 
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -81,7 +79,7 @@ class FavoritesFragment : Fragment() {
 
             favoritesViewModel.filterFavorites(filterQuery).observe(viewLifecycleOwner, { filteredFavoritesList ->
                 filteredFavoritesList?.let {
-                    val massagedFavoritesList = favoritesViewModel.massageGameCoverUrl(filteredFavoritesList)
+                    val massagedFavoritesList = favoritesViewModel.massageDataForListAdapter(filteredFavoritesList)
                     favoritesAdapter.submitList(massagedFavoritesList)
                 }
             })

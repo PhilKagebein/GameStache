@@ -18,29 +18,22 @@ class WishlistViewModel(private val gameStacheRepository: GameStacheRepository) 
     fun pullWishlistFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepository.getWishlistFromDb(true).let { wishlist ->
-                val wishlistMassaged = massageGameCoverUrl(wishlist)
+                val wishlistMassaged = massageDataForListAdapter(wishlist)
                 wishlistFromDb.postValue(wishlistMassaged)
             }
         }
     }
 
-    fun massageGameCoverUrl(gamesList: List<SearchResultsResponseItem?>): List<SearchResultsResponseItem?> {
-        for (game in gamesList) {
-
-            if (game?.cover?.url == null){
-                game?.cover?.url = ""
-            } else {
-                val url = URI(game.cover.url)
-                val segments = url.path.split("/")
-                val lastSegment = segments[segments.size - 1]
-                val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-                game.cover.url = GameStacheRepository.concatCoverUrl(imageHash)
-            }
-
+    private fun massageCoverUrl(coverURL: String?): String {
+        if (coverURL == null){
+            return ""
+        } else {
+            val url = URI(coverURL)
+            val segments = url.path.split("/")
+            val lastSegment = segments[segments.size - 1]
+            val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
+            return GameStacheRepository.concatCoverUrl(imageHash)
         }
-
-        return gamesList
-
     }
 
     fun setNoWishlistTextViewVisibility(wishlist: List<SearchResultsResponseItem?>): Int {
@@ -55,5 +48,50 @@ class WishlistViewModel(private val gameStacheRepository: GameStacheRepository) 
 
     fun filterWishlist(filterQuery: String): LiveData<List<SearchResultsResponseItem>> {
         return gameStacheRepository.filterWishlist(filterQuery, true)
+    }
+
+    fun massageDataForListAdapter(gamesList: List<SearchResultsResponseItem?>): List<SearchResultsResponseItem?> {
+        for (game in gamesList) {
+            game?.cover?.url = game?.cover?.url?.let { massageCoverUrl(it) }.toString()
+
+            val gameInfoListsMap = createStringMaps(game)
+
+            game?.platformsToDisplay = joinInfoListsToString(gameInfoListsMap["platforms"])
+            game?.genresToDisplay = joinInfoListsToString(gameInfoListsMap["genres"])
+            game?.gameModesToDisplay = joinInfoListsToString(gameInfoListsMap["gameModes"])
+
+        }
+        return gamesList
+    }
+
+    private fun createStringMaps(game: SearchResultsResponseItem?): Map<String, MutableList<String>> {
+        val platformList = mutableListOf<String>()
+        val genreList = mutableListOf<String>()
+        val gameModesList = mutableListOf<String>()
+
+        game?.platforms?.let { platforms ->
+            for (platform in platforms) {
+                platform?.name?.let { platformList.add(it) }
+            }
+        }
+
+        game?.genres?.let { genres ->
+            for (genre in genres) {
+                genre?.name?.let { genreList.add(it) }
+            }
+        }
+
+        game?.game_modes?.let { gameModes ->
+            for (gameMode in gameModes) {
+                gameMode?.name?.let { gameModesList.add(it) }
+            }
+        }
+
+        return mapOf("platforms" to platformList, "genres" to genreList, "gameModes" to gameModesList)
+    }
+
+    private fun joinInfoListsToString(list: MutableList<String>?): String {
+        list?.let { return list.joinToString(separator = ", ") }
+            ?: run {return ""}
     }
 }
