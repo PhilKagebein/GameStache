@@ -106,24 +106,23 @@ class GameStacheRepository(
         }
     }
 
-     suspend fun searchGames(accessToken: String, gamesSearch: RequestBody): Response<SearchResultsResponse> {
-        return api.searchGames("Bearer $accessToken", gamesSearch)
+     suspend fun searchForGames(accessToken: String, gamesSearch: RequestBody): Response<SearchResultsResponse> {
+        return api.searchForGames("Bearer $accessToken", gamesSearch)
     }
 
-    //TODO: CHANGE BELOW NAMES TO ELIMINTATE "FROM DB"
-     suspend fun getPlatformsListFromDb(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
+     suspend fun getPlatformsListFromApi(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
         return api.getPlatformsList("Bearer $accessToken", platformsPostRequestBody)
     }
 
-     suspend fun getGenresListFromDb(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
+     suspend fun getGenresListFromApi(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
         return api.getGenresList("Bearer $accessToken", genrePostRequestBody)
     }
 
-     suspend fun getGameModesListFromDb(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
+     suspend fun getGameModesListFromApi(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
         return api.getGameModesList("Bearer $accessToken", gameModesPostRequestBody)
     }
 
-    suspend fun getIndividualGameData(accessToken: String, individualGameSearch: RequestBody): Response<List<IndividualGameDataItem>> {
+    suspend fun getIndividualGameDataFromApi(accessToken: String, individualGameSearch: RequestBody): Response<List<IndividualGameDataItem>> {
         return api.getIndividualGameData("Bearer $accessToken", individualGameSearch)
     }
 

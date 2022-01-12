@@ -60,7 +60,6 @@ class ExploreFragment : Fragment() {
         exploreViewModel.getAuthToken()
 
         //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
-        //TODO WALK THROUGH WITH KEVIN WHAT I DID WITH INITSPINNERS AND SETSPINNERONCLICK TO SEE IF THIS IS THE BEST WAY OF DOING IT
         exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             if (spinnerListFromRoom != null) { platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
                     platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
@@ -77,7 +76,6 @@ class ExploreFragment : Fragment() {
                 gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode", savedInstanceState) }
             })
 
-        //TODO: TALK TO KEVIN ABOUT NOT ELIMINATING THIS BECAUSE I DON'T WANT THE SEARCH TO BE PERFORMED AUTOMATICALLY
         exploreViewModel.searchText().observe(viewLifecycleOwner, { text ->
             searchRequestBody = text
         })
@@ -102,34 +100,6 @@ class ExploreFragment : Fragment() {
                     })
                 })
             })
-        })
-
-        //TODO: CAN I PUT THIS IN THE VIEW MODEL?
-        //Storing Spinner data in Room
-        exploreViewModel.getPlatformsListFromRoom().observe(viewLifecycleOwner, { response ->
-            if (response != null) {
-                for (i in response.indices) {
-                    val item = PlatformsResponseItem(response[i].id, response[i].name)
-                    exploreViewModel.addPlatformsListToRoom(item)
-                }
-            }
-        })
-
-        exploreViewModel.genresResponse().observe(viewLifecycleOwner, { response ->
-            if (response != null) {
-                for (i in response.indices) {
-                    val item = GenresResponseItem(response[i].id, response[i].name)
-                    exploreViewModel.addGenresListToRoom(item)
-                }
-            }
-        })
-        exploreViewModel.gameModesResponse().observe(viewLifecycleOwner, { response ->
-            if (response != null) {
-                for (i in response.indices) {
-                    val item = GameModesResponseItem(response[i].id, response[i].name)
-                    exploreViewModel.addGameModesListToRoom(item)
-                }
-            }
         })
 
         binding.btnClearPlatformSpinner.setOnClickListener {
@@ -161,6 +131,12 @@ class ExploreFragment : Fragment() {
                 loadingDialog.dismiss()
             }
         })
+
+        exploreViewModel.twitchAuthorization.observe(viewLifecycleOwner, { twitchAuth ->
+            twitchAuth?.let {
+                exploreViewModel.updateSpinnerListsFromApi(twitchAuth)
+            }
+        })
     }
 
     private fun checkForEmptySearch(editText: String, platformText: String, genreText: String, gameModeText: String, searchRequestBody: RequestBody) {
@@ -178,7 +154,7 @@ class ExploreFragment : Fragment() {
         collapseKeyboard()
 
         exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAccessToken ->
-            exploreViewModel.searchGames(twitchAccessToken, searchRequestBody)
+            exploreViewModel.searchForGames(twitchAccessToken, searchRequestBody)
         } ?: run {
             exploreViewModel.getAuthToken()
             makeSearchAgainToast(requireContext(), resources).show()

@@ -51,8 +51,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
 
     fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            //TODO: WHY IS THIS NULL TOO
-            gameStacheRepo.getAuthToken().let {
+            gameStacheRepo.getAuthToken()?.let {
                 twitchAuthorization.postValue(it)
             } ?: run {
                 twitchAuthorization.postValue(null)
@@ -64,6 +63,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         gameStacheRepo.checkIfGameIsInDb(gameID)
     }
 
+    //TODO: HANDLE NO INTERNET ACCESS BETTER SO APP DOESN'T CRASH
     fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
@@ -73,7 +73,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
 
                         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
                             twitchAuth?.access_token?.let { authToken ->
-                                val response = gameStacheRepo.getIndividualGameData(authToken, individualGameSearchBody)
+                                val response = gameStacheRepo.getIndividualGameDataFromApi(authToken, individualGameSearchBody)
                                 if (response.isSuccessful){
                                     response.body()?.let {
                                         storeIndividualGameToDb(it)
@@ -104,25 +104,25 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     val progressBarIsVisible: LiveData<Boolean>
     = getIndividualGameData().switchMap { gameData ->
         platformListFromDb.map { platformsListInDb ->
-            getImageURLForGlide(gameData)
-            getSimilarGamesList(gameData)
-            getReleaseDatesList(gameData)
-            getOriginalReleaseDateText(gameData)
-            getOriginalPlatformsText(gameData)
-            getDevelopersText(gameData)
-            getPublishersText(gameData)
-            getSummaryText(gameData)
-            getRegionsList(gameData)
-            getPlayerPerspectivesText(gameData)
-            getGenresText(gameData)
-            getGameModesText(gameData)
-            getPlatformsListForMultiplayerModesSpinner(gameData, platformsListInDb)
-            getMultiplayerModesList(gameData)
+            postImageUrl(gameData)
+            postSimilarGamesList(gameData)
+            postReleaseDateData(gameData)
+            postOriginalReleaseDateText(gameData)
+            postOriginalPlatformsText(gameData)
+            postDevelopersText(gameData)
+            postPublishersText(gameData)
+            postSummaryText(gameData)
+            postRegionsList(gameData)
+            postPlayerPerspectivesText(gameData)
+            postGenresText(gameData)
+            postGameModesText(gameData)
+            postPlatformsListForMultiplayerModesSpinner(gameData, platformsListInDb)
+            postMultiplayerModesList(gameData)
             false
         }
     }
 
-    private fun getImageURLForGlide(gameData: List<IndividualGameDataItem?>) {
+    private fun postImageUrl(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.cover?.url?.let {
             val baseUrl = URI(gameData[0]?.cover?.url)
             val segments = baseUrl.path.split("/")
@@ -134,7 +134,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getSimilarGamesList(gameData: List<IndividualGameDataItem?>) {
+    private fun postSimilarGamesList(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.similar_games?.let { similarGames ->
             similarGamesList.postValue(similarGames)
         } ?: run {
@@ -142,11 +142,11 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getReleaseDatesList(gameData: List<IndividualGameDataItem?>) {
+    private fun postReleaseDateData(gameData: List<IndividualGameDataItem?>) {
         releaseDatesList.postValue(gameData[0]?.release_dates)
     }
 
-    private fun getOriginalReleaseDateText(gameData: List<IndividualGameDataItem?>) {
+    private fun postOriginalReleaseDateText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.first_release_date?.let {
             originalReleaseDate.postValue( formatDate(it) )
         } ?: run {
@@ -154,7 +154,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getOriginalPlatformsText(gameData: List<IndividualGameDataItem?>) {
+    private fun postOriginalPlatformsText(gameData: List<IndividualGameDataItem?>) {
         val originalReleaseDate = gameData[0]?.first_release_date
         val individualReleasesList = gameData[0]?.release_dates
 
@@ -167,7 +167,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getDevelopersText(gameData: List<IndividualGameDataItem?>) {
+    private fun postDevelopersText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.involved_companies?.let { involvedCompanies ->
             developers.postValue( createDevelopersText(involvedCompanies) )
         } ?: run {
@@ -175,7 +175,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getPublishersText(gameData: List<IndividualGameDataItem?>) {
+    private fun postPublishersText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.involved_companies?.let { involvedCompanies ->
             publishers.postValue( createPublishersText(involvedCompanies) )
         } ?: run {
@@ -183,7 +183,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getSummaryText(gameData: List<IndividualGameDataItem?>) {
+    private fun postSummaryText(gameData: List<IndividualGameDataItem?>) {
 
         gameData[0]?.summary?.let {
             summaryText.postValue( it )
@@ -192,7 +192,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getRegionsList(gameData: List<IndividualGameDataItem?>) {
+    private fun postRegionsList(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.release_dates?.let { releaseDatesList ->
             regionsList.postValue( getRegionsReleasedList(releaseDatesList) )
         } ?: run {
@@ -200,7 +200,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getPlayerPerspectivesText(gameData: List<IndividualGameDataItem?>) {
+    private fun postPlayerPerspectivesText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.player_perspectives?.let { playerPerspectives ->
             playerPerspectivesText.postValue( createPlayerPerspectivesText(playerPerspectives) )
         } ?: run {
@@ -208,7 +208,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getGenresText(gameData: List<IndividualGameDataItem?>) {
+    private fun postGenresText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.genres?.let { genres ->
             genresText.postValue( createGenresText(genres) )
         } ?: run {
@@ -216,7 +216,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getGameModesText(gameData: List<IndividualGameDataItem?>) {
+    private fun postGameModesText(gameData: List<IndividualGameDataItem?>) {
         gameData[0]?.game_modes?.let { gameModes ->
             gameModesText.postValue( createGameModesText(gameModes) )
         } ?: run {
@@ -224,35 +224,34 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun getMultiplayerModesList(gameData: List<IndividualGameDataItem?>) {
+    private fun postMultiplayerModesList(gameData: List<IndividualGameDataItem?>) {
         multiplayerModesList.postValue( gameData[0]?.multiplayer_modes )
     }
 
-    //TODO: CHANGE NAME
     private fun createGameModesText(gameModes: List<GameMode?>): String {
         val gameModesList = mutableListOf<String>()
 
-        for (gameMode in gameModes.indices) {
-            gameModes[gameMode]?.name?.let { gameModesList.add(it) }
+        for (gameMode in gameModes) {
+            gameMode?.name?.let { gameModesList.add(it) }
         }
 
         return gameModesList.joinToString(prefix = resources.getString(R.string.game_modes_list_prefix), separator = resources.getString(R.string.game_modes_list_separator))
     }
 
-    private fun getPlatformsListForMultiplayerModesSpinner(gameData: List<IndividualGameDataItem?>, platformsListInDb: List<GenericSpinnerItem>) {
+    private fun postPlatformsListForMultiplayerModesSpinner(gameData: List<IndividualGameDataItem?>, platformsListInDb: List<GenericSpinnerItem>) {
         val multiplayerModesRaw = gameData[0]?.multiplayer_modes
         val platformIntsList = mutableListOf<Int>()
         val platformNamesList: MutableList<String?> = mutableListOf(resources.getString(R.string.platform_spinner_prompt))
 
         multiplayerModesRaw?.let {
-            for (platform in multiplayerModesRaw.indices) {
-                multiplayerModesRaw[platform]?.platform?.let { platformInt -> platformIntsList.add(platformInt) }
+            for (platform in multiplayerModesRaw) {
+                platform?.platform?.let { platformInt -> platformIntsList.add(platformInt) }
             }
         }
         for (int in platformIntsList) {
-            for (entry in platformsListInDb.indices) {
-                if (int == platformsListInDb[entry].id) {
-                    platformNamesList.add(platformsListInDb[entry].name)
+            for (entry in platformsListInDb) {
+                if (int == entry.id) {
+                    platformNamesList.add(entry.name)
                 }
             }
         }
@@ -305,36 +304,35 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         } else {
 
             multiplayerModes?.let {
-                for (platform in multiplayerModes.indices) {
-                    if (selectedPlatformInt == multiplayerModes[platform]?.platform) {
+                for (platform in multiplayerModes) {
+                    if (selectedPlatformInt == platform?.platform) {
 
-                        //TODO: DO I BREAK UP EACH ONE OF THESE INTO FUNCTIONS FOR CLARITY?
-                        if (multiplayerModes[platform]?.campaigncoop == true) {
+                        if (platform.campaigncoop) {
                             coopCapabilitiesList.add(resources.getString(R.string.campaign_coop))
                         }
-                        if (multiplayerModes[platform]?.lancoop == true) {
+                        if (platform.lancoop) {
                             coopCapabilitiesList.add(resources.getString(R.string.lan_coop))
                         }
 
-                        if (multiplayerModes[platform]?.offlinecoop == true) {
+                        if (platform.offlinecoop) {
                             offlineCapabilitiesList.add(resources.getString(R.string.offline_coop))
                         }
-                        if (multiplayerModes[platform]?.splitscreen == true) {
+                        if (platform.splitscreen) {
                             offlineCapabilitiesList.add(resources.getString(R.string.split_screen))
                         }
 
-                        if (multiplayerModes[platform]?.onlinecoop == true) {
+                        if (platform.onlinecoop) {
                             onlineCapabilitiesList.add(resources.getString(R.string.online_coop))
                         }
-                        if (multiplayerModes[platform]?.dropin == true) {
+                        if (platform.dropin) {
                             onlineCapabilitiesList.add(resources.getString(R.string.drop_in_multi))
                         }
 
                         if (offlineCapabilitiesList.isNullOrEmpty()) {
                             offlineCapabilitiesList.add(resources.getString(R.string.none))
                         } else {
-                            val offlineCoopMax = multiplayerModes[platform]?.offlinecoopmax
-                            val offlineMax = multiplayerModes[platform]?.offlinemax
+                            val offlineCoopMax = platform.offlinecoopmax
+                            val offlineMax = platform.offlinemax
                             val maxPlayersOffline = determineMaxPlayers(offlineCoopMax, offlineMax)
 
                             if (maxPlayersOffline.isNotBlank()) {
@@ -347,8 +345,8 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
                         if (onlineCapabilitiesList.isNullOrEmpty()) {
                             onlineCapabilitiesList.add(resources.getString(R.string.none))
                         } else {
-                            val onlineCoopMax = multiplayerModes[platform]?.onlinecoopmax
-                            val onlineMax = multiplayerModes[platform]?.onlinemax
+                            val onlineCoopMax = platform.onlinecoopmax
+                            val onlineMax = platform.onlinemax
                             val maxPlayersOnline = determineMaxPlayers(onlineCoopMax, onlineMax)
 
                             if (maxPlayersOnline.isNotBlank()) {

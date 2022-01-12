@@ -191,8 +191,8 @@ class IndividualGameFragment : Fragment() {
             val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(similarGamesTextViews[0].visibility)
             binding.similarGamesArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
 
-            for (textView in similarGamesTextViews.indices) {
-                similarGamesTextViews[textView].visibility = individualGameViewModel.changeCardViewVisibility(similarGamesTextViews[textView].visibility)
+            for (textView in similarGamesTextViews) {
+                textView.visibility = individualGameViewModel.changeCardViewVisibility(textView.visibility)
             }
         }
 
