@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.wishlist.WishlistFragment">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvWishlist"
+    <data>
+        <variable
+            name="wishlistviewmodel"
+            type="com.example.gamestache.ui.wishlist.WishlistViewModel" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/wishlistRecyclerViewLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginVertical="@dimen/rvWishlistMarginVertical"
-        android:layout_marginHorizontal="@dimen/rvWishlistMarginHorizontal"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        tools:context=".ui.explore.FavoritesFragment"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/wishlistRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/rvExploreMarginVertical"
+            android:layout_marginStart="@dimen/rvExploreMarginStart"
+            android:layout_marginEnd="@dimen/rvExploreMarginEnd"
+            tools:listitem="@layout/search_results"
+            android:visibility="visible"
+            />
+        <TextView
+            android:id="@+id/noWishlistYetTextView"
+            android:paddingHorizontal="10dp"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/no_games_in_wishlist_text_view"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+</layout>

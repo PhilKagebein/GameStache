@@ -73,11 +73,11 @@
     <dimen name="favoritesAndWishlistLinearLayoutMarginTop">10dp</dimen>
     <dimen name="favoritesAndWishlistLinearLayoutMarginBottom">-10dp</dimen>
 
-    <dimen name="favoritesButtonWidth">125dp</dimen>
+    <dimen name="favoritesButtonWidth">135dp</dimen>
     <dimen name="favoritesButtonHeight">55dp</dimen>
     <dimen name="favoritesButtonMarginEnd">20dp</dimen>
 
-    <dimen name="wishlistButtonWidth">125dp</dimen>
+    <dimen name="wishlistButtonWidth">135dp</dimen>
     <dimen name="wishlistButtonHeight">55dp</dimen>
     <dimen name="wishlistButtonMarginStart">20dp</dimen>
 

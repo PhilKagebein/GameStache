@@ -18,7 +18,7 @@ class FavoritesViewModel(private val gameStacheRepository: GameStacheRepository)
 
     fun pullFavoritesListFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
-            gameStacheRepository.getFavoritesFromDb().let { listOfFavorites ->
+            gameStacheRepository.getFavoritesFromDb(true).let { listOfFavorites ->
                 val favoritesMassaged = massageGameCoverUrl(listOfFavorites)
                 favoritesListFromDb.postValue(favoritesMassaged)
             }
@@ -55,7 +55,7 @@ class FavoritesViewModel(private val gameStacheRepository: GameStacheRepository)
     }
 
     fun filterFavorites(filterQuery: String): LiveData<List<SearchResultsResponseItem>> {
-        return gameStacheRepository.filterFavoriteGames(filterQuery)
+        return gameStacheRepository.filterFavoriteGames(filterQuery, true)
     }
 
 }

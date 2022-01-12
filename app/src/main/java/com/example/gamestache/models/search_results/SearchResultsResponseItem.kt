@@ -7,7 +7,7 @@ import com.example.gamestache.models.GameMode
 import com.example.gamestache.models.Genre
 import com.example.gamestache.models.Platform
 
-@Entity(tableName = "fave_table")
+@Entity(tableName = "fave_and_wishlist_table")
 data class SearchResultsResponseItem(
     @PrimaryKey(autoGenerate = false)
     val id: Int?,
@@ -15,5 +15,7 @@ data class SearchResultsResponseItem(
     var game_modes: List<GameMode?>?,
     var genres: List<Genre?>?,
     val name: String?,
-    var platforms: List<Platform?>?
+    var platforms: List<Platform?>?,
+    var favoriteStatus: Boolean,
+    var wishlistStatus: Boolean
 )

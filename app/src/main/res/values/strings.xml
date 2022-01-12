@@ -58,5 +58,7 @@
     <string name="add_to_favorites_button_text">Add to Favorites</string>
     <string name="add_to_wishlist_button_text">Add to Wishlist</string>
     <string name="game_is_a_favorite_text">Favorited \u2713</string>
+    <string name="game_is_in_wishlist_text">Wishlist \u2713</string>
+    <string name="no_games_in_wishlist_text_view">There are no games in your wishlist yet. Add some from the explore screen then come back.</string>
 
 </resources>

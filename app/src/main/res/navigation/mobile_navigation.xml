@@ -35,7 +35,11 @@
         android:id="@+id/navigation_wishlist"
         android:name="com.example.gamestache.ui.wishlist.WishlistFragment"
         android:label="@string/title_wishlist"
-        tools:layout="@layout/fragment_wishlist" />
+        tools:layout="@layout/fragment_wishlist" >
+        <action
+            android:id="@+id/action_navigation_wishlist_to_individualGameFragment"
+            app:destination="@id/individualGameFragment" />
+    </fragment>
     <fragment
         android:id="@+id/individualGameFragment"
         android:name="com.example.gamestache.ui.individual_game.IndividualGameFragment"

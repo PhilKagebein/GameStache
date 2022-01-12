@@ -29,7 +29,7 @@ abstract class GameStacheDatabase: RoomDatabase() {
     abstract fun gameModesSpinnerDao(): GameModesSpinnerDao
     abstract fun individualGameDao(): IndividualGameDao
     abstract fun twitchAuthDao(): TwitchAuthorizationDao
-    abstract fun favoritesDao(): FavoritesDao
+    abstract fun favoritesDao(): FavoritesAndWishlistDao
 
     companion object{
         @Volatile

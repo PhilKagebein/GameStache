@@ -25,7 +25,7 @@ class GameStacheRepository(
     private val genresResponseDao: GenresSpinnerDao,
     private val gameModesResponseDao: GameModesSpinnerDao,
     private val twitchAuthorizationDao: TwitchAuthorizationDao,
-    private val favoritesDao: FavoritesDao
+    private val favoritesAndWishlistDao: FavoritesAndWishlistDao
 ) {
 
     fun getPlatformsListFromDb(): LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListFromDb()
@@ -35,11 +35,14 @@ class GameStacheRepository(
     fun getIndividualGameDataFromDb(gameID: Int): LiveData<List<IndividualGameDataItem?>> = individualGameDao.getIndividualGameDataFromRoom(gameID)
     private fun getTwitchAuthFromDb(): TwitchAuthorization = twitchAuthorizationDao.getTwitchAuthFromDb()
     private fun getAuthStatusInDb(): Int = twitchAuthorizationDao.checkIfAuthTokenIsInDB()
-    suspend fun checkIfGameIsFavorited(gameId: Int): Int = favoritesDao.checkIfGameIsFavorited(gameId)
-    fun getFavoritesFromDb(): List<SearchResultsResponseItem?> = favoritesDao.getFavoritesFromDb()
-    fun filterFavoriteGames(filterQuery: String): LiveData<List<SearchResultsResponseItem>> = favoritesDao.filterFavoriteGames(filterQuery)
+    suspend fun checkIfGameIsInFavoriteAndWishlistTable(gameId: Int): Int = favoritesAndWishlistDao.checkIfGameIsInFavoriteAndWishlistTable(gameId)
+    fun getFavoritesFromDb(favoriteStatus: Boolean): List<SearchResultsResponseItem?> = favoritesAndWishlistDao.getFavoritesFromDb(favoriteStatus)
+    fun getWishlistFromDb(wishlistStatus: Boolean): List<SearchResultsResponseItem?> = favoritesAndWishlistDao.getWishlistFromDb(wishlistStatus)
+    fun filterFavoriteGames(filterQuery: String, favoriteStatus: Boolean): LiveData<List<SearchResultsResponseItem>> = favoritesAndWishlistDao.filterFavoriteGames(filterQuery, favoriteStatus)
+    fun filterWishlist(filterQuery: String, wishlistStatus: Boolean): LiveData<List<SearchResultsResponseItem>> = favoritesAndWishlistDao.filterWishlist(filterQuery, wishlistStatus)
+    fun getIndividualGameInfo(gameId: Int): SearchResultsResponseItem = favoritesAndWishlistDao.getIndividualGameInfo(gameId)
 
-     suspend fun storePlatformsListToDb(spinnerResponseItem: PlatformsResponseItem) {
+    suspend fun storePlatformsListToDb(spinnerResponseItem: PlatformsResponseItem) {
         platformsResponseDao.addPlatformsListToDb(spinnerResponseItem)
     }
 
@@ -59,14 +62,13 @@ class GameStacheRepository(
         twitchAuthorizationDao.addTwitchAuthToDb(twitchAuthorization)
     }
 
-    suspend fun addGameAsFavorite(favoriteGame: SearchResultsResponseItem?) {
-        favoritesDao.addGameAsFavorite(favoriteGame)
+    suspend fun addGameToFavoriteAndWishlistTable(game: SearchResultsResponseItem?) {
+        favoritesAndWishlistDao.addGameToFavoriteAndWishlistTable(game)
     }
 
-    suspend fun removeGameAsFavorite(favoriteGame: SearchResultsResponseItem?) {
-        favoritesDao.removeGameAsFavorite(favoriteGame)
+    suspend fun updateFavoriteAndWishlistStatus(gameId: Int, favoriteStatus: Boolean, wishlistStatus: Boolean) {
+        favoritesAndWishlistDao.updateFavoriteAndWishlistStatus(gameId, favoriteStatus, wishlistStatus)
     }
-
 
     private suspend fun getNewAuthToken(): TwitchAuthorization? {
         val twitchAuth = authApi.getAccessToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)

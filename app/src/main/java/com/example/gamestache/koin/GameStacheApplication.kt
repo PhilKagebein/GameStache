@@ -21,7 +21,8 @@ class GameStacheApplication: Application() {
                 gameStacheRepositoryModule,
                 exploreViewModelModule,
                 individualGameViewModelModule,
-                favoritesViewModel
+                favoritesViewModel,
+                wishlistViewModel
             )
         }
     }
