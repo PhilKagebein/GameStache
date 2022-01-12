@@ -12,6 +12,7 @@ import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.individual_game.*
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
+import com.example.gamestache.ui.explore.GamesListAdapterFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -21,7 +22,6 @@ import java.net.URI
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 
 class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, private val resources: Resources) : ViewModel() {
@@ -502,19 +502,21 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    private fun addGameAsFavorite(favoriteGame: List<IndividualGameDataItem?>) {
-        viewModelScope.launch(Dispatchers.IO)  {
-            favoriteGame[0]?.let { favoriteGame ->
-                gameStacheRepo.addGameAsFavorite(SearchResultsResponseItem(favoriteGame.id, favoriteGame.cover, favoriteGame.game_modes, favoriteGame.genres, favoriteGame.name, favoriteGame.platforms))
-            }
-
-        }
-    }
-
-    private fun removeGameAsFavorite(gameToRemove: List<IndividualGameDataItem?>) {
+    private fun updateFavoriteAndWishlistStatus(game: List<IndividualGameDataItem?>, newFavoriteStatus: Boolean, newWishlistStatus: Boolean, favoriteOrWishlistStatusInTable: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            gameToRemove[0]?.let { game ->
-                gameStacheRepo.removeGameAsFavorite(SearchResultsResponseItem(game.id, game.cover, game.game_modes, game.genres, game.name, game.platforms))
+            game[0]?.let { game ->
+                if (favoriteOrWishlistStatusInTable == GAME_NOT_IN_DB) {
+                    gameStacheRepo.addGameToFavoriteAndWishlistTable(
+                        SearchResultsResponseItem(game.id, game.cover, game.game_modes, game.genres, game.name, game.platforms, newFavoriteStatus, newWishlistStatus))
+                } else {
+                    game.id?.let { id ->
+                        newFavoriteStatus.let { newFavoriteStatus ->
+                            newWishlistStatus.let { newWishlistStatus ->
+                                gameStacheRepo.updateFavoriteAndWishlistStatus(id, newFavoriteStatus, newWishlistStatus)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -597,18 +599,54 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         return genresList.joinToString(prefix = resources.getString(R.string.genres_prefix), separator = ", ")
     }
 
-    fun onFavoriteButtonPush(buttonText: String, gameData: List<IndividualGameDataItem?>): String {
-        var newButtonText = ""
-        when (buttonText) {
-            resources.getString(R.string.add_to_favorites_button_text) -> {
-                addGameAsFavorite(gameData)
-                newButtonText = resources.getString(R.string.game_is_a_favorite_text)
+    private fun changeFavoriteAndWishlistStatus(gameData: List<IndividualGameDataItem?>, buttonPressed: GamesListAdapterFragment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var favoriteStatus: Boolean? = false
+            var wishlistStatus: Boolean? = false
+
+            val favoriteOrWishlistStatusInTable: Int? = gameData[0]?.id?.let { gameStacheRepo.checkIfGameIsInFavoriteAndWishlistTable(it) }
+
+            if (favoriteOrWishlistStatusInTable != GAME_NOT_IN_DB) {
+                val gameDataFromDb = gameData[0]?.id?.let { gameStacheRepo.getIndividualGameInfo(it) }
+                favoriteStatus = gameDataFromDb?.favoriteStatus
+                wishlistStatus = gameDataFromDb?.wishlistStatus
             }
-            resources.getString(R.string.game_is_a_favorite_text) -> {
-                removeGameAsFavorite(gameData)
-                newButtonText = resources.getString(R.string.add_to_favorites_button_text)
+
+            when (buttonPressed) {
+                GamesListAdapterFragment.FAVORITES -> {favoriteStatus = favoriteStatus?.not()}
+                GamesListAdapterFragment.WISHLIST -> {wishlistStatus = wishlistStatus?.not()}
+            }
+
+            favoriteStatus?.let { favoriteStatus ->
+                wishlistStatus?.let { wishlistStatus ->
+                    favoriteOrWishlistStatusInTable?.let { favoriteOrWishlistStatusInTable ->
+                        updateFavoriteAndWishlistStatus(gameData, favoriteStatus, wishlistStatus, favoriteOrWishlistStatusInTable)
+                    }
+                }
             }
         }
+    }
+
+    fun onFavoriteOrWishlistButtonPush(buttonText: String, gameData: List<IndividualGameDataItem?>, buttonPressed: GamesListAdapterFragment): String {
+        var newButtonText = ""
+        changeFavoriteAndWishlistStatus(gameData, buttonPressed)
+
+            when (buttonText) {
+                resources.getString(R.string.add_to_favorites_button_text) -> {
+                    newButtonText = resources.getString(R.string.game_is_a_favorite_text)
+                }
+                resources.getString(R.string.game_is_a_favorite_text) -> {
+                    newButtonText = resources.getString(R.string.add_to_favorites_button_text)
+                }
+
+                resources.getString(R.string.add_to_wishlist_button_text) -> {
+                    newButtonText = resources.getString(R.string.game_is_in_wishlist_text)
+                }
+
+                resources.getString(R.string.game_is_in_wishlist_text) -> {
+                    newButtonText = resources.getString(R.string.add_to_wishlist_button_text)
+                }
+            }
 
         return newButtonText
     }
@@ -616,7 +654,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     val currentStatusAsAFavorite: LiveData<String>
         = gameId.switchMap { gameId ->
             liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-                if (gameStacheRepo.checkIfGameIsFavorited(gameId) == GAME_NOT_IN_DB) {
+                if ( (gameStacheRepo.checkIfGameIsInFavoriteAndWishlistTable(gameId) == GAME_NOT_IN_DB) || gameStacheRepo.getIndividualGameInfo(gameId).favoriteStatus == NO ) {
                     emit(resources.getString(R.string.add_to_favorites_button_text))
                 } else {
                     emit(resources.getString(R.string.game_is_a_favorite_text))
@@ -624,10 +662,22 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
             }
     }
 
+    val currentStatusAsWishlistItem: LiveData<String>
+            = gameId.switchMap { gameId ->
+        liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
+            if ((gameStacheRepo.checkIfGameIsInFavoriteAndWishlistTable(gameId) == GAME_NOT_IN_DB) || gameStacheRepo.getIndividualGameInfo(gameId).wishlistStatus == NO) {
+                emit(resources.getString(R.string.add_to_wishlist_button_text))
+            } else {
+                emit(resources.getString(R.string.game_is_in_wishlist_text))
+            }
+        }
+    }
+
     companion object{
 
         const val RELEASE_DATE_FORMAT = "MMMM dd, yyyy"
         const val GAME_NOT_IN_DB = 0
+        const val NO = false
         fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         fun createIndividualGameSearchBodyRequestBody(gameID: Int): RequestBody = "where id = $gameID;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
 

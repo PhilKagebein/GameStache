@@ -33,4 +33,9 @@
         <item name="android:windowMinWidthMinor">95%</item>
     </style>
 
+    <style name="ActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:textColorHint">?attr/textColor</item>
+        <item name="android:textColor">?attr/textColor</item>
+    </style>
+
 </resources>

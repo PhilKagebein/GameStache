@@ -2,7 +2,9 @@ package com.example.gamestache.ui.favorites
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,13 +48,13 @@ class FavoritesFragment : Fragment() {
         val searchView = initOptionsMenu(menu, inflater)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
 
-            override fun onQueryTextSubmit(textToFilter: String?): Boolean {
-                filterFavorites(textToFilter)
+            override fun onQueryTextSubmit(filterText: String?): Boolean {
+                filterFavorites(filterText)
                 return false
             }
 
-            override fun onQueryTextChange(textToFilter: String?): Boolean {
-                filterFavorites(textToFilter)
+            override fun onQueryTextChange(filterText: String?): Boolean {
+                filterFavorites(filterText)
                 return false
             }
 

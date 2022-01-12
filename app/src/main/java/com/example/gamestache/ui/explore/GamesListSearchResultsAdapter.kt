@@ -12,6 +12,7 @@ import com.example.gamestache.R
 import com.example.gamestache.databinding.SearchResultsBinding
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.ui.favorites.FavoritesFragmentDirections
+import com.example.gamestache.ui.wishlist.WishlistFragmentDirections
 
 class GamesListSearchResultsAdapter(private val fragment: GamesListAdapterFragment):
     ListAdapter<SearchResultsResponseItem, GamesListSearchResultsAdapter.SearchResultsResponseViewHolder>(DiffCallback()) {
@@ -48,6 +49,18 @@ class GamesListSearchResultsAdapter(private val fragment: GamesListAdapterFragme
                         }
                     }
                 }
+
+                GamesListAdapterFragment.WISHLIST -> {
+                    action = currentItem.id?.let { id ->
+                        currentItem.name?.let { name ->
+                            WishlistFragmentDirections.actionNavigationWishlistToIndividualGameFragment(
+                                id,
+                                name
+                            )
+                        }
+                    }
+                }
+
             }
 
             action?.let { action ->
@@ -130,5 +143,6 @@ class GamesListSearchResultsAdapter(private val fragment: GamesListAdapterFragme
 
 enum class GamesListAdapterFragment {
     FAVORITES,
-    EXPLORE
+    EXPLORE,
+    WISHLIST
 }

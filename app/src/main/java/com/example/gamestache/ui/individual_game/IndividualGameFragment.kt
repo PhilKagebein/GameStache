@@ -24,6 +24,7 @@ import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.individual_game.MultiplayerModesItem
 import com.example.gamestache.models.individual_game.ReleaseDate
 import com.example.gamestache.models.individual_game.SimilarGame
+import com.example.gamestache.ui.explore.GamesListAdapterFragment
 import kotlinx.android.synthetic.main.individual_game_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -203,10 +204,20 @@ class IndividualGameFragment : Fragment() {
         })
 
         individualGameViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
+
             binding.favoritesButton.setOnClickListener {
-                binding.favoritesButton.text = individualGameViewModel.onFavoriteButtonPush(binding.favoritesButton.text.toString(), gameData)
+                binding.favoritesButton.text = individualGameViewModel.onFavoriteOrWishlistButtonPush(binding.favoritesButton.text.toString(), gameData,
+                    GamesListAdapterFragment.FAVORITES
+                )
+            }
+
+            binding.wishListButton.setOnClickListener {
+                binding.wishListButton.text = individualGameViewModel.onFavoriteOrWishlistButtonPush(binding.wishListButton.text.toString(), gameData,
+                    GamesListAdapterFragment.WISHLIST
+                )
             }
         })
+
     }
 
     private fun setSimilarGameOnClickListener(similarGamesList: List<SimilarGame?>, similarGamesTextViews: MutableList<TextView>) {
