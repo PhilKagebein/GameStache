@@ -15,7 +15,7 @@ interface TwitchApi {
 
     @Headers("Client-ID: $CLIENT_ID")
     @POST("games")
-    suspend fun searchGames(
+    suspend fun searchForGames(
         @Header("Authorization") accessToken: String,
         @Body gamesSearch: RequestBody
     ): Response<SearchResultsResponse>

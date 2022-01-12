@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Response
 import java.net.URI
 
 class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewModel() {
@@ -39,19 +40,19 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
     val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGenresListFromDb()
     val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGameModesListFromDb()
 
-    fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
+    private fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepo.storePlatformsListToDb(spinnerResponseItem)
         }
     }
 
-    fun addGenresListToRoom(spinnerResponseItem: GenresResponseItem){
+    private fun addGenresListToRoom(spinnerResponseItem: GenresResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepo.storeGenresListToDb(spinnerResponseItem)
         }
     }
 
-    fun addGameModesListToRoom(spinnerResponseItem: GameModesResponseItem){
+    private fun addGameModesListToRoom(spinnerResponseItem: GameModesResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepo.storeGameModesListToDb(spinnerResponseItem)
         }
@@ -59,20 +60,18 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
 
     fun getAuthToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            //TODO: WHY IS THE RUN STATEMENT GREYED OUT? GAMESTACHEREPO.GETAUTHTOKEN() IS NULLABLE AND CAN RETURN NULL
-            gameStacheRepo.getAuthToken().let {
+            gameStacheRepo.getAuthToken()?.let {
                 twitchAuthorization.postValue(it)
             } ?: run {
                 twitchAuthorization.postValue(null)
             }
-
         }
     }
 
-    fun searchGames(accessToken: String, gamesSearch: RequestBody) {
+    fun searchForGames(accessToken: String, gamesSearch: RequestBody) {
         viewModelScope.launch(Dispatchers.IO) {
             progressBarIsVisible.postValue(true)
-            val response = gameStacheRepo.searchGames(accessToken, gamesSearch)
+            val response = gameStacheRepo.searchForGames(accessToken, gamesSearch)
             if (response.isSuccessful) {
                 gamesList.postValue(response.body())
             } else {
@@ -142,35 +141,47 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
             ?: run {return ""}
         }
 
-    //TODO: CHANGE THIS NAME
-    fun getPlatformsListFromRoom(): LiveData<List<PlatformsResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
-        liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> gameStacheRepo.getPlatformsListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
-            emit(response?.body())
+    fun updateSpinnerListsFromApi(twitchAuthorization: TwitchAuthorization?) {
+        viewModelScope.launch(Dispatchers.IO) {
+          twitchAuthorization?.let{ twitchAuth ->
+                val platformsListFromApi = gameStacheRepo.getPlatformsListFromApi(twitchAuth.access_token, spinnersPostRequestBody)
+                val genresListFromApi = gameStacheRepo.getGenresListFromApi(twitchAuth.access_token, spinnersPostRequestBody)
+                val gameModesListFromApi = gameStacheRepo.getGameModesListFromApi(twitchAuth.access_token, spinnersPostRequestBody)
+
+              updateSpinnersListsInRoom(platformsListFromApi, genresListFromApi, gameModesListFromApi)
             }
-    }
-
-    fun genresResponse(): LiveData<List<GenresResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
-        liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> gameStacheRepo.getGenresListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
-            emit(response?.body())
         }
     }
 
-    fun gameModesResponse(): LiveData<List<GameModesResponseItem>?> = twitchAuthorization.switchMap { twitchAuthorization ->
-        liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
-            val response = twitchAuthorization?.let { twitchAuthorization -> gameStacheRepo.getGameModesListFromDb(twitchAuthorization.access_token, spinnersPostRequestBody) }
-            emit(response?.body())
+    private fun updateSpinnersListsInRoom(platformsList: Response<List<PlatformsResponseItem>>?, genresList: Response<List<GenresResponseItem>>?, gameModesList: Response<List<GameModesResponseItem>>?) {
+        platformsList?.body()?.let { platforms ->
+            for (platform in platforms) {
+                val platformItem = PlatformsResponseItem(platform.id, platform.name)
+                addPlatformsListToRoom(platformItem)
+            }
+        }
+
+        genresList?.body()?.let { genres ->
+            for (genre in genres) {
+                val genreItem = GenresResponseItem(genre.id, genre.name)
+                addGenresListToRoom(genreItem)
+            }
+        }
+
+        gameModesList?.body()?.let { gameModes ->
+            for (gameMode in gameModes) {
+                val gameModeItem = GameModesResponseItem(gameMode.id, gameMode.name)
+                addGameModesListToRoom(gameModeItem)
+            }
         }
     }
 
-    //TODO: TALK TO KEVIN ABOUT WHY I MADE GENERICSPINNERITEM CLASS AND THIS SOLUTION TO THE PROBLEM
     fun addPromptToSpinnerList(spinnerList: List<GenericSpinnerItem>?, spinnerPrompt: String): MutableList<String?> {
         val list: MutableList<String?> = emptyList<String>().toMutableList()
         list.add(spinnerPrompt)
         if (spinnerList != null) {
-            for (i in spinnerList.indices) {
-                list.add(spinnerList[i].name)
+            for (item in spinnerList) {
+                list.add(item.name)
             }
         }
         return list
@@ -195,27 +206,18 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
             }
         }
 
-    //TODO SHOW KEVIN THIS AND SEE IF HE THINKS THIS IS THE BEST IT WILL BE
-    private fun makeWhereClause(spinnerMap: Map<String,String>): String {
-        var whereClause = "where "
+    private fun makeWhereClause(spinnerMap: Map<String, String>): String {
+        val stringsToJoin = mutableListOf<String>()
         val filteredMap = spinnerMap.filterNot { it.value.isEmpty() }
-        val mapList = filteredMap.toList()
-        val mapSize = filteredMap.size
-        var currentMapItem = 1
-
-        if (mapSize == 0) {
-            return ""
-        } else {
+        if (filteredMap.isEmpty()) { return "" }
+        else {
+            val mapList = filteredMap.toList()
             for (i in mapList) {
-                if (currentMapItem < mapSize) {
-                    whereClause += "${i.first} = ${i.second} & "
-                    currentMapItem++
-                } else if (currentMapItem == mapSize){
-                    whereClause += "${i.first} = ${i.second};"
-                }
+                stringsToJoin.add("${i.first} = ${i.second}")
             }
+
+            return stringsToJoin.joinToString(separator = " & ", prefix = "where ", postfix = ";")
         }
-        return whereClause
     }
 
     fun setExploreSpinnersClearButtonVisibility(itemPosition: Int): Int {
