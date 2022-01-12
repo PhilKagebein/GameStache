@@ -3,7 +3,6 @@ package com.example.gamestache.ui.favorites
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import com.example.gamestache.koin.exploreViewModelModule
 import com.example.gamestache.models.search_results.*
 import com.example.gamestache.repository.GameStacheRepository
 import com.example.gamestache.repository.GameStacheRepository.Companion.concatCoverUrl
@@ -19,29 +18,22 @@ class FavoritesViewModel(private val gameStacheRepository: GameStacheRepository)
     fun pullFavoritesListFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepository.getFavoritesFromDb(true).let { listOfFavorites ->
-                val favoritesMassaged = massageGameCoverUrl(listOfFavorites)
+                val favoritesMassaged = massageDataForListAdapter(listOfFavorites)
                 favoritesListFromDb.postValue(favoritesMassaged)
             }
         }
     }
 
-    fun massageGameCoverUrl(gamesList: List<SearchResultsResponseItem?>): List<SearchResultsResponseItem?> {
-        for (game in gamesList) {
-
-            if (game?.cover?.url == null){
-                game?.cover?.url = ""
-            } else {
-                val url = URI(game.cover.url)
-                val segments = url.path.split("/")
-                val lastSegment = segments[segments.size - 1]
-                val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-                game.cover.url = concatCoverUrl(imageHash)
-            }
-
+    private fun massageCoverUrl(coverURL: String?): String {
+        if (coverURL == null){
+            return ""
+        } else {
+            val url = URI(coverURL)
+            val segments = url.path.split("/")
+            val lastSegment = segments[segments.size - 1]
+            val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
+            return concatCoverUrl(imageHash)
         }
-
-        return gamesList
-
     }
 
     fun setNoFavoritesTextViewVisibility(favoritesList: List<SearchResultsResponseItem?>): Int {
@@ -58,6 +50,50 @@ class FavoritesViewModel(private val gameStacheRepository: GameStacheRepository)
         return gameStacheRepository.filterFavoriteGames(filterQuery, true)
     }
 
+    fun massageDataForListAdapter(gamesList: List<SearchResultsResponseItem?>): List<SearchResultsResponseItem?> {
+        for (game in gamesList) {
+            game?.cover?.url = game?.cover?.url?.let { massageCoverUrl(it) }.toString()
+
+            val gameInfoListsMap = createStringMaps(game)
+
+            game?.platformsToDisplay = joinInfoListsToString(gameInfoListsMap["platforms"])
+            game?.genresToDisplay = joinInfoListsToString(gameInfoListsMap["genres"])
+            game?.gameModesToDisplay = joinInfoListsToString(gameInfoListsMap["gameModes"])
+
+        }
+        return gamesList
+    }
+
+    private fun createStringMaps(game: SearchResultsResponseItem?): Map<String, MutableList<String>> {
+        val platformList = mutableListOf<String>()
+        val genreList = mutableListOf<String>()
+        val gameModesList = mutableListOf<String>()
+
+        game?.platforms?.let { platforms ->
+            for (platform in platforms) {
+                platform?.name?.let { platformList.add(it) }
+            }
+        }
+
+        game?.genres?.let { genres ->
+            for (genre in genres) {
+                genre?.name?.let { genreList.add(it) }
+            }
+        }
+
+        game?.game_modes?.let { gameModes ->
+            for (gameMode in gameModes) {
+                gameMode?.name?.let { gameModesList.add(it) }
+            }
+        }
+
+        return mapOf("platforms" to platformList, "genres" to genreList, "gameModes" to gameModesList)
+    }
+
+    private fun joinInfoListsToString(list: MutableList<String>?): String {
+        list?.let { return list.joinToString(separator = ", ") }
+            ?: run {return ""}
+    }
 }
 
 

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -79,7 +78,7 @@ class WishlistFragment : Fragment() {
 
             wishlistViewModel.filterWishlist(filterQuery).observe(viewLifecycleOwner, { filteredFavoritesList ->
                 filteredFavoritesList?.let {
-                    val massagedFavoritesList = wishlistViewModel.massageGameCoverUrl(filteredFavoritesList)
+                    val massagedFavoritesList = wishlistViewModel.massageDataForListAdapter(filteredFavoritesList)
                     wishlistAdapter.submitList(massagedFavoritesList)
                 }
             })
