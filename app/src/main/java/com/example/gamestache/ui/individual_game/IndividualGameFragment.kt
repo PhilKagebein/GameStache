@@ -20,6 +20,7 @@ import com.example.gamestache.MainActivity
 import com.example.gamestache.R
 import com.example.gamestache.SpinnerAdapter
 import com.example.gamestache.databinding.IndividualGameFragmentBinding
+import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
 import com.example.gamestache.models.individual_game.MultiplayerModesItem
 import com.example.gamestache.models.individual_game.ReleaseDate
@@ -61,7 +62,7 @@ class IndividualGameFragment : Fragment() {
         val similarGamesTextViews = mutableListOf<TextView>()
 
         individualGameViewModel.gameId.postValue(args.gameId)
-        individualGameViewModel.getAccessToken()
+        individualGameViewModel.getAccessToken(requireContext())
 
         individualGameViewModel.progressBarIsVisible.observe(viewLifecycleOwner, { progressBarStatus ->
 
@@ -190,6 +191,10 @@ class IndividualGameFragment : Fragment() {
         })
 
         individualGameViewModel.getIndividualGameData().observe(viewLifecycleOwner, { gameData ->
+
+            if (gameData.isNullOrEmpty()) {
+                makeNoInternetToast(requireContext(), resources).show()
+            }
 
             binding.favoritesButton.setOnClickListener {
                 binding.favoritesButton.text = individualGameViewModel.onFavoriteOrWishlistButtonPush(binding.favoritesButton.text.toString(), gameData,

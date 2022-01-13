@@ -1,8 +1,13 @@
 package com.example.gamestache.ui.explore
 
+import android.content.Context
+import android.content.res.Resources
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.gamestache.isOnline
+import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.massageDataForListAdapter
 import com.example.gamestache.models.TwitchAuthorization
 import com.example.gamestache.models.explore_spinners.GameModesResponseItem
@@ -12,6 +17,7 @@ import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import com.example.gamestache.models.search_results.SearchResultsResponse
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
+import com.example.gamestache.ui.explore.ExploreFragment.Companion.IS_OFFLINE_LOG_TEXT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -58,27 +64,28 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
         }
     }
 
-    fun getAuthToken() {
+    fun getAuthToken(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            gameStacheRepo.getAuthToken()?.let {
-                twitchAuthorization.postValue(it)
-            } ?: run {
-                twitchAuthorization.postValue(null)
-            }
+            val authToken = com.example.gamestache.getAuthToken(context, gameStacheRepo)
+            twitchAuthorization.postValue(authToken)
         }
     }
 
-    fun searchForGames(accessToken: String, gamesSearch: RequestBody) {
-        viewModelScope.launch(Dispatchers.IO) {
-            progressBarIsVisible.postValue(true)
-            val response = gameStacheRepo.searchForGames(accessToken, gamesSearch)
-            if (response.isSuccessful) {
-                gamesList.postValue(response.body())
-            } else {
-                //Change how this is handled in the future.
-                println("Twitch auth token response not successful.")
+    fun searchForGames(accessToken: String, gamesSearch: RequestBody, context: Context, resources: Resources) {
+        if (isOnline(context)) {
+            viewModelScope.launch(Dispatchers.IO) {
+                progressBarIsVisible.postValue(true)
+                val response = gameStacheRepo.searchForGames(accessToken, gamesSearch)
+                if (response.isSuccessful) {
+                    gamesList.postValue(response.body())
+                } else {
+                    Log.i(GAMES_SEARCH_LOG_TAG, response.toString())
+                }
+                progressBarIsVisible.postValue(false)
             }
-            progressBarIsVisible.postValue(false)
+        } else {
+            Log.i(GAMES_SEARCH_LOG_TAG, IS_OFFLINE_LOG_TEXT)
+            makeNoInternetToast(context, resources).show()
         }
     }
 
@@ -179,5 +186,6 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
     }
     companion object {
         const val BASIC_SEARCH_TEXT = "\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;"
+        const val GAMES_SEARCH_LOG_TAG = "ExploreViewModel - Games Search"
     }
 }

@@ -7,6 +7,7 @@ import com.example.gamestache.Constants.Companion.CLIENT_SECRET
 import com.example.gamestache.Constants.Companion.GRANT_TYPE
 import com.example.gamestache.api.TwitchApi
 import com.example.gamestache.api.TwitchApiAuth
+import com.example.gamestache.isOnline
 import com.example.gamestache.models.*
 import com.example.gamestache.models.explore_spinners.*
 import com.example.gamestache.models.individual_game.IndividualGameDataItem
@@ -71,14 +72,15 @@ class GameStacheRepository(
     }
 
     private suspend fun getNewAuthToken(): TwitchAuthorization? {
+        //TODO: NEED TO CHECK BEFORE EXECUTING LINE 75 IF THERE IS INTERNET ACCESS
         val twitchAuth = authApi.getAccessToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)
-
+        println("do you hit this")
         if (twitchAuth.isSuccessful) {
             twitchAuth.body()?.token_birth_date = LocalDateTime.now()
             twitchAuth.body()?.let { storeTwitchAuthInDb(it) }
             return twitchAuth.body()
         } else {
-            //TODO: am i doing the Log.i correctly
+            println("please hit this line")
             Log.i("GameStacheRepository - getAccessToken()", twitchAuth.toString())
             return null
         }

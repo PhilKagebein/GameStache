@@ -1,10 +1,13 @@
 package com.example.gamestache.ui.individual_game
 
+import android.content.Context
 import android.content.res.Resources
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.gamestache.R
+import com.example.gamestache.getAuthToken
 import com.example.gamestache.models.GameMode
 import com.example.gamestache.models.Genre
 import com.example.gamestache.models.TwitchAuthorization
@@ -49,13 +52,11 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
 
     val platformListFromDb = gameStacheRepo.getPlatformsListFromDb()
 
-    fun getAccessToken() {
+    fun getAccessToken(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            gameStacheRepo.getAuthToken()?.let {
-                twitchAuthorization.postValue(it)
-            } ?: run {
-                twitchAuthorization.postValue(null)
-            }
+            val authToken = getAuthToken(context, gameStacheRepo)
+            twitchAuthorization.postValue(authToken)
+
         }
     }
 
@@ -63,7 +64,6 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         gameStacheRepo.checkIfGameIsInDb(gameID)
     }
 
-    //TODO: HANDLE NO INTERNET ACCESS BETTER SO APP DOESN'T CRASH
     fun getIndividualGameData(): LiveData<out List<IndividualGameDataItem?>>
         = twitchAuthorization.switchMap { twitchAuth ->
             gameId.switchMap { gameID ->
@@ -78,13 +78,17 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
                                     response.body()?.let {
                                         storeIndividualGameToDb(it)
                                         emit(it)
-                                    } ?: throw NullPointerException()
-
+                                    } ?: run {
+                                        Log.i(GET_INDIVIDUAL_GAME_DATA_TAG, API_RESPONSE_UNSUCCESSFUL_LOG_TEXT)
+                                        emit(emptyList<IndividualGameDataItem>())
+                                    }
                                 } else{
-                                    throw NullPointerException()
+                                    Log.i(GET_INDIVIDUAL_GAME_DATA_TAG, API_RESPONSE_UNSUCCESSFUL_LOG_TEXT)
+                                    emit(emptyList<IndividualGameDataItem>())
                                 }
                             } ?: run {
-                                throw NullPointerException()
+                                Log.i(GET_INDIVIDUAL_GAME_DATA_TAG, TWITCH_AUTH_NULL_TEXT)
+                                emit(emptyList<IndividualGameDataItem>())
                             }
                         }
 
@@ -104,20 +108,22 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     val progressBarIsVisible: LiveData<Boolean>
     = getIndividualGameData().switchMap { gameData ->
         platformListFromDb.map { platformsListInDb ->
-            postImageUrl(gameData)
-            postSimilarGamesList(gameData)
-            postReleaseDateData(gameData)
-            postOriginalReleaseDateText(gameData)
-            postOriginalPlatformsText(gameData)
-            postDevelopersText(gameData)
-            postPublishersText(gameData)
-            postSummaryText(gameData)
-            postRegionsList(gameData)
-            postPlayerPerspectivesText(gameData)
-            postGenresText(gameData)
-            postGameModesText(gameData)
-            postPlatformsListForMultiplayerModesSpinner(gameData, platformsListInDb)
-            postMultiplayerModesList(gameData)
+            if (!gameData.isNullOrEmpty()) {
+                postImageUrl(gameData)
+                postSimilarGamesList(gameData)
+                postReleaseDateData(gameData)
+                postOriginalReleaseDateText(gameData)
+                postOriginalPlatformsText(gameData)
+                postDevelopersText(gameData)
+                postPublishersText(gameData)
+                postSummaryText(gameData)
+                postRegionsList(gameData)
+                postPlayerPerspectivesText(gameData)
+                postGenresText(gameData)
+                postGameModesText(gameData)
+                postPlatformsListForMultiplayerModesSpinner(gameData, platformsListInDb)
+                postMultiplayerModesList(gameData)
+            }
             false
         }
     }
@@ -668,7 +674,9 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         const val NO = false
         fun addImageHashToGlideURL(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_1080p/${imageHash}.jpg"
         fun createIndividualGameSearchBodyRequestBody(gameID: Int): RequestBody = "where id = $gameID;\nfields cover.url, first_release_date, name, genres.name, platforms.name, franchise.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, involved_companies.company.name, game_modes.name, multiplayer_modes.*, player_perspectives.name, release_dates.date, release_dates.game, release_dates.human, release_dates.platform.name, release_dates.region, similar_games.name, summary;\nlimit 100;".toRequestBody("text/plain".toMediaTypeOrNull())
-
+        const val GET_INDIVIDUAL_GAME_DATA_TAG = "getIndividualGameData - Api Response"
+        const val API_RESPONSE_UNSUCCESSFUL_LOG_TEXT = "Response from Api unsuccessful"
+        const val TWITCH_AUTH_NULL_TEXT = "Twitch Auth is Null"
     }
 
 }
