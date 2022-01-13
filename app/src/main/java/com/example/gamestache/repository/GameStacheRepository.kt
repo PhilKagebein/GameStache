@@ -129,7 +129,7 @@ class GameStacheRepository(
     companion object {
         const val AUTH_NOT_IN_DB = 0
         const val DAYS_TO_GET_EXPIRATION: Long = 30
-        fun concatCoverUrl(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg"
+
     }
 
 }
