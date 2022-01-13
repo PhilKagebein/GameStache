@@ -14,8 +14,6 @@ import java.time.ZoneOffset
 
 class Converters {
 
-    //TODO: MAKE A GENERIC CONVERTER FOR THESE IF POSSIBLE. ELIMINATE EACH SPECIFIC CONVERTER
-
     @TypeConverter
     fun stringToCover(data: String?): Cover? {
         val coverType = object :

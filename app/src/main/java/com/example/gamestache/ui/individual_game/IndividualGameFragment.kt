@@ -131,14 +131,8 @@ class IndividualGameFragment : Fragment() {
                 individualGameViewModel.multiplayerModesList.observe(viewLifecycleOwner, { multiplayerModesList ->
 
                     if (multiplayerModesList.isNullOrEmpty()) {
-                        binding.multiplayerCapabilitiesSectionTitleTV.visibility = GONE
-                        multiplayerOnPlatformSpinner.visibility = GONE
-                        binding.coopCapabilitiesTV.visibility = GONE
-                        binding.offlineCapabilities.visibility = GONE
-                        binding.onlineCapabilities.visibility = GONE
-                        binding.onlineCapablitiesTitleTV.visibility = GONE
-                        binding.offlineCapabilitiesTitleTV.visibility = GONE
-                        binding.coopCapabilitiesTitleTV.visibility = GONE
+                        binding.multiplayerCapabilitiesLinearLayout.visibility = GONE
+                        binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility = GONE
                     }
                     val spinner = initSpinner(platformListForSpinner, multiplayerOnPlatformSpinner)
 
@@ -173,16 +167,8 @@ class IndividualGameFragment : Fragment() {
                 binding.gameModesArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
 
                 binding.gameModesTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.gameModesTV.visibility)
-                binding.multiplayerCapabilitiesSectionTitleTV.visibility = individualGameViewModel.getMultiplayerTitleAndSpinnerVisibility( binding.multiplayerCapabilitiesSectionTitleTV.visibility, multiplayerModes)
-                multiplayerOnPlatformSpinner.visibility = individualGameViewModel.getMultiplayerTitleAndSpinnerVisibility(multiplayerOnPlatformSpinner.visibility, multiplayerModes)
-
-                //TODO: IF ALL OF THESE WILL ALWAYS SHARE THE SAME VISIBILITY, DO I WRAP THESE AROUND A LINEAR LAYOUT OR SOMETHING AND JUST CHANGE THE VISIBILITY ON THAT?
-                binding.coopCapabilitiesTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.coopCapabilitiesTV.visibility)
-                binding.offlineCapabilities.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.offlineCapabilities.visibility)
-                binding.onlineCapabilities.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.onlineCapabilities.visibility)
-                binding.onlineCapablitiesTitleTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.onlineCapablitiesTitleTV.visibility)
-                binding.offlineCapabilitiesTitleTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.offlineCapabilitiesTitleTV.visibility)
-                binding.coopCapabilitiesTitleTV.visibility = individualGameViewModel.getMultiplayerCapabilitiesInfoVisibility(multiplayerOnPlatformSpinner.selectedItemPosition, binding.coopCapabilitiesTitleTV.visibility)
+                binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility = individualGameViewModel.getMultiplayerTitleAndSpinnerVisibility( binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility, multiplayerModes)
+                binding.multiplayerCapabilitiesLinearLayout.visibility = individualGameViewModel.changeCardViewVisibility(binding.multiplayerCapabilitiesLinearLayout.visibility)
 
             }
         })
