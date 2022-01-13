@@ -59,22 +59,23 @@ class ExploreFragment : Fragment() {
         }
         exploreViewModel.getAuthToken()
 
-        //TODO: HOW TO PERSIST STATE OF SPINNER SELECTION AFTER NAVIGATING BACK FROM INDIVIDUAL GAME FRAGMENT
         exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            if (spinnerListFromRoom != null) { platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
-                    platformSpinner?.let { setSpinnerOnClick(it, "platform", savedInstanceState) }
-                }
-            })
+            platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
+            platformSpinner?.let { setSpinnerOnClick(it, "platform") }
+            platformSpinner?.setSelection(exploreViewModel.platformSpinnerSelection)
+        })
 
         exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
-            genreSpinner?.let { setSpinnerOnClick(it, "genre", savedInstanceState) }
+            genreSpinner?.let { setSpinnerOnClick(it, "genre") }
+            genreSpinner?.setSelection(exploreViewModel.genreSpinnerSelection)
         })
 
         exploreViewModel.currentGameModesListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-                gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
-                gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode", savedInstanceState) }
-            })
+            gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
+            gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode") }
+            gameModesSpinner?.setSelection(exploreViewModel.gameModesSpinnerSelection)
+        })
 
         exploreViewModel.searchText().observe(viewLifecycleOwner, { text ->
             searchRequestBody = text
@@ -175,13 +176,22 @@ class ExploreFragment : Fragment() {
 
     }
 
-    private fun setSpinnerOnClick(spinner: Spinner, spinnerName: String, savedInstanceState: Bundle?) {
+    private fun setSpinnerOnClick(spinner: Spinner, spinnerName: String) {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
                 when (spinnerName) {
-                    ExploreSpinners.PLATFORM_SPINNER.spinnerName -> binding.btnClearPlatformSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
-                    ExploreSpinners.GENRE_SPINNER.spinnerName -> binding.btnClearGenreSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
-                    ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                    ExploreSpinners.PLATFORM_SPINNER.spinnerName -> {
+                        binding.btnClearPlatformSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                        exploreViewModel.platformSpinnerSelection = itemPosition
+                    }
+                    ExploreSpinners.GENRE_SPINNER.spinnerName -> {
+                        binding.btnClearGenreSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                        exploreViewModel.genreSpinnerSelection = itemPosition
+                    }
+                    ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> {
+                        binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                        exploreViewModel.gameModesSpinnerSelection = itemPosition
+                    }
                 }
                 if (itemPosition == 0) {
                     when (spinnerName) {
