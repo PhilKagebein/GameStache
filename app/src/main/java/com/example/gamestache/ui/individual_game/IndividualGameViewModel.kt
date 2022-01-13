@@ -482,16 +482,6 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
             }        }
     }
 
-    fun getMultiplayerCapabilitiesInfoVisibility(spinnerSelection: Int, currentVisibility: Int): Int {
-         if (spinnerSelection != 0) {
-            if (currentVisibility == GONE) {
-                return VISIBLE
-            } else  {
-                 return GONE
-            }
-        } else return GONE
-    }
-
     fun determineArrowButtonStatus(viewVisibility: Int): Int {
         if (viewVisibility == GONE) {
             return R.drawable.drop_down_arrow_down
