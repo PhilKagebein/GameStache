@@ -36,6 +36,10 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
     val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGenresListFromDb()
     val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGameModesListFromDb()
 
+    var platformSpinnerSelection = 0
+    var genreSpinnerSelection = 0
+    var gameModesSpinnerSelection = 0
+
     private fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {
             gameStacheRepo.storePlatformsListToDb(spinnerResponseItem)
