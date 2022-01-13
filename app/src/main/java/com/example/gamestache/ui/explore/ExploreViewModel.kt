@@ -3,6 +3,7 @@ package com.example.gamestache.ui.explore
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.gamestache.massageDataForListAdapter
 import com.example.gamestache.models.TwitchAuthorization
 import com.example.gamestache.models.explore_spinners.GameModesResponseItem
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
@@ -11,25 +12,20 @@ import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import com.example.gamestache.models.search_results.SearchResultsResponse
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
-import com.example.gamestache.repository.GameStacheRepository.Companion.concatCoverUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
-import java.net.URI
 
 class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewModel() {
-    //Live Data for the Access/Authorization Token
     val twitchAuthorization: MutableLiveData<TwitchAuthorization?> = MutableLiveData()
 
-    //Live Data for the Search functionality
     private val gamesList: MutableLiveData<SearchResultsResponse> = MutableLiveData()
 
     private val spinnersPostRequestBody: RequestBody = "fields name;\n limit 500;".toRequestBody("text/plain".toMediaTypeOrNull())
 
-    //Text for filters to be included with searches
     var platformText: MutableLiveData<String> = MutableLiveData("")
     var genreText: MutableLiveData<String> = MutableLiveData("")
     var gameModesText: MutableLiveData<String> = MutableLiveData("")
@@ -82,64 +78,9 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
         }
     }
 
-    fun transformDataForListAdapter(): LiveData<List<SearchResultsResponseItem>> = gamesList.map{ gamesList ->
-
-        for (game in gamesList) {
-            game.cover?.url = game.cover?.url?.let { massageCoverUrl(it) }.toString()
-
-            val gameInfoListsMap = createStringMaps(game)
-
-            game.platformsToDisplay = joinInfoListsToString(gameInfoListsMap["platforms"])
-            game.genresToDisplay = joinInfoListsToString(gameInfoListsMap["genres"])
-            game.gameModesToDisplay = joinInfoListsToString(gameInfoListsMap["gameModes"])
-
-       }
-        gamesList
+    fun transformDataForListAdapter(): LiveData<List<SearchResultsResponseItem?>> = gamesList.map{ gamesList ->
+        massageDataForListAdapter(gamesList)
     }
-
-    //TODO: I USE THIS FUNCTION MULTIPLE TIMES, BEST PLACE TO STORE IT?
-    private fun massageCoverUrl(coverURL: String?): String {
-        if (coverURL == null){
-            return ""
-        } else {
-            val url = URI(coverURL)
-            val segments = url.path.split("/")
-            val lastSegment = segments[segments.size - 1]
-            val imageHash = lastSegment.substring(0, (lastSegment.length - 4))
-            return concatCoverUrl(imageHash)
-        }
-    }
-
-    private fun createStringMaps(game: SearchResultsResponseItem): Map<String, MutableList<String>> {
-        val platformList = mutableListOf<String>()
-        val genreList = mutableListOf<String>()
-        val gameModesList = mutableListOf<String>()
-
-        game.platforms?.let { platforms ->
-            for (platform in platforms) {
-                platform?.name?.let { platformList.add(it) }
-            }
-        }
-
-        game.genres?.let { genres ->
-            for (genre in genres) {
-                genre?.name?.let { genreList.add(it) }
-            }
-        }
-
-        game.game_modes?.let { gameModes ->
-            for (gameMode in gameModes) {
-                gameMode?.name?.let { gameModesList.add(it) }
-            }
-        }
-
-        return mapOf("platforms" to platformList, "genres" to genreList, "gameModes" to gameModesList)
-    }
-
-    private fun joinInfoListsToString(list: MutableList<String>?): String {
-        list?.let { return list.joinToString(separator = ", ") }
-            ?: run {return ""}
-        }
 
     fun updateSpinnerListsFromApi(twitchAuthorization: TwitchAuthorization?) {
         viewModelScope.launch(Dispatchers.IO) {

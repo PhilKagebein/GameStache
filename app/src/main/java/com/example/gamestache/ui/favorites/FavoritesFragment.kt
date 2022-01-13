@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamestache.R
 import com.example.gamestache.databinding.FragmentFavoritesBinding
+import com.example.gamestache.massageDataForListAdapter
 import com.example.gamestache.ui.explore.GamesListAdapterFragment
 import com.example.gamestache.ui.explore.GamesListSearchResultsAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -79,7 +80,7 @@ class FavoritesFragment : Fragment() {
 
             favoritesViewModel.filterFavorites(filterQuery).observe(viewLifecycleOwner, { filteredFavoritesList ->
                 filteredFavoritesList?.let {
-                    val massagedFavoritesList = favoritesViewModel.massageDataForListAdapter(filteredFavoritesList)
+                    val massagedFavoritesList = massageDataForListAdapter(filteredFavoritesList)
                     favoritesAdapter.submitList(massagedFavoritesList)
                 }
             })
