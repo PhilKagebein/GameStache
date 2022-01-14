@@ -6,13 +6,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.gamestache.models.TwitchAuthorization
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.net.URI
 
 fun concatCoverUrl(imageHash: String): String = "https://images.igdb.com/igdb/image/upload/t_cover_big/${imageHash}.jpg"
@@ -112,4 +108,5 @@ suspend fun getAuthToken(context: Context, gameStacheRepo: GameStacheRepository)
             return null
         }
 }
+
 
