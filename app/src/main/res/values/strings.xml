@@ -54,11 +54,11 @@
     <string name="original_release_date">Original Release Date: %1$s</string>
     <string name="similar_game">\u0009-\u0020%1$s</string>
     <string name="blank_search_attempt_error_message">You must enter a game or select one option from a spinner</string>
-    <string name="tried_searching_with_null_twitch_auth">Unable to access the database. Try searching again</string>
     <string name="add_to_favorites_button_text">Add to Favorites</string>
     <string name="add_to_wishlist_button_text">Add to Wishlist</string>
     <string name="game_is_a_favorite_text">Favorited \u2713</string>
     <string name="game_is_in_wishlist_text">Wishlist \u2713</string>
     <string name="no_games_in_wishlist_text_view">There are no games in your wishlist yet. Add some from the explore screen then come back.</string>
+    <string name="no_internet_access_toast_text">No internet access. Check your internet connection and try again.</string>
 
 </resources>

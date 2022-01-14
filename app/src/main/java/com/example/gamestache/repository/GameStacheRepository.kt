@@ -1,14 +1,16 @@
 package com.example.gamestache.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.gamestache.Constants.Companion.CLIENT_ID
 import com.example.gamestache.Constants.Companion.CLIENT_SECRET
 import com.example.gamestache.Constants.Companion.GRANT_TYPE
 import com.example.gamestache.api.TwitchApi
 import com.example.gamestache.api.TwitchApiAuth
-import com.example.gamestache.models.*
-import com.example.gamestache.models.explore_spinners.*
+import com.example.gamestache.models.TwitchAuthorization
+import com.example.gamestache.models.explore_spinners.GameModesResponseItem
+import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
+import com.example.gamestache.models.explore_spinners.GenresResponseItem
+import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import com.example.gamestache.models.individual_game.IndividualGameDataItem
 import com.example.gamestache.models.search_results.SearchResultsResponse
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
@@ -72,14 +74,11 @@ class GameStacheRepository(
 
     private suspend fun getNewAuthToken(): TwitchAuthorization? {
         val twitchAuth = authApi.getAccessToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)
-
         if (twitchAuth.isSuccessful) {
             twitchAuth.body()?.token_birth_date = LocalDateTime.now()
             twitchAuth.body()?.let { storeTwitchAuthInDb(it) }
             return twitchAuth.body()
         } else {
-            //TODO: am i doing the Log.i correctly
-            Log.i("GameStacheRepository - getAccessToken()", twitchAuth.toString())
             return null
         }
     }

@@ -2,8 +2,8 @@ package com.example.gamestache.ui.explore
 
 import android.app.Dialog
 import android.content.Context
-import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gamestache.R
 import com.example.gamestache.SpinnerAdapter
 import com.example.gamestache.databinding.FragmentExploreBinding
-import com.example.gamestache.models.explore_spinners.GameModesResponseItem
+import com.example.gamestache.isOnline
+import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
-import com.example.gamestache.models.explore_spinners.GenresResponseItem
-import com.example.gamestache.models.explore_spinners.PlatformsResponseItem
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -57,7 +56,7 @@ class ExploreFragment : Fragment() {
             adapter = exploreAdapter
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
         }
-        exploreViewModel.getAuthToken()
+        exploreViewModel.getAuthToken(requireContext())
 
         exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
             platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
@@ -135,7 +134,15 @@ class ExploreFragment : Fragment() {
 
         exploreViewModel.twitchAuthorization.observe(viewLifecycleOwner, { twitchAuth ->
             twitchAuth?.let {
-                exploreViewModel.updateSpinnerListsFromApi(twitchAuth)
+                if (isOnline(requireContext())) {
+                    exploreViewModel.updateSpinnerListsFromApi(twitchAuth)
+                } else {
+                    Log.i(TWITCH_AUTH_LOG_TAG, IS_OFFLINE_LOG_TEXT)
+                    makeNoInternetToast(requireContext(), resources).show()
+                }
+            } ?: run {
+                Log.i(TWITCH_AUTH_LOG_TAG, TWITCH_AUTH_NULL_LOG_TEXT)
+                makeNoInternetToast(requireContext(), resources).show()
             }
         })
     }
@@ -155,10 +162,14 @@ class ExploreFragment : Fragment() {
         collapseKeyboard()
 
         exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAccessToken ->
-            exploreViewModel.searchForGames(twitchAccessToken, searchRequestBody)
+            if (isOnline(requireContext())) {
+                exploreViewModel.searchForGames(twitchAccessToken, searchRequestBody, requireContext(), resources)
+            } else {
+                Log.i(PERFORM_GAME_SEARCH_LOG_TAG, IS_OFFLINE_LOG_TEXT)
+                makeNoInternetToast(requireContext(), resources).show()
+            }
         } ?: run {
-            exploreViewModel.getAuthToken()
-            makeSearchAgainToast(requireContext(), resources).show()
+            exploreViewModel.getAuthToken(requireContext())
         }
 
     }
@@ -218,7 +229,10 @@ class ExploreFragment : Fragment() {
         const val PLATFORM_SPINNER_PROMPT = "Select a platform"
         const val GENRE_SPINNER_PROMPT = "Select a genre"
         const val GAME_MODES_SPINNER_PROMPT = "Select multiplayer capabilities"
-        fun makeSearchAgainToast(context: Context, resources: Resources): Toast = Toast.makeText(context, resources.getString(R.string.tried_searching_with_null_twitch_auth), Toast.LENGTH_SHORT)
+        const val PERFORM_GAME_SEARCH_LOG_TAG = "ExploreFragment - performGameSearch"
+        const val IS_OFFLINE_LOG_TEXT = "No internet connection from isOnline"
+        const val TWITCH_AUTH_LOG_TAG = "ExploreFragment - twitchAuth"
+        const val TWITCH_AUTH_NULL_LOG_TEXT = "TwitchAuth Null"
     }
 
     enum class ExploreSpinners(val spinnerName: String) {
