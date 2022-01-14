@@ -13,6 +13,6 @@ interface GenresSpinnerDao {
 
     @Transaction
     @Query("SELECT * FROM genres_list_table ORDER BY name ASC")
-    fun getGenresListFromDb(): LiveData<List<GenericSpinnerItem>>
+    fun getGenresListFromDb(): LiveData<MutableList<GenericSpinnerItem>>
 
 }

@@ -13,6 +13,6 @@ interface PlatformSpinnerDao {
 
     @Transaction
     @Query("SELECT * FROM platforms_list_table ORDER BY name ASC")
-    fun getPlatformsListFromDb(): LiveData<List<GenericSpinnerItem>>
+    fun getPlatformsListFromDb(): LiveData<MutableList<GenericSpinnerItem>>
 
 }

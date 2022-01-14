@@ -13,5 +13,5 @@ interface GameModesSpinnerDao {
 
     @Transaction
     @Query("SELECT * FROM game_modes_list_table ORDER BY name ASC")
-    fun getGameModesListFromDb(): LiveData<List<GenericSpinnerItem>>
+    fun getGameModesListFromDb(): LiveData<MutableList<GenericSpinnerItem>>
 }

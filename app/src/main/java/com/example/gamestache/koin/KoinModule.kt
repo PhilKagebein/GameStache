@@ -103,7 +103,7 @@ val gameStacheRepositoryModule = module {
 
 val exploreViewModelModule = module {
 
-    viewModel { ExploreViewModel(get()) }
+    viewModel { ExploreViewModel(get(), get()) }
 
 }
 
