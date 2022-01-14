@@ -59,19 +59,20 @@ class ExploreFragment : Fragment() {
         exploreViewModel.getAuthToken(requireContext())
 
         exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT) }
+            platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT, ExploreSpinners.PLATFORM_SPINNER
+            ) }
             platformSpinner?.let { setSpinnerOnClick(it, "platform") }
             platformSpinner?.setSelection(exploreViewModel.platformSpinnerSelection)
         })
 
         exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT) }
+            genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT, ExploreSpinners.GENRE_SPINNER) }
             genreSpinner?.let { setSpinnerOnClick(it, "genre") }
             genreSpinner?.setSelection(exploreViewModel.genreSpinnerSelection)
         })
 
         exploreViewModel.currentGameModesListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT) }
+            gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT, ExploreSpinners.GAME_MODE_SPINNER) }
             gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode") }
             gameModesSpinner?.setSelection(exploreViewModel.gameModesSpinnerSelection)
         })
@@ -163,7 +164,7 @@ class ExploreFragment : Fragment() {
 
         exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAccessToken ->
             if (isOnline(requireContext())) {
-                exploreViewModel.searchForGames(twitchAccessToken, searchRequestBody, requireContext(), resources)
+                exploreViewModel.searchForGames(twitchAccessToken, searchRequestBody, requireContext())
             } else {
                 Log.i(PERFORM_GAME_SEARCH_LOG_TAG, IS_OFFLINE_LOG_TEXT)
                 makeNoInternetToast(requireContext(), resources).show()
@@ -179,8 +180,8 @@ class ExploreFragment : Fragment() {
         inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 
-    private fun initSpinners(spinner: Spinner, spinnerListFromRoom: List<GenericSpinnerItem>, prompt: String): Spinner {
-        val spinnerListWithPrompt = exploreViewModel.addPromptToSpinnerList(spinnerListFromRoom, prompt)
+    private fun initSpinners(spinner: Spinner, spinnerListFromRoom: MutableList<GenericSpinnerItem>, prompt: String, spinnerType: ExploreSpinners): Spinner {
+        val spinnerListWithPrompt = exploreViewModel.addPromptToSpinnerList(spinnerListFromRoom, prompt, spinnerType)
         val customAdapter = SpinnerAdapter(requireContext(), spinnerListWithPrompt)
         spinner.adapter = customAdapter
         return spinner

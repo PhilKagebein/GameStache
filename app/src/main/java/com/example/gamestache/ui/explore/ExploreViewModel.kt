@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.gamestache.R
 import com.example.gamestache.isOnline
 import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.massageDataForListAdapter
@@ -25,7 +26,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
 
-class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewModel() {
+class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private val resources: Resources) : ViewModel() {
     val twitchAuthorization: MutableLiveData<TwitchAuthorization?> = MutableLiveData()
 
     private val gamesList: MutableLiveData<SearchResultsResponse> = MutableLiveData()
@@ -38,9 +39,9 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
     val nameSearchText: MutableLiveData<String> = MutableLiveData("")
     val progressBarIsVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val currentPlatformListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getPlatformsListFromDb()
-    val currentGenreListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGenresListFromDb()
-    val currentGameModesListInDb: LiveData<List<GenericSpinnerItem>> = gameStacheRepo.getGameModesListFromDb()
+    val currentPlatformListInDb: LiveData<MutableList<GenericSpinnerItem>> = gameStacheRepo.getPlatformsListFromDb()
+    val currentGenreListInDb: LiveData<MutableList<GenericSpinnerItem>> = gameStacheRepo.getGenresListFromDb()
+    val currentGameModesListInDb: LiveData<MutableList<GenericSpinnerItem>> = gameStacheRepo.getGameModesListFromDb()
 
     var platformSpinnerSelection = 0
     var genreSpinnerSelection = 0
@@ -71,7 +72,7 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
         }
     }
 
-    fun searchForGames(accessToken: String, gamesSearch: RequestBody, context: Context, resources: Resources) {
+    fun searchForGames(accessToken: String, gamesSearch: RequestBody, context: Context) {
         if (isOnline(context)) {
             viewModelScope.launch(Dispatchers.IO) {
                 progressBarIsVisible.postValue(true)
@@ -128,15 +129,38 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
         }
     }
 
-    fun addPromptToSpinnerList(spinnerList: List<GenericSpinnerItem>?, spinnerPrompt: String): MutableList<String?> {
-        val list: MutableList<String?> = emptyList<String>().toMutableList()
-        list.add(spinnerPrompt)
-        if (spinnerList != null) {
+    fun addPromptToSpinnerList(spinnerList: MutableList<GenericSpinnerItem>?, spinnerPrompt: String, spinnerType: ExploreFragment.ExploreSpinners): MutableList<String?> {
+        var list: MutableList<String?> = mutableListOf()
+        if (spinnerType == ExploreFragment.ExploreSpinners.PLATFORM_SPINNER) {
+            list = putCurrentGenPlatformsAtBeginningOfList(spinnerList, list)
+        }
+        list.add(0, spinnerPrompt)
+
+        spinnerList?.let { spinnerList ->
             for (item in spinnerList) {
                 list.add(item.name)
             }
         }
         return list
+    }
+
+    private fun putCurrentGenPlatformsAtBeginningOfList(platformList: List<GenericSpinnerItem>?, reorderedList: MutableList<String?>): MutableList<String?> {
+        platformList?.let {
+            for (platform in platformList) {
+                when (platform.name) {
+                    resources.getString(R.string.android_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.iOS_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.linux_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.mac_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.nintendo_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.pc_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.playstation_platform_name) -> reorderedList.add(platform.name)
+                    resources.getString(R.string.xbox_platform_name) -> reorderedList.add(platform.name)
+                }
+            }
+        }
+
+        return reorderedList
     }
 
     fun searchText(): LiveData<RequestBody> =
@@ -189,3 +213,4 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository) : ViewM
         const val GAMES_SEARCH_LOG_TAG = "ExploreViewModel - Games Search"
     }
 }
+

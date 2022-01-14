@@ -30,9 +30,9 @@ class GameStacheRepository(
     private val favoritesAndWishlistDao: FavoritesAndWishlistDao
 ) {
 
-    fun getPlatformsListFromDb(): LiveData<List<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListFromDb()
-    fun getGenresListFromDb(): LiveData<List<GenericSpinnerItem>> = genresResponseDao.getGenresListFromDb()
-    fun getGameModesListFromDb(): LiveData<List<GenericSpinnerItem>> = gameModesResponseDao.getGameModesListFromDb()
+    fun getPlatformsListFromDb(): LiveData<MutableList<GenericSpinnerItem>> = platformsResponseDao.getPlatformsListFromDb()
+    fun getGenresListFromDb(): LiveData<MutableList<GenericSpinnerItem>> = genresResponseDao.getGenresListFromDb()
+    fun getGameModesListFromDb(): LiveData<MutableList<GenericSpinnerItem>> = gameModesResponseDao.getGameModesListFromDb()
     fun checkIfGameIsInDb(gameID: Int): LiveData<Int> = individualGameDao.checkIfGameExistsInRoom(gameID)
     fun getIndividualGameDataFromDb(gameID: Int): LiveData<List<IndividualGameDataItem?>> = individualGameDao.getIndividualGameDataFromRoom(gameID)
     private fun getTwitchAuthFromDb(): TwitchAuthorization = twitchAuthorizationDao.getTwitchAuthFromDb()
