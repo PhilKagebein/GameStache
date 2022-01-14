@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import com.example.gamestache.R
 import com.example.gamestache.isOnline
 import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.massageDataForListAdapter
@@ -130,37 +129,43 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private
     }
 
     fun addPromptToSpinnerList(spinnerList: MutableList<GenericSpinnerItem>?, spinnerPrompt: String, spinnerType: ExploreFragment.ExploreSpinners): MutableList<String?> {
-        var list: MutableList<String?> = mutableListOf()
-        if (spinnerType == ExploreFragment.ExploreSpinners.PLATFORM_SPINNER) {
-            list = putCurrentGenPlatformsAtBeginningOfList(spinnerList, list)
-        }
-        list.add(0, spinnerPrompt)
+        var spinnerItems = spinnerList
+        val list: MutableList<String?> = mutableListOf()
 
-        spinnerList?.let { spinnerList ->
-            for (item in spinnerList) {
+        if (spinnerType == ExploreFragment.ExploreSpinners.PLATFORM_SPINNER) {
+            spinnerItems = putCurrentGenPlatformsAtBeginningOfList(spinnerItems)
+        }
+        list.add(spinnerPrompt)
+
+        spinnerItems?.let { items ->
+            for (item in items) {
                 list.add(item.name)
             }
         }
         return list
     }
 
-    private fun putCurrentGenPlatformsAtBeginningOfList(platformList: List<GenericSpinnerItem>?, reorderedList: MutableList<String?>): MutableList<String?> {
+    private fun putCurrentGenPlatformsAtBeginningOfList(platformList: MutableList<GenericSpinnerItem>?): MutableList<GenericSpinnerItem>? {
+        val currentGenPlatforms = mutableListOf<GenericSpinnerItem>()
         platformList?.let {
-            for (platform in platformList) {
-                when (platform.name) {
-                    resources.getString(R.string.android_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.iOS_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.linux_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.mac_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.nintendo_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.pc_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.playstation_platform_name) -> reorderedList.add(platform.name)
-                    resources.getString(R.string.xbox_platform_name) -> reorderedList.add(platform.name)
+        val platformListIterator = platformList.iterator()
+
+            while (platformListIterator.hasNext()) {
+                val platform = platformListIterator.next()
+
+                for (id in CURRENT_GEN_PLATFORMS) {
+                    if (platform.id == id) {
+                        currentGenPlatforms.add(platform)
+                        platformListIterator.remove()
+                    }
                 }
+
             }
         }
 
-        return reorderedList
+        platformList?.addAll(0, currentGenPlatforms)
+
+        return platformList
     }
 
     fun searchText(): LiveData<RequestBody> =
@@ -211,6 +216,7 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private
     companion object {
         const val BASIC_SEARCH_TEXT = "\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;"
         const val GAMES_SEARCH_LOG_TAG = "ExploreViewModel - Games Search"
+        val CURRENT_GEN_PLATFORMS = listOf(34, 39, 3, 14, 130, 6, 167, 169)
     }
 }
 
