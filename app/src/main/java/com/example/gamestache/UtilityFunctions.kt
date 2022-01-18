@@ -5,6 +5,9 @@ import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
+import android.util.TypedValue
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import com.example.gamestache.models.TwitchAuthorization
 import com.example.gamestache.models.search_results.SearchResultsResponseItem
@@ -107,6 +110,21 @@ suspend fun getAuthToken(context: Context, gameStacheRepo: GameStacheRepository)
         } else {
             return null
         }
+}
+
+fun formatSearchView(searchView: androidx.appcompat.widget.SearchView, context: Context) {
+    val typedValue = TypedValue()
+    val theme = context.theme
+    theme.resolveAttribute(R.attr.onAppBar, typedValue, true)
+
+    val editText = searchView.findViewById<EditText>(R.id.search_src_text)
+    editText.setHintTextColor(typedValue.data)
+
+    val closeButton = searchView.findViewById<ImageView>(R.id.search_close_btn)
+    closeButton.setImageResource(R.drawable.art_dialog_close_button)
+
+    val searchButton = searchView.findViewById<ImageView>(R.id.search_button)
+    searchButton.setImageResource(R.drawable.explore_icon)
 }
 
 

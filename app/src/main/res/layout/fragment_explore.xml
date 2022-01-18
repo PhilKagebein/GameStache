@@ -23,6 +23,7 @@
             android:orientation="horizontal">
 
             <EditText
+                android:theme="@style/ExploreEditTextStyle"
                 android:id="@+id/exploreSearchFieldEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -37,7 +38,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintBottom_toBottomOf="parent"
-
                 />
 
             <ImageView
@@ -68,18 +68,18 @@
 
             <Spinner
                 android:id="@+id/spnPlatform"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
+                style="@style/SpinnersStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:prompt="@string/platform_spinner_prompt"
                 android:spinnerMode="dialog"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnClearPlatformSpinner"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:prompt="@string/platform_spinner_prompt"
-                />
 
+                />
             <ImageView
                 android:id="@+id/btnClearPlatformSpinner"
                 android:layout_width="@dimen/clearButtonWidth"
@@ -109,7 +109,7 @@
 
             <Spinner
                 android:id="@+id/spnGenre"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
+                style="@style/SpinnersStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog"
@@ -150,7 +150,7 @@
 
             <Spinner
                 android:id="@+id/spnMultiplayer"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
+                style="@style/SpinnersStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog"
@@ -196,6 +196,7 @@
                 android:layout_marginStart="@dimen/btnExploreMarginStart"
                 android:layout_marginTop="@dimen/btnExploreMarginTop"
                 android:backgroundTint="?attr/primaryColor"
+                android:textColor="?attr/onPrimary"
                 />
         </LinearLayout>
 

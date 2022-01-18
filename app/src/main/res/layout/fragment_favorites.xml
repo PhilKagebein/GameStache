@@ -30,10 +30,10 @@
         <TextView
             android:id="@+id/noFavoritesYetTextView"
             android:paddingHorizontal="10dp"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="?attr/textColor"
             android:gravity="center_vertical|center_horizontal"
             android:text="You have not added any favorites yet. Add some from the explore screen then come back."
             android:visibility="gone"

@@ -53,6 +53,7 @@
                     android:layout_marginEnd="@dimen/favoritesButtonMarginEnd"
                     android:text="@{individualgameviewmodel.currentStatusAsAFavorite}"
                     android:backgroundTint="?attr/primaryColor"
+                    android:textColor="?attr/onPrimary"
                     />
 
                 <Button
@@ -65,6 +66,7 @@
                    android:layout_marginStart="@dimen/wishlistButtonMarginStart"
                     android:text="@{individualgameviewmodel.currentStatusAsWishlistItem}"
                     android:backgroundTint="?attr/primaryColor"
+                    android:textColor="?attr/onPrimary"
                     />
             </LinearLayout>
 
@@ -79,6 +81,7 @@
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
                 android:layout_marginTop="@dimen/individualGameMarginTop"
+                android:backgroundTint="?attr/cardViewBackground"
                 >
 
                 <LinearLayout
@@ -160,6 +163,7 @@
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
                 android:layout_marginTop="@dimen/individualGameMarginTop"
+                android:backgroundTint="?attr/cardViewBackground"
                 >
 
                 <LinearLayout
@@ -231,6 +235,8 @@
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
                 android:layout_marginTop="@dimen/individualGameMarginTop"
+                android:backgroundTint="?attr/cardViewBackground"
+
                 >
 
                 <LinearLayout
@@ -280,7 +286,7 @@
                         android:layout_marginHorizontal="@dimen/gameFragmentTextViewStartMargin"
                         android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
                         android:id="@+id/releasesByRegionSpinner"
-                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        style="@style/SpinnersStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="visible"
@@ -313,6 +319,7 @@
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
                 android:layout_marginTop="@dimen/individualGameMarginTop"
+                android:backgroundTint="?attr/cardViewBackground"
                 >
 
                 <LinearLayout
@@ -397,6 +404,7 @@
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameHorizontalMargin"
                 android:layout_marginTop="@dimen/individualGameMarginTop"
+                android:backgroundTint="?attr/cardViewBackground"
                 >
 
                 <LinearLayout
@@ -584,6 +592,7 @@
                 app:cardCornerRadius="@dimen/cardViewsCornerRadius"
                 android:layout_marginHorizontal="@dimen/individualGameMarginTop"
                 android:layout_marginVertical="@dimen/individualGameVerticalMargin"
+                android:backgroundTint="?attr/cardViewBackground"
                 >
 
                 <LinearLayout

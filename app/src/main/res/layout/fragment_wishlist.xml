@@ -30,13 +30,14 @@
         <TextView
             android:id="@+id/noWishlistYetTextView"
             android:paddingHorizontal="10dp"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="?attr/textColor"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/no_games_in_wishlist_text_view"
             android:visibility="gone"
+
             />
     </LinearLayout>
 </layout>

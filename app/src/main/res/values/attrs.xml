@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="primaryColor" format="color"/>
-    <attr name="primaryColorVariant" format="color"/>
-    <attr name="secondaryColor" format="color"/>
-    <attr name="secondaryColorVariant" format="color"/>
+    <attr name="onPrimary" format="color"/>
     <attr name="outlineColor" format="color"/>
     <attr name="textColor" format="color"/>
     <attr name="greyGreen" format="color"/>
     <attr name="grey" format="color"/>
     <attr name="neonGreen" format="color"/>
-
+    <attr name="onBackground" format="color"/>
+    <attr name="appBar" format="color"/>
+    <attr name="onAppBar" format="color"/>
+    <attr name="cardViewBackground" format="color"/>
+    <attr name="statusBarColor" format="color"/>
 </resources>
