@@ -94,15 +94,18 @@ class ExploreFragment : Fragment() {
             exploreViewModel.platformText.observe(viewLifecycleOwner, { platformText ->
                 exploreViewModel.genreText.observe(viewLifecycleOwner, {genreText ->
                     exploreViewModel.gameModesText.observe(viewLifecycleOwner, { gameModeText ->
+
                         binding.exploreSearchFieldEditText.setOnEditorActionListener { _, actionId, _ ->
                             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                                 checkForEmptySearch(editText, platformText, genreText, gameModeText, searchRequestBody)
                             }
                             true
                         }
+
                         binding.btnExploreSearch.setOnClickListener {
                             checkForEmptySearch(editText, platformText, genreText, gameModeText, searchRequestBody)
                         }
+
                     })
                 })
             })
@@ -160,6 +163,7 @@ class ExploreFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
+            binding.exploreSearchFieldEditText.clearFocus()
             performGameSearch(searchRequestBody)
         }
     }
