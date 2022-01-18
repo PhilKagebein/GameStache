@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.gamestache.isOnline
 import com.example.gamestache.makeNoInternetToast

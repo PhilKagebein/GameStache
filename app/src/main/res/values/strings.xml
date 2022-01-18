@@ -68,5 +68,6 @@
     <string name="pc_platform_name">PC (Microsoft Windows)</string>
     <string name="playstation_platform_name">PlayStation 5</string>
     <string name="xbox_platform_name">Xbox Series X|S</string>
+    <string name="no_search_results_found_toast">No results found</string>
 
 </resources>
