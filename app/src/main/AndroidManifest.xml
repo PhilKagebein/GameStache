@@ -7,10 +7,10 @@
 
     <application
         android:name=".koin.GameStacheApplication"
-        android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:icon="@mipmap/game_stache_app_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/game_stache_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VideoGameSearcher">
         <activity

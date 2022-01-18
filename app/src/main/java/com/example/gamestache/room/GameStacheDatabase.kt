@@ -20,7 +20,7 @@ import com.example.gamestache.models.search_results.SearchResultsResponseItem
     IndividualGameDataItem::class,
     TwitchAuthorization::class,
     SearchResultsResponseItem::class
-], version = 1, exportSchema = false)
+], version = 2, exportSchema = false)
 @TypeConverters( Converters::class )
 abstract class GameStacheDatabase: RoomDatabase() {
 
@@ -46,7 +46,8 @@ abstract class GameStacheDatabase: RoomDatabase() {
                     context.applicationContext,
                     GameStacheDatabase::class.java,
                     "game_stache_database"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 return instance
             }
