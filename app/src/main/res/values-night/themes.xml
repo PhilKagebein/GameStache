@@ -19,7 +19,11 @@
         <!--Changes Text color on etVideoGameSearch-->
         <item name="android:textColorHint">?attr/textColor</item>
         <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
+        <item name="drawerArrowStyle">@style/GameStacheBackArrow</item>
+    </style>
 
+    <style name="GameStacheBackArrow" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">?attr/onAppBar</item>
     </style>
 
     <style name="DialogStyle" parent="Theme.AppCompat.Dialog">

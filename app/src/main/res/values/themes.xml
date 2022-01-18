@@ -17,7 +17,12 @@
         <item name="cardViewBackground">@color/lightModeCardViewColor</item>
         <item name="statusBarColor">@color/lightModeStatusBar</item>
         <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
+        <item name="drawerArrowStyle">@style/GameStacheBackArrow</item>
 
+    </style>
+
+    <style name="GameStacheBackArrow" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">?attr/onAppBar</item>
     </style>
 
 
