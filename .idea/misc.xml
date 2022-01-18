@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/action_bar_back_arrow.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/action_bar_background.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/art_dialog_close_button.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/art_dialog_exit_button_background.xml" value="0.3536458333333333" />
@@ -11,6 +12,7 @@
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/drop_down_arrow_down.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/drop_down_arrow_up.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/explore_icon.xml" value="0.3536458333333333" />
+        <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/loading_dialog_background.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/progress_bar_background.xml" value="0.3536458333333333" />
         <entry key="..\:/Users/Phil Kagebein/AndroidStudioProjects/GameStache/app/src/main/res/drawable/search_view_cursor.xml" value="0.3536458333333333" />

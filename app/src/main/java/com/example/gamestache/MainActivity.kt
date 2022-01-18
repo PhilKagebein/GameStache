@@ -5,7 +5,9 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -40,9 +42,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener{ _, destination, _ ->
             navView.visibility = setBottomNavBarVisibility(destination.id)
         }
-
-       setTopBarColor()
-
+        setTopBarColor()
     }
 
     override fun onSupportNavigateUp(): Boolean {
