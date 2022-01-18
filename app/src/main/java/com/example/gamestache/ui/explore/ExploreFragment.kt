@@ -2,6 +2,7 @@ package com.example.gamestache.ui.explore
 
 import android.app.Dialog
 import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -82,7 +83,11 @@ class ExploreFragment : Fragment() {
         })
 
         exploreViewModel.transformDataForListAdapter().observe(viewLifecycleOwner, { gamesList ->
-            exploreAdapter.submitList(gamesList)
+            if (gamesList.isNullOrEmpty()) {
+                makeNoSearchResultsToast(requireContext(), resources).show()
+            } else {
+                exploreAdapter.submitList(gamesList)
+            }
         })
 
         exploreViewModel.nameSearchText.observe(viewLifecycleOwner, { editText ->
@@ -234,6 +239,7 @@ class ExploreFragment : Fragment() {
         const val IS_OFFLINE_LOG_TEXT = "No internet connection from isOnline"
         const val TWITCH_AUTH_LOG_TAG = "ExploreFragment - twitchAuth"
         const val TWITCH_AUTH_NULL_LOG_TEXT = "TwitchAuth Null"
+        fun makeNoSearchResultsToast(context: Context, resources: Resources): Toast = Toast.makeText(context, resources.getString(R.string.no_search_results_found_toast), Toast.LENGTH_SHORT)
     }
 
     enum class ExploreSpinners(val spinnerName: String) {
