@@ -1,15 +1,17 @@
 package com.example.gamestache
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.gamestache.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,8 +39,10 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener{ _, destination, _ ->
             navView.visibility = setBottomNavBarVisibility(destination.id)
-
         }
+
+       setTopBarColor()
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -52,6 +56,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             return VISIBLE
         }
+    }
+
+    private fun setTopBarColor() {
+        val actionBar = supportActionBar
+        val colorDrawable = ColorDrawable(Color.parseColor("#2b2d2e"))
+        actionBar?.setBackgroundDrawable(colorDrawable)
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.gamestache.ui.individual_game
 import android.app.Dialog
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -236,11 +237,15 @@ class IndividualGameFragment : Fragment() {
     }
 
     private fun formatSimilarGamesTextViews(similarGamesTextViews: MutableList<TextView>) {
+        val typedValue = TypedValue()
+        val theme = context?.theme
+        theme?.resolveAttribute(R.attr.textColor, typedValue, true)
+
         for (textView in similarGamesTextViews) {
             textView.apply {
                 textSize = SIMILAR_GAME_TEXT_SIZE
                 setPadding(SIMILAR_GAME_LEFT_PADDING, SIMILAR_GAME_TOP_PADDING, SIMILAR_GAME_RIGHT_PADDING, SIMILAR_GAME_BOTTOM_PADDING)
-                setTextColor(resources.getColor(R.color.white, context.theme))
+                setTextColor(typedValue.data)
                 textAlignment = left
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             }

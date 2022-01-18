@@ -2,6 +2,7 @@ package com.example.gamestache.ui.wishlist
 
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamestache.R
 import com.example.gamestache.databinding.FragmentWishlistBinding
+import com.example.gamestache.formatSearchView
 import com.example.gamestache.massageDataForListAdapter
 import com.example.gamestache.ui.explore.GamesListAdapterFragment
 import com.example.gamestache.ui.explore.GamesListSearchResultsAdapter
@@ -45,6 +47,8 @@ class WishlistFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         val searchView = initOptionsMenu(menu, inflater)
+        formatSearchView(searchView, requireContext())
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
 
             override fun onQueryTextChange(filterText: String?): Boolean {

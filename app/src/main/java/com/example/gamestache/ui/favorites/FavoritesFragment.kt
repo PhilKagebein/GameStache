@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamestache.R
 import com.example.gamestache.databinding.FragmentFavoritesBinding
+import com.example.gamestache.formatSearchView
 import com.example.gamestache.massageDataForListAdapter
 import com.example.gamestache.ui.explore.GamesListAdapterFragment
 import com.example.gamestache.ui.explore.GamesListSearchResultsAdapter
@@ -41,10 +42,13 @@ class FavoritesFragment : Fragment() {
                 binding.favoritesListRecyclerView.visibility = favoritesViewModel.setFavoritesListRecyclerViewVisibility(favoritesList)
                 favoritesAdapter.submitList(favoritesList)
             })
+
         }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val searchView = initOptionsMenu(menu, inflater)
+        formatSearchView(searchView, requireContext())
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
 
             override fun onQueryTextSubmit(filterText: String?): Boolean {
@@ -59,6 +63,8 @@ class FavoritesFragment : Fragment() {
 
         })
     }
+
+
 
     private fun initOptionsMenu(menu: Menu, inflater: MenuInflater): SearchView {
         inflater.inflate(R.menu.menu_item, menu)
