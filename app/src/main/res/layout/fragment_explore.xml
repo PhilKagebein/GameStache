@@ -67,21 +67,21 @@
             android:orientation="horizontal">
 
             <Spinner
-                android:id="@+id/spnPlatform"
+                android:id="@+id/platformSpinner"
                 style="@style/SpinnersStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:prompt="@string/platform_spinner_prompt"
                 android:spinnerMode="dialog"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnClearPlatformSpinner"
+                app:layout_constraintEnd_toStartOf="@+id/clearPlatformSpinnerButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
 
                 />
             <ImageView
-                android:id="@+id/btnClearPlatformSpinner"
+                android:id="@+id/clearPlatformSpinnerButton"
                 android:layout_width="@dimen/clearButtonWidth"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -91,7 +91,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/spnPlatform"
+                app:layout_constraintStart_toEndOf="@+id/platformSpinner"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
                 />
@@ -108,13 +108,13 @@
             android:orientation="horizontal">
 
             <Spinner
-                android:id="@+id/spnGenre"
+                android:id="@+id/genreSpinner"
                 style="@style/SpinnersStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnClearGenreSpinner"
+                app:layout_constraintEnd_toStartOf="@+id/clearGenreSpinnerButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -122,7 +122,7 @@
                 />
 
             <ImageView
-                android:id="@+id/btnClearGenreSpinner"
+                android:id="@+id/clearGenreSpinnerButton"
                 android:layout_width="@dimen/clearButtonWidth"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -132,7 +132,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/spnGenre"
+                app:layout_constraintStart_toEndOf="@+id/genreSpinner"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
                 />
@@ -149,13 +149,13 @@
             android:orientation="horizontal">
 
             <Spinner
-                android:id="@+id/spnMultiplayer"
+                android:id="@+id/multiplayerCapabilitiesSpinner"
                 style="@style/SpinnersStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnClearMultiplayerSpinner"
+                app:layout_constraintEnd_toStartOf="@+id/clearMultiplayerCapabilitiesSpinnerButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -163,7 +163,7 @@
                 />
 
             <ImageView
-                android:id="@+id/btnClearMultiplayerSpinner"
+                android:id="@+id/clearMultiplayerCapabilitiesSpinnerButton"
                 android:layout_width="@dimen/clearButtonWidth"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -173,7 +173,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/spnMultiplayer"
+                app:layout_constraintStart_toEndOf="@+id/multiplayerCapabilitiesSpinner"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
                 />
@@ -187,7 +187,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnExploreSearch"
+                android:id="@+id/exploreSearchButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/search_button_text"
@@ -201,7 +201,7 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvExplore"
+            android:id="@+id/exploreResultsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginVertical="@dimen/rvExploreMarginVertical"

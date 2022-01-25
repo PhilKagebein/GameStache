@@ -17,7 +17,6 @@ import com.example.gamestache.ui.wishlist.WishlistFragmentDirections
 class GamesListSearchResultsAdapter(private val fragment: GamesListAdapterFragment):
     ListAdapter<SearchResultsResponseItem, GamesListSearchResultsAdapter.SearchResultsResponseViewHolder>(DiffCallback()) {
 
-    //TODO: will setting action to null ever cause a problem?
     private var action: NavDirections? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultsResponseViewHolder {

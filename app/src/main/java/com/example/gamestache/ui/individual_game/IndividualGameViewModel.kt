@@ -52,7 +52,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
 
     val platformListFromDb = gameStacheRepo.getPlatformsListFromDb()
 
-    fun getAccessToken(context: Context) {
+    fun getAuthToken(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val authToken = getAuthToken(context, gameStacheRepo)
             twitchAuthorization.postValue(authToken)
@@ -485,7 +485,7 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
         }
     }
 
-    fun determineArrowButtonStatus(viewVisibility: Int): Int {
+    fun determineDropDownButtonOrientation(viewVisibility: Int): Int {
         if (viewVisibility == GONE) {
             return R.drawable.drop_down_arrow_up
         } else {

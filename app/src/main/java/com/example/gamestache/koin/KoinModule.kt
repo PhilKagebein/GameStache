@@ -18,18 +18,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val apiAuthModule = module {
 
-    fun provideTwitchApiAccessToken(retrofitAccessToken: Retrofit): TwitchApiAuth {
-        return retrofitAccessToken.create(TwitchApiAuth::class.java)
+    fun provideTwitchApiAuthToken(retrofitAuthToken: Retrofit): TwitchApiAuth {
+        return retrofitAuthToken.create(TwitchApiAuth::class.java)
     }
 
-    fun provideRetrofitAccessToken(): Retrofit {
+    fun provideRetrofitAuthToken(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Constants.AUTH_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    single { provideTwitchApiAccessToken(provideRetrofitAccessToken()) }
+    single { provideTwitchApiAuthToken(provideRetrofitAuthToken()) }
 
 }
 

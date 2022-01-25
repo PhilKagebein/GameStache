@@ -56,15 +56,15 @@ class ExploreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var platformSpinner: Spinner? = binding.spnPlatform
-        var genreSpinner: Spinner? = binding.spnGenre
-        var gameModesSpinner: Spinner? = binding.spnMultiplayer
+        var platformSpinner: Spinner? = binding.platformSpinner
+        var genreSpinner: Spinner? = binding.genreSpinner
+        var gameModesSpinner: Spinner? = binding.multiplayerCapabilitiesSpinner
 
         var searchRequestBody: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
         val exploreAdapter = GamesListSearchResultsAdapter(GamesListAdapterFragment.EXPLORE)
         val loadingDialog = Dialog(requireContext())
 
-        binding.rvExplore.apply {
+        binding.exploreResultsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = exploreAdapter
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
@@ -115,7 +115,7 @@ class ExploreFragment : Fragment() {
                             true
                         }
 
-                        binding.btnExploreSearch.setOnClickListener {
+                        binding.exploreSearchButton.setOnClickListener {
                             checkForEmptySearch(editText, platformText, genreText, gameModeText, searchRequestBody)
                         }
 
@@ -124,15 +124,15 @@ class ExploreFragment : Fragment() {
             })
         })
 
-        binding.btnClearPlatformSpinner.setOnClickListener {
+        binding.clearPlatformSpinnerButton.setOnClickListener {
             platformSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
 
-        binding.btnClearGenreSpinner.setOnClickListener {
+        binding.clearGenreSpinnerButton.setOnClickListener {
             genreSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
 
-        binding.btnClearMultiplayerSpinner.setOnClickListener {
+        binding.clearMultiplayerCapabilitiesSpinnerButton.setOnClickListener {
             gameModesSpinner?.setSelection(SPINNER_RESET_VALUE)
         }
 
@@ -184,9 +184,9 @@ class ExploreFragment : Fragment() {
     private fun performGameSearch(searchRequestBody: RequestBody) {
         collapseKeyboard()
 
-        exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAccessToken ->
+        exploreViewModel.twitchAuthorization.value?.access_token?.let { twitchAuthToken ->
             if (isOnline(requireContext())) {
-                exploreViewModel.searchForGames(twitchAccessToken, searchRequestBody, requireContext())
+                exploreViewModel.searchForGames(twitchAuthToken, searchRequestBody, requireContext())
             } else {
                 Log.i(PERFORM_GAME_SEARCH_LOG_TAG, IS_OFFLINE_LOG_TEXT)
                 makeNoInternetToast(requireContext(), resources).show()
@@ -215,15 +215,15 @@ class ExploreFragment : Fragment() {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
                 when (spinnerName) {
                     ExploreSpinners.PLATFORM_SPINNER.spinnerName -> {
-                        binding.btnClearPlatformSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                        binding.clearPlatformSpinnerButton.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                         exploreViewModel.platformSpinnerSelection = itemPosition
                     }
                     ExploreSpinners.GENRE_SPINNER.spinnerName -> {
-                        binding.btnClearGenreSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                        binding.clearGenreSpinnerButton.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                         exploreViewModel.genreSpinnerSelection = itemPosition
                     }
                     ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> {
-                        binding.btnClearMultiplayerSpinner.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
+                        binding.clearMultiplayerCapabilitiesSpinnerButton.visibility = exploreViewModel.setExploreSpinnersClearButtonVisibility(itemPosition)
                         exploreViewModel.gameModesSpinnerSelection = itemPosition
                     }
                 }

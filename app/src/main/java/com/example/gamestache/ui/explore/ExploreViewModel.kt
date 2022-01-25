@@ -19,10 +19,7 @@ import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
 import com.example.gamestache.ui.explore.ExploreFragment.Companion.IS_OFFLINE_LOG_TEXT
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -77,11 +74,11 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private
         }
     }
 
-    fun searchForGames(accessToken: String, gamesSearch: RequestBody, context: Context) {
+    fun searchForGames(authToken: String, gamesSearch: RequestBody, context: Context) {
         if (isOnline(context)) {
             viewModelScope.launch(Dispatchers.IO) {
                 progressBarIsVisible.postValue(true)
-                val response = gameStacheRepo.searchForGames(accessToken, gamesSearch)
+                val response = gameStacheRepo.searchForGames(authToken, gamesSearch)
                 if (response.isSuccessful) {
                     gamesList.postValue(response.body())
                 } else {
