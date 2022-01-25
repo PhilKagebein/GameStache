@@ -56,6 +56,7 @@
     <dimen name="individualGameVerticalMargin">20dp</dimen>
     <dimen name="individualGameMarginTop">20dp</dimen>
     <dimen name="individualGameTextSize">18sp</dimen>
+    <dimen name="individualGameTitleTextSize">20sp</dimen>
 
     <!--Card Views-->
     <dimen name="cardViewsCornerRadius">3dp</dimen>
