@@ -75,4 +75,10 @@
     <string name="art_dialog_cancel_button_content_description">A button to close the game art dialog popup</string>
     <string name="art_dialog_image_view_content_description">A blown up image of the game art</string>
     <string name="game_art_content_description">An image of the game art</string>
+    <string name="explore_edit_text_clear_button_content_description">A button to clear the search field</string>
+    <string name="spinner_clear_button_content_description">A button to clear the spinner selection</string>
+    <string name="game_summary_close_button_content_description">A button to close the Game Summary popup</string>
+    <string name="drop_down_arrow_content_description">A toggleable dropdown arrow</string>
+    <string name="game_art_thumbnail_content_description">A thumbnail of the game art</string>
+    <string name="search">Search</string>
 </resources>

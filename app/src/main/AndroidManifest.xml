@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.gamestache">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +20,8 @@
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.App.Starting"
-            >
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <!-- windowSoftInputMode fixes the keyboard from pushing up the nav bar-->
 
             <intent-filter>

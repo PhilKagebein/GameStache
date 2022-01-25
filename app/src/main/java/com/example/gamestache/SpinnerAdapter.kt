@@ -11,7 +11,7 @@ import android.widget.TextView
 class SpinnerAdapter(context: Context, spinnerList: MutableList<String?>):
     ArrayAdapter<String>(context, 0, spinnerList) {
 
-        val inflater = LayoutInflater.from(context)
+    private val inflater = LayoutInflater.from(context)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = inflater.inflate(R.layout.spinner_items, null, true)

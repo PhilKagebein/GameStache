@@ -2,7 +2,6 @@ package com.example.gamestache.ui.wishlist
 
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
