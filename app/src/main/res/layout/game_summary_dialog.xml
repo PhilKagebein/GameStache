@@ -13,6 +13,7 @@
         app:tint="?attr/textColor"
         app:layout_constraintTop_toTopOf="@+id/topGuideline"
         app:layout_constraintEnd_toEndOf="@+id/rightGuideline"
+        android:contentDescription="@string/game_summary_close_button_content_description"
 
         />
 

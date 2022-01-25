@@ -205,7 +205,7 @@
                             android:drawableTintMode="@color/white"
                             android:clickable="false"
                             android:focusable="false"
-                            />
+                            android:contentDescription="@string/drop_down_arrow_content_description" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -278,6 +278,7 @@
                             android:drawableTintMode="@color/white"
                             android:clickable="false"
                             android:focusable="false"
+                            android:contentDescription="@string/drop_down_arrow_content_description"
                             />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -364,6 +365,7 @@
                             android:drawableTintMode="@color/white"
                             android:clickable="false"
                             android:focusable="false"
+                            android:contentDescription="@string/drop_down_arrow_content_description"
                             />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -551,6 +553,7 @@
                             android:drawableTintMode="@color/white"
                             android:clickable="false"
                             android:focusable="false"
+                            android:contentDescription="@string/drop_down_arrow_content_description"
                             />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -613,6 +616,7 @@
                             android:drawableTintMode="@color/white"
                             android:clickable="false"
                             android:focusable="false"
+                            android:contentDescription="@string/drop_down_arrow_content_description"
                             />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>

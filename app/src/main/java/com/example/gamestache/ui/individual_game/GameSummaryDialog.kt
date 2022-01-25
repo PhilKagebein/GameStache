@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.game_summary_dialog.view.*
 
 class GameSummaryDialog(private val summaryText: String): DialogFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var rootView: View = inflater.inflate(R.layout.game_summary_dialog, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val rootView: View = inflater.inflate(R.layout.game_summary_dialog, container, false)
 
         val summaryTextView = rootView.findViewById<TextView>(R.id.gameSummaryDialogTextView)
         summaryTextView.movementMethod = ScrollingMovementMethod()

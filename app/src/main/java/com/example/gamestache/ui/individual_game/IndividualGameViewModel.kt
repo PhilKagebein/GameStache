@@ -606,12 +606,15 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
             when (buttonPressed) {
                 GamesListAdapterFragment.FAVORITES -> {favoriteStatus = favoriteStatus?.not()}
                 GamesListAdapterFragment.WISHLIST -> {wishlistStatus = wishlistStatus?.not()}
+                else -> {
+
+                }
             }
 
-            favoriteStatus?.let { favoriteStatus ->
+            favoriteStatus?.let { currentFavoriteStatus ->
                 wishlistStatus?.let { wishlistStatus ->
                     favoriteOrWishlistStatusInTable?.let { favoriteOrWishlistStatusInTable ->
-                        updateFavoriteAndWishlistStatus(gameData, favoriteStatus, wishlistStatus, favoriteOrWishlistStatusInTable)
+                        updateFavoriteAndWishlistStatus(gameData, currentFavoriteStatus, wishlistStatus, favoriteOrWishlistStatusInTable)
                     }
                 }
             }

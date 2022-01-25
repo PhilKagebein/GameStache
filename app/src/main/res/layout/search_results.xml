@@ -25,6 +25,7 @@
                 android:layout_gravity="start"
                 android:scaleType="fitCenter"
                 android:layout_marginEnd="@dimen/artImageViewEndMargin"
+                android:contentDescription="@string/game_art_thumbnail_content_description"
                 />
 
     <LinearLayout

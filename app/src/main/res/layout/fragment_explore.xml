@@ -38,7 +38,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintBottom_toBottomOf="parent"
-                />
+                tools:ignore="Autofill" />
 
             <ImageView
                 android:id="@+id/clearEditTextButton"
@@ -54,7 +54,7 @@
                 app:layout_constraintStart_toEndOf="@+id/exploreSearchFieldEditText"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
-                />
+                android:contentDescription="@string/explore_edit_text_clear_button_content_description" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -94,7 +94,7 @@
                 app:layout_constraintStart_toEndOf="@+id/platformSpinner"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
-                />
+                android:contentDescription="@string/spinner_clear_button_content_description" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -135,6 +135,7 @@
                 app:layout_constraintStart_toEndOf="@+id/genreSpinner"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
+                android:contentDescription="@string/spinner_clear_button_content_description"
                 />
 
 
@@ -176,6 +177,7 @@
                 app:layout_constraintStart_toEndOf="@+id/multiplayerCapabilitiesSpinner"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
+                android:contentDescription="@string/spinner_clear_button_content_description"
                 />
 
 

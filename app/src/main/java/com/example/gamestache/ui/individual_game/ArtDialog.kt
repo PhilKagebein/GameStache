@@ -11,8 +11,8 @@ import kotlinx.android.synthetic.main.individual_game_art_dialog.view.*
 
 class ArtDialog(private val url: String): DialogFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var rootView: View = inflater.inflate(R.layout.individual_game_art_dialog, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val rootView: View = inflater.inflate(R.layout.individual_game_art_dialog, container, false)
 
         Glide.with(this)
             .load(url)
