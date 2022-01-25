@@ -12,12 +12,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/game_stache_app_icon_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VideoGameSearcher">
+        android:theme="@style/Theme.App.Starting">
         <activity
             android:name="com.example.gamestache.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Theme.App.Starting"
             >
             <!-- windowSoftInputMode fixes the keyboard from pushing up the nav bar-->
 

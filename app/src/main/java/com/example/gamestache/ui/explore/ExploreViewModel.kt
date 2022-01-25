@@ -5,7 +5,6 @@ import android.content.res.Resources
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.gamestache.isOnline
 import com.example.gamestache.makeNoInternetToast
@@ -20,6 +19,10 @@ import com.example.gamestache.models.search_results.SearchResultsResponseItem
 import com.example.gamestache.repository.GameStacheRepository
 import com.example.gamestache.ui.explore.ExploreFragment.Companion.IS_OFFLINE_LOG_TEXT
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -46,6 +49,8 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private
     var platformSpinnerSelection = 0
     var genreSpinnerSelection = 0
     var gameModesSpinnerSelection = 0
+
+    val isExploreFragmentLoading = MutableStateFlow(true)
 
     private fun addPlatformsListToRoom(spinnerResponseItem: PlatformsResponseItem){
         viewModelScope.launch(Dispatchers.IO) {

@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import com.example.gamestache.databinding.FragmentExploreBinding
 import com.example.gamestache.isOnline
 import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.models.explore_spinners.GenericSpinnerItem
+import kotlinx.coroutines.flow.update
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -32,6 +34,16 @@ class ExploreFragment : Fragment() {
 
     val exploreViewModel: ExploreViewModel by viewModel()
     private lateinit var binding: FragmentExploreBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                exploreViewModel.isExploreFragmentLoading.value
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentExploreBinding.inflate(inflater, container, false)
@@ -64,6 +76,7 @@ class ExploreFragment : Fragment() {
             ) }
             platformSpinner?.let { setSpinnerOnClick(it, "platform") }
             platformSpinner?.setSelection(exploreViewModel.platformSpinnerSelection)
+            exploreViewModel.isExploreFragmentLoading.update { false }
         })
 
         exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
