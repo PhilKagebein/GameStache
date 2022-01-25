@@ -69,5 +69,10 @@
     <string name="playstation_platform_name">PlayStation 5</string>
     <string name="xbox_platform_name">Xbox Series X|S</string>
     <string name="no_search_results_found_toast">No results found</string>
-
+    <string name="empty" />
+    <string name="release_region_spinner_default">North America</string>
+    <string name="no_favorites_yet_text">You have not added any favorites yet. Add some from the explore screen then come back.</string>
+    <string name="art_dialog_cancel_button_content_description">A button to close the game art dialog popup</string>
+    <string name="art_dialog_image_view_content_description">A blown up image of the game art</string>
+    <string name="game_art_content_description">An image of the game art</string>
 </resources>

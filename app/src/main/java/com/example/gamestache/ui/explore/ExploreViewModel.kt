@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
+import com.example.gamestache.R
 import com.example.gamestache.isOnline
 import com.example.gamestache.makeNoInternetToast
 import com.example.gamestache.massageDataForListAdapter
@@ -172,13 +173,13 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private
     }
 
     fun searchText(): LiveData<RequestBody> =
-        nameSearchText.switchMap { searchText ->
+        nameSearchText.switchMap { searchQuery ->
             platformText.switchMap { platformText ->
                 genreText.switchMap { genreText ->
                     gameModesText.map { gameModesText ->
                         val text =
                             BASIC_SEARCH_TEXT +
-                            "${if (searchText.isNullOrBlank()) {""} else {"search \"${searchText}\";"}}\n" +
+                            "${if (searchQuery.isNullOrBlank()) {resources.getString(R.string.empty)} else { makeSearchString(searchQuery) }}\n" +
                                     makeWhereClause(mapOf(
                                         "platforms.name" to platformText,
                                         "genres.name" to genreText,
@@ -220,6 +221,7 @@ class ExploreViewModel(private val gameStacheRepo: GameStacheRepository, private
         const val BASIC_SEARCH_TEXT = "\nfields name, genres.name, platforms.name, game_modes.name, cover.url;\nlimit 100;"
         const val GAMES_SEARCH_LOG_TAG = "ExploreViewModel - Games Search"
         val CURRENT_GEN_PLATFORMS = listOf(34, 39, 3, 14, 130, 6, 167, 169)
+        fun makeSearchString(searchQuery: String) = "search \"${searchQuery}\";"
     }
 }
 

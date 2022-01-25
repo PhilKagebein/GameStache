@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamestache.Constants.Companion.makeFilterQuery
 import com.example.gamestache.R
 import com.example.gamestache.databinding.FragmentFavoritesBinding
 import com.example.gamestache.formatSearchView
@@ -82,9 +83,8 @@ class FavoritesFragment : Fragment() {
 
     private fun filterFavorites(query: String?) {
         if (query != null ) {
-            val filterQuery = "%$query%"
 
-            favoritesViewModel.filterFavorites(filterQuery).observe(viewLifecycleOwner, { filteredFavoritesList ->
+            favoritesViewModel.filterFavorites(makeFilterQuery(query)).observe(viewLifecycleOwner, { filteredFavoritesList ->
                 filteredFavoritesList?.let {
                     val massagedFavoritesList = massageDataForListAdapter(filteredFavoritesList)
                     favoritesAdapter.submitList(massagedFavoritesList)
@@ -93,5 +93,7 @@ class FavoritesFragment : Fragment() {
         }
     }
 }
+
+
 
 
