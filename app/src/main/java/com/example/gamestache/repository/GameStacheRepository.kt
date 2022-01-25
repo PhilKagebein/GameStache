@@ -73,7 +73,7 @@ class GameStacheRepository(
     }
 
     private suspend fun getNewAuthToken(): TwitchAuthorization? {
-        val twitchAuth = authApi.getAccessToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)
+        val twitchAuth = authApi.getAuthToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE)
         if (twitchAuth.isSuccessful) {
             twitchAuth.body()?.token_birth_date = LocalDateTime.now()
             twitchAuth.body()?.let { storeTwitchAuthInDb(it) }
@@ -105,24 +105,24 @@ class GameStacheRepository(
         }
     }
 
-     suspend fun searchForGames(accessToken: String, gamesSearch: RequestBody): Response<SearchResultsResponse> {
-        return api.searchForGames("Bearer $accessToken", gamesSearch)
+     suspend fun searchForGames(authToken: String, gamesSearch: RequestBody): Response<SearchResultsResponse> {
+        return api.searchForGames("Bearer $authToken", gamesSearch)
     }
 
-     suspend fun getPlatformsListFromApi(accessToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
-        return api.getPlatformsList("Bearer $accessToken", platformsPostRequestBody)
+     suspend fun getPlatformsListFromApi(authToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
+        return api.getPlatformsList("Bearer $authToken", platformsPostRequestBody)
     }
 
-     suspend fun getGenresListFromApi(accessToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
-        return api.getGenresList("Bearer $accessToken", genrePostRequestBody)
+     suspend fun getGenresListFromApi(authToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
+        return api.getGenresList("Bearer $authToken", genrePostRequestBody)
     }
 
-     suspend fun getGameModesListFromApi(accessToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
-        return api.getGameModesList("Bearer $accessToken", gameModesPostRequestBody)
+     suspend fun getGameModesListFromApi(authToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
+        return api.getGameModesList("Bearer $authToken", gameModesPostRequestBody)
     }
 
-    suspend fun getIndividualGameDataFromApi(accessToken: String, individualGameSearch: RequestBody): Response<List<IndividualGameDataItem>> {
-        return api.getIndividualGameData("Bearer $accessToken", individualGameSearch)
+    suspend fun getIndividualGameDataFromApi(authToken: String, individualGameSearch: RequestBody): Response<List<IndividualGameDataItem>> {
+        return api.getIndividualGameData("Bearer $authToken", individualGameSearch)
     }
 
     companion object {

@@ -63,7 +63,7 @@ class IndividualGameFragment : Fragment() {
         val similarGamesTextViews = mutableListOf<TextView>()
 
         individualGameViewModel.gameId.postValue(args.gameId)
-        individualGameViewModel.getAccessToken(requireContext())
+        individualGameViewModel.getAuthToken(requireContext())
 
         individualGameViewModel.progressBarIsVisible.observe(viewLifecycleOwner, { progressBarStatus ->
 
@@ -99,12 +99,12 @@ class IndividualGameFragment : Fragment() {
             artDialog.show(requireActivity().supportFragmentManager, "ArtDialog")
         }
 
-        binding.cardViewSummary.setOnClickListener {
+        binding.summaryCardView.setOnClickListener {
 
-            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.descriptionText.visibility)
-            binding.descriptionBlockArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+            val arrowButtonBackGroundResource = individualGameViewModel.determineDropDownButtonOrientation(binding.summaryText.visibility)
+            binding.summaryCardViewDropDownArrow.setBackgroundResource(arrowButtonBackGroundResource)
 
-            binding.descriptionText.visibility = individualGameViewModel.changeCardViewVisibility(binding.descriptionText.visibility)
+            binding.summaryText.visibility = individualGameViewModel.changeCardViewVisibility(binding.summaryText.visibility)
 
         }
 
@@ -112,7 +112,7 @@ class IndividualGameFragment : Fragment() {
             summaryText = liveSummaryText
         })
 
-        binding.descriptionText.setOnClickListener {
+        binding.summaryText.setOnClickListener {
             val gameSummaryDialog = summaryText?.let { summaryText -> GameSummaryDialog(summaryText) }
             gameSummaryDialog?.show(requireActivity().supportFragmentManager, "GameSummaryDialog")
         }
@@ -147,30 +147,30 @@ class IndividualGameFragment : Fragment() {
 
         binding.releaseRegionsCardView.setOnClickListener {
 
-            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.releasesByRegionSpinner.visibility)
-            binding.releasesByRegionArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+            val arrowButtonBackGroundResource = individualGameViewModel.determineDropDownButtonOrientation(binding.releasesByRegionSpinner.visibility)
+            binding.releasesByRegionDropDownButton.setBackgroundResource(arrowButtonBackGroundResource)
 
             binding.releasesByRegionSpinner.visibility = individualGameViewModel.changeCardViewVisibility(binding.releasesByRegionSpinner.visibility)
             binding.releaseRegionInformationTextView.visibility = individualGameViewModel.changeCardViewVisibility(binding.releaseRegionInformationTextView.visibility)
         }
 
-        binding.cardViewGenresAndPerspectives.setOnClickListener {
+        binding.genresAndPerspectivesCardView.setOnClickListener {
 
-            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.individualGamePlayerPerspectivesTV.visibility)
-            binding.playerPerspectivesAndGenresArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+            val arrowButtonBackGroundResource = individualGameViewModel.determineDropDownButtonOrientation(binding.playerPerspectivesTextView.visibility)
+            binding.playerPerspectivesAndGenresDropDownButton.setBackgroundResource(arrowButtonBackGroundResource)
 
-            binding.individualGameGenresTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.individualGameGenresTV.visibility)
-            binding.individualGamePlayerPerspectivesTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.individualGamePlayerPerspectivesTV.visibility)
+            binding.genresTextView.visibility = individualGameViewModel.changeCardViewVisibility(binding.genresTextView.visibility)
+            binding.playerPerspectivesTextView.visibility = individualGameViewModel.changeCardViewVisibility(binding.playerPerspectivesTextView.visibility)
 
         }
 
         individualGameViewModel.multiplayerModesList.observe(viewLifecycleOwner, { multiplayerModes ->
             binding.gameModesCardView.setOnClickListener {
 
-                val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(binding.gameModesTV.visibility)
-                binding.gameModesArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+                val arrowButtonBackGroundResource = individualGameViewModel.determineDropDownButtonOrientation(binding.gameModesTextView.visibility)
+                binding.gameModesDropDownButton.setBackgroundResource(arrowButtonBackGroundResource)
 
-                binding.gameModesTV.visibility = individualGameViewModel.changeCardViewVisibility(binding.gameModesTV.visibility)
+                binding.gameModesTextView.visibility = individualGameViewModel.changeCardViewVisibility(binding.gameModesTextView.visibility)
                 binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility = individualGameViewModel.getMultiplayerTitleAndSpinnerVisibility( binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility, multiplayerModes)
                 binding.multiplayerCapabilitiesLinearLayout.visibility = individualGameViewModel.changeCardViewVisibility(binding.multiplayerCapabilitiesLinearLayout.visibility)
 
@@ -178,8 +178,8 @@ class IndividualGameFragment : Fragment() {
         })
 
         binding.similarGamesCardView.setOnClickListener {
-            val arrowButtonBackGroundResource = individualGameViewModel.determineArrowButtonStatus(similarGamesTextViews[0].visibility)
-            binding.similarGamesArrowButton.setBackgroundResource(arrowButtonBackGroundResource)
+            val arrowButtonBackGroundResource = individualGameViewModel.determineDropDownButtonOrientation(similarGamesTextViews[0].visibility)
+            binding.similarGamesDropDownButton.setBackgroundResource(arrowButtonBackGroundResource)
 
             for (textView in similarGamesTextViews) {
                 textView.visibility = individualGameViewModel.changeCardViewVisibility(textView.visibility)
@@ -298,12 +298,12 @@ class IndividualGameFragment : Fragment() {
                 override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
 
                     getMultiplayerModeItemVisibility(itemPosition).apply {
-                        binding.coopCapabilitiesTV.visibility = this
-                        binding.coopCapabilitiesTitleTV.visibility = this
+                        binding.coopCapabilitiesText.visibility = this
+                        binding.coopCapabilitiesTitleTextView.visibility = this
                         binding.offlineCapabilities.visibility = this
-                        binding.offlineCapabilitiesTitleTV.visibility = this
+                        binding.offlineCapabilitiesTitleTextView.visibility = this
                         binding.onlineCapabilities.visibility = this
-                        binding.onlineCapablitiesTitleTV.visibility = this
+                        binding.onlineCapabilitiesTitleTextView.visibility = this
                     }
 
                     val coopCapabilitiesText: String =
@@ -339,7 +339,7 @@ class IndividualGameFragment : Fragment() {
     }
 
     private fun setInitialMultiPlayerCapabilitiesVisibility() {
-        binding.gameModesTV.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
+        binding.gameModesTextView.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
         binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
         binding.multiplayerCapabilitiesLinearLayout.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
     }

@@ -72,7 +72,7 @@
 
             <!--Title and game release info block-->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewTitleAndOriginalRelease"
+                android:id="@+id/titleBlockCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -155,7 +155,7 @@
 
             <!--Game summary block-->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewSummary"
+                android:id="@+id/summaryCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -175,7 +175,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/gameSummaryBlockTitle"
+                            android:id="@+id/summaryCardViewTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
@@ -192,7 +192,7 @@
                             />
 
                         <ImageButton
-                            android:id="@+id/descriptionBlockArrowButton"
+                            android:id="@+id/summaryCardViewDropDownArrow"
                             android:layout_width="@dimen/gameFragmentDropdownWidth"
                             android:layout_height="@dimen/gameFragmentDropdownHeight"
                             android:background="@drawable/drop_down_arrow_down"
@@ -210,7 +210,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/descriptionText"
+                        android:id="@+id/summaryText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/gameFragmentTextViewStartMargin"
@@ -228,7 +228,7 @@
 
             <!--Player Perspectives and Genres-->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewGenresAndPerspectives"
+                android:id="@+id/genresAndPerspectivesCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -248,7 +248,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/playerPerspectivesAndGenresTitleTV"
+                            android:id="@+id/playerPerspectivesAndGenresTitleTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
@@ -265,7 +265,7 @@
                             />
 
                         <ImageButton
-                            android:id="@+id/playerPerspectivesAndGenresArrowButton"
+                            android:id="@+id/playerPerspectivesAndGenresDropDownButton"
                             android:layout_width="@dimen/gameFragmentDropdownWidth"
                             android:layout_height="@dimen/gameFragmentDropdownHeight"
                             android:background="@drawable/drop_down_arrow_down"
@@ -283,7 +283,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/individualGamePlayerPerspectivesTV"
+                        android:id="@+id/playerPerspectivesTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/individualGameTextSize"
@@ -296,7 +296,7 @@
                         />
 
                     <TextView
-                        android:id="@+id/individualGameGenresTV"
+                        android:id="@+id/genresTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/individualGameTextSize"
@@ -334,7 +334,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/gameModesTitleTV"
+                            android:id="@+id/gameModesTitleTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
@@ -351,7 +351,7 @@
                             />
 
                         <ImageButton
-                            android:id="@+id/gameModesArrowButton"
+                            android:id="@+id/gameModesDropDownButton"
                             android:layout_width="@dimen/gameFragmentDropdownWidth"
                             android:layout_height="@dimen/gameFragmentDropdownHeight"
                             android:background="@drawable/drop_down_arrow_down"
@@ -369,7 +369,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/gameModesTV"
+                        android:id="@+id/gameModesTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/individualGameTextSize"
@@ -387,7 +387,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/multiplayerCapabilitiesSectionTitleTV"
+                            android:id="@+id/multiplayerCapabilitiesSectionTitleTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/individualGameTextSize"
@@ -417,7 +417,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
                         <TextView
-                            android:id="@+id/coopCapabilitiesTitleTV"
+                            android:id="@+id/coopCapabilitiesTitleTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/individualGameTextSize"
@@ -429,7 +429,7 @@
                             android:textAlignment="textStart"
                             />
                         <TextView
-                            android:id="@+id/coopCapabilitiesTV"
+                            android:id="@+id/coopCapabilitiesText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/individualGameTextSize"
@@ -442,7 +442,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/offlineCapabilitiesTitleTV"
+                            android:id="@+id/offlineCapabilitiesTitleTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/individualGameTextSize"
@@ -467,7 +467,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/onlineCapablitiesTitleTV"
+                            android:id="@+id/onlineCapabilitiesTitleTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/individualGameTextSize"
@@ -521,7 +521,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/similarGamesTitleTV"
+                            android:id="@+id/similarGamesTitleTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginVertical="@dimen/gameFragmentTextViewVerticalMargin"
@@ -538,7 +538,7 @@
                             />
 
                         <ImageButton
-                            android:id="@+id/similarGamesArrowButton"
+                            android:id="@+id/similarGamesDropDownButton"
                             android:layout_width="@dimen/gameFragmentDropdownWidth"
                             android:layout_height="@dimen/gameFragmentDropdownHeight"
                             android:background="@drawable/drop_down_arrow_down"
@@ -600,7 +600,7 @@
                             />
 
                         <ImageButton
-                            android:id="@+id/releasesByRegionArrowButton"
+                            android:id="@+id/releasesByRegionDropDownButton"
                             android:layout_width="@dimen/gameFragmentDropdownWidth"
                             android:layout_height="@dimen/gameFragmentDropdownHeight"
                             android:background="@drawable/drop_down_arrow_down"
