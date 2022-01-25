@@ -83,6 +83,8 @@ class IndividualGameFragment : Fragment() {
 
         })
 
+        setInitialMultiPlayerCapabilitiesVisibility()
+
         individualGameViewModel.glideURL.observe(viewLifecycleOwner, { url ->
             imageURL = url
             Glide.with(this)
@@ -248,6 +250,7 @@ class IndividualGameFragment : Fragment() {
                 setTextColor(typedValue.data)
                 textAlignment = left
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                textView.visibility = GONE
             }
         }
     }
@@ -292,12 +295,7 @@ class IndividualGameFragment : Fragment() {
     private fun setOnClickForMultiplayerPlatformSpinner(multiplayerModes: List<MultiplayerModesItem?>?, spinner: Spinner, platformListFromDb: List<GenericSpinnerItem>) {
         multiplayerOnPlatformSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    adapterView: AdapterView<*>?,
-                    view: View?,
-                    itemPosition: Int,
-                    rowId: Long
-                ) {
+                override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, itemPosition: Int, rowId: Long) {
 
                     getMultiplayerModeItemVisibility(itemPosition).apply {
                         binding.coopCapabilitiesTV.visibility = this
@@ -309,8 +307,7 @@ class IndividualGameFragment : Fragment() {
                     }
 
                     val coopCapabilitiesText: String =
-                        individualGameViewModel.getCoopCapabilitiesText(
-                            multiplayerModes,
+                        individualGameViewModel.getCoopCapabilitiesText(multiplayerModes,
                             spinner.getItemAtPosition(itemPosition).toString(),
                             platformListFromDb
                         )
@@ -341,6 +338,12 @@ class IndividualGameFragment : Fragment() {
             }
     }
 
+    private fun setInitialMultiPlayerCapabilitiesVisibility() {
+        binding.gameModesTV.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
+        binding.multiplayerCapabilitiesSectionTitleAndSpinnerLinearLayout.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
+        binding.multiplayerCapabilitiesLinearLayout.visibility = INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY
+    }
+
     companion object {
         const val RELEASE_REGION_SPINNER_REGION_DEFAULT = "North America"
         const val SIMILAR_GAME_TEXT_SIZE = 18F
@@ -350,6 +353,7 @@ class IndividualGameFragment : Fragment() {
         const val SIMILAR_GAME_BOTTOM_PADDING = 3
         const val COUNTDOWN_TIMER_DELAY: Long = 500
         const val COUNTDOWN_TIMER_INTERVAL: Long = 500
+        const val INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY = GONE
 
     }
 }

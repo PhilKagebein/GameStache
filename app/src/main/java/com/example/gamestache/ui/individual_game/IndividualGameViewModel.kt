@@ -481,18 +481,15 @@ class IndividualGameViewModel(private val gameStacheRepo: GameStacheRepository, 
     fun getMultiplayerTitleAndSpinnerVisibility(currentVisibility: Int, multiplayerModes: List<MultiplayerModesItem?>?): Int {
         if (multiplayerModes.isNullOrEmpty()) return GONE
         else {
-            if (currentVisibility == GONE) {
-                return VISIBLE
-            } else  {
-                return GONE
-            }        }
+            return changeCardViewVisibility(currentVisibility)
+        }
     }
 
     fun determineArrowButtonStatus(viewVisibility: Int): Int {
         if (viewVisibility == GONE) {
-            return R.drawable.drop_down_arrow_down
-        } else {
             return R.drawable.drop_down_arrow_up
+        } else {
+            return R.drawable.drop_down_arrow_down
         }
     }
 
