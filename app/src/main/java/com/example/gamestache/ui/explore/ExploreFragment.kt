@@ -72,7 +72,7 @@ class ExploreFragment : Fragment() {
         exploreViewModel.getAuthToken(requireContext())
 
         exploreViewModel.currentPlatformListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, PLATFORM_SPINNER_PROMPT, ExploreSpinners.PLATFORM_SPINNER
+            platformSpinner = platformSpinner?.let { initSpinners(it, spinnerListFromRoom, resources.getString(R.string.platform_spinner_prompt), ExploreSpinners.PLATFORM_SPINNER
             ) }
             platformSpinner?.let { setSpinnerOnClick(it, "platform") }
             platformSpinner?.setSelection(exploreViewModel.platformSpinnerSelection)
@@ -80,13 +80,13 @@ class ExploreFragment : Fragment() {
         })
 
         exploreViewModel.currentGenreListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, GENRE_SPINNER_PROMPT, ExploreSpinners.GENRE_SPINNER) }
+            genreSpinner = genreSpinner?.let { initSpinners(it, spinnerListFromRoom, resources.getString(R.string.genre_spinner_prompt), ExploreSpinners.GENRE_SPINNER) }
             genreSpinner?.let { setSpinnerOnClick(it, "genre") }
             genreSpinner?.setSelection(exploreViewModel.genreSpinnerSelection)
         })
 
         exploreViewModel.currentGameModesListInDb.observe(viewLifecycleOwner, { spinnerListFromRoom ->
-            gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, GAME_MODES_SPINNER_PROMPT, ExploreSpinners.GAME_MODE_SPINNER) }
+            gameModesSpinner = gameModesSpinner?.let { initSpinners(it, spinnerListFromRoom, resources.getString(R.string.game_modes_spinner_prompt), ExploreSpinners.GAME_MODE_SPINNER) }
             gameModesSpinner?.let { setSpinnerOnClick(it, "gameMode") }
             gameModesSpinner?.setSelection(exploreViewModel.gameModesSpinnerSelection)
         })
@@ -229,15 +229,15 @@ class ExploreFragment : Fragment() {
                 }
                 if (itemPosition == 0) {
                     when (spinnerName) {
-                        ExploreSpinners.PLATFORM_SPINNER.spinnerName -> exploreViewModel.platformText.postValue("")
-                        ExploreSpinners.GENRE_SPINNER.spinnerName -> exploreViewModel.genreText.postValue("")
-                        ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> exploreViewModel.gameModesText.postValue("")
+                        ExploreSpinners.PLATFORM_SPINNER.spinnerName -> exploreViewModel.platformText.postValue(resources.getString(R.string.empty))
+                        ExploreSpinners.GENRE_SPINNER.spinnerName -> exploreViewModel.genreText.postValue(resources.getString(R.string.empty))
+                        ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> exploreViewModel.gameModesText.postValue(resources.getString(R.string.empty))
                     }
                 } else {
                     when (spinnerName) {
-                        ExploreSpinners.PLATFORM_SPINNER.spinnerName -> exploreViewModel.platformText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
-                        ExploreSpinners.GENRE_SPINNER.spinnerName -> exploreViewModel.genreText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
-                        ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> exploreViewModel.gameModesText.postValue("\"${spinner.getItemAtPosition(itemPosition)}\"")
+                        ExploreSpinners.PLATFORM_SPINNER.spinnerName -> exploreViewModel.platformText.postValue(makeSpinnerTextForAPICall(spinner.getItemAtPosition(itemPosition).toString()))
+                        ExploreSpinners.GENRE_SPINNER.spinnerName -> exploreViewModel.genreText.postValue(makeSpinnerTextForAPICall(spinner.getItemAtPosition(itemPosition).toString()))
+                        ExploreSpinners.GAME_MODE_SPINNER.spinnerName -> exploreViewModel.gameModesText.postValue(makeSpinnerTextForAPICall(spinner.getItemAtPosition(itemPosition).toString()))
                     }
                 }
             }
@@ -249,14 +249,12 @@ class ExploreFragment : Fragment() {
 
     companion object {
         const val SPINNER_RESET_VALUE = 0
-        const val PLATFORM_SPINNER_PROMPT = "Select a platform"
-        const val GENRE_SPINNER_PROMPT = "Select a genre"
-        const val GAME_MODES_SPINNER_PROMPT = "Select multiplayer capabilities"
         const val PERFORM_GAME_SEARCH_LOG_TAG = "ExploreFragment - performGameSearch"
         const val IS_OFFLINE_LOG_TEXT = "No internet connection from isOnline"
         const val TWITCH_AUTH_LOG_TAG = "ExploreFragment - twitchAuth"
         const val TWITCH_AUTH_NULL_LOG_TEXT = "TwitchAuth Null"
         fun makeNoSearchResultsToast(context: Context, resources: Resources): Toast = Toast.makeText(context, resources.getString(R.string.no_search_results_found_toast), Toast.LENGTH_SHORT)
+        fun makeSpinnerTextForAPICall(text: String) = "\"$text\""
     }
 
     enum class ExploreSpinners(val spinnerName: String) {

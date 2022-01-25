@@ -106,28 +106,29 @@ class GameStacheRepository(
     }
 
      suspend fun searchForGames(authToken: String, gamesSearch: RequestBody): Response<SearchResultsResponse> {
-        return api.searchForGames("Bearer $authToken", gamesSearch)
+        return api.searchForGames(bearerString(authToken), gamesSearch)
     }
 
      suspend fun getPlatformsListFromApi(authToken: String, platformsPostRequestBody: RequestBody): Response<List<PlatformsResponseItem>> {
-        return api.getPlatformsList("Bearer $authToken", platformsPostRequestBody)
+        return api.getPlatformsList(bearerString(authToken), platformsPostRequestBody)
     }
 
      suspend fun getGenresListFromApi(authToken: String, genrePostRequestBody: RequestBody): Response<List<GenresResponseItem>> {
-        return api.getGenresList("Bearer $authToken", genrePostRequestBody)
+        return api.getGenresList(bearerString(authToken), genrePostRequestBody)
     }
 
      suspend fun getGameModesListFromApi(authToken: String, gameModesPostRequestBody: RequestBody): Response<List<GameModesResponseItem>> {
-        return api.getGameModesList("Bearer $authToken", gameModesPostRequestBody)
+        return api.getGameModesList(bearerString(authToken), gameModesPostRequestBody)
     }
 
     suspend fun getIndividualGameDataFromApi(authToken: String, individualGameSearch: RequestBody): Response<List<IndividualGameDataItem>> {
-        return api.getIndividualGameData("Bearer $authToken", individualGameSearch)
+        return api.getIndividualGameData(bearerString(authToken), individualGameSearch)
     }
 
     companion object {
         const val AUTH_NOT_IN_DB = 0
         const val DAYS_TO_GET_EXPIRATION: Long = 30
+        fun bearerString(authToken: String) = "Bearer $authToken"
 
     }
 

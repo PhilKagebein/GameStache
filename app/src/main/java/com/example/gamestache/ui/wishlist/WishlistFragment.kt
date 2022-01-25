@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gamestache.Constants.Companion.makeFilterQuery
 import com.example.gamestache.R
 import com.example.gamestache.databinding.FragmentWishlistBinding
 import com.example.gamestache.formatSearchView
@@ -79,9 +80,8 @@ class WishlistFragment : Fragment() {
 
     private fun filterWishlist(query: String?) {
         if (query != null ) {
-            val filterQuery = "%$query%"
 
-            wishlistViewModel.filterWishlist(filterQuery).observe(viewLifecycleOwner, { filteredFavoritesList ->
+            wishlistViewModel.filterWishlist(makeFilterQuery(query)).observe(viewLifecycleOwner, { filteredFavoritesList ->
                 filteredFavoritesList?.let {
                     val massagedFavoritesList = massageDataForListAdapter(filteredFavoritesList)
                     wishlistAdapter.submitList(massagedFavoritesList)

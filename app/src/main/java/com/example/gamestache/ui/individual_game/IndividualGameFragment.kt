@@ -245,8 +245,8 @@ class IndividualGameFragment : Fragment() {
 
         for (textView in similarGamesTextViews) {
             textView.apply {
-                textSize = SIMILAR_GAME_TEXT_SIZE
-                setPadding(SIMILAR_GAME_LEFT_PADDING, SIMILAR_GAME_TOP_PADDING, SIMILAR_GAME_RIGHT_PADDING, SIMILAR_GAME_BOTTOM_PADDING)
+                textSize = resources.getDimension(R.dimen.similarGameTextSize)
+                setPadding(resources.getDimensionPixelOffset(R.dimen.similarGameLeftPadding), resources.getDimensionPixelOffset(R.dimen.similarGameTopPadding), resources.getDimensionPixelOffset(R.dimen.similarGameRightPadding), resources.getDimensionPixelOffset(R.dimen.similarGameBottomPadding))
                 setTextColor(typedValue.data)
                 textAlignment = left
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -256,8 +256,8 @@ class IndividualGameFragment : Fragment() {
     }
 
     private fun setReleaseRegionSpinnerSelection(releaseRegionsSpinner: Spinner, regionsList: MutableList<String?>) {
-        if (regionsList.contains(RELEASE_REGION_SPINNER_REGION_DEFAULT)) {
-            releaseRegionsSpinner.setSelection(regionsList.indexOf(RELEASE_REGION_SPINNER_REGION_DEFAULT))
+        if (regionsList.contains(resources.getString(R.string.release_region_spinner_default))) {
+            releaseRegionsSpinner.setSelection(regionsList.indexOf(resources.getString(R.string.release_region_spinner_default)))
         } else if (regionsList.size >= 2){
             releaseRegionsSpinner.setSelection(1)
         } else {
@@ -345,12 +345,6 @@ class IndividualGameFragment : Fragment() {
     }
 
     companion object {
-        const val RELEASE_REGION_SPINNER_REGION_DEFAULT = "North America"
-        const val SIMILAR_GAME_TEXT_SIZE = 18F
-        const val SIMILAR_GAME_LEFT_PADDING = 17
-        const val SIMILAR_GAME_TOP_PADDING = 3
-        const val SIMILAR_GAME_RIGHT_PADDING = 17
-        const val SIMILAR_GAME_BOTTOM_PADDING = 3
         const val COUNTDOWN_TIMER_DELAY: Long = 500
         const val COUNTDOWN_TIMER_INTERVAL: Long = 500
         const val INITIAL_MULTIPLAYER_CAPABILITY_VISIBILITY = GONE

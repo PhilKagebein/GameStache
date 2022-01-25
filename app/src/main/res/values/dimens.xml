@@ -66,6 +66,7 @@
     <!--Text Views-->
     <dimen name="gameFragmentTextViewStartMargin">7dp</dimen>
     <dimen name="gameFragmentTextViewVerticalMargin">3dp</dimen>
+    <dimen name="gameFragmentTextViewTopMargin">10dp</dimen>
 
     <!--Dropdown arrow for Game Description-->
     <dimen name="gameFragmentDropdownWidth">35dp</dimen>
@@ -82,9 +83,15 @@
     <dimen name="wishlistButtonHeight">55dp</dimen>
     <dimen name="wishlistButtonMarginStart">20dp</dimen>
 
+    <dimen name="similarGameTextSize">7sp</dimen>
+    <dimen name="similarGameLeftPadding">10dp</dimen>
+    <dimen name="similarGameRightPadding">10dp</dimen>
+    <dimen name="similarGameTopPadding">1dp</dimen>
+    <dimen name="similarGameBottomPadding">1dp</dimen>
+
 <!--game_summary_dialog-->
-    <dimen name="cancelButtonGameSummaryWidth">50dp</dimen>
-    <dimen name="cancelButtonGameSummaryHeight">50dp</dimen>
+    <dimen name="dialogCloseButtonWidth">50dp</dimen>
+    <dimen name="dialogCloseButtonHeight">50dp</dimen>
 
     <!--gameSummaryCardView-->
     <dimen name="gameSummaryCardViewLayoutWidth">350dp</dimen>
@@ -95,7 +102,11 @@
     <dimen name="gameSummaryDialogTextViewVerticalMargin">3dp</dimen>
     <dimen name="gameSummaryDialogTextViewTextSize">25sp</dimen>
 
+<!--game_summary_dialog-->
+    <dimen name="artDialogImageViewHorizontalMargin">10dp</dimen>
 
-
+<!--favorites_and_wishlist_fragment-->
+    <dimen name="noFavesOrWishlistTextViewHorizontalPadding">10dp</dimen>
+    <dimen name="noFavesOrWishlistTextViewTextSize">20sp</dimen>
 
 </resources>

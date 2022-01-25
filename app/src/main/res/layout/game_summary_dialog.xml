@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/cancelButtonGameSummary"
-        android:layout_width="@dimen/cancelButtonGameSummaryWidth"
-        android:layout_height="@dimen/cancelButtonGameSummaryHeight"
+        android:layout_width="@dimen/dialogCloseButtonWidth"
+        android:layout_height="@dimen/dialogCloseButtonHeight"
         android:scaleType="centerInside"
         android:background="@drawable/art_dialog_close_button"
         app:tint="?attr/textColor"
