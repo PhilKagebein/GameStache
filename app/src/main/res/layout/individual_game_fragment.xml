@@ -6,7 +6,7 @@
     <data>
         <variable
             name="individualgameviewmodel"
-            type="com.example.gamestache.ui.individual_game.IndividualGameViewModel"/>
+            type="com.stache.gamestache.ui.individual_game.IndividualGameViewModel"/>
     </data>
 
     <ScrollView

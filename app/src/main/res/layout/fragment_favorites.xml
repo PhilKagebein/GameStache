@@ -6,7 +6,7 @@
     <data>
         <variable
             name="favoritesviewmodel"
-            type="com.example.gamestache.ui.favorites.FavoritesViewModel"/>
+            type="com.stache.gamestache.ui.favorites.FavoritesViewModel"/>
     </data>
 
     <LinearLayout
